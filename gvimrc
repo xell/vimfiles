@@ -13,6 +13,9 @@
 " Popup confirmation window
 set confirm
 
+" Don't hide mouse, or the cursor will flash in the title
+"set nomousehide
+
 " Transparency only for MacVim GUI
 if g:ism && &term == 'builtin_gui'
 	set transparency=4
