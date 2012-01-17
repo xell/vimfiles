@@ -49,6 +49,13 @@ let $MYVIMRC = g:myvim_dir . '/vimrc'
 let $MYGVIMRC = g:myvim_dir . '/gvimrc'
 " }}}
 
+" Pathogen {{{2
+" call :Helptags after install/copy plugins into bundle
+call pathogen#infect()
+"call pathogen#helptags()
+" }}}
+
+
 " }}}
 
 " General {{{1
@@ -335,6 +342,15 @@ endf
 if g:ism
 	set listchars=tab:▸\ ,eol:¬
 endif
+
+" Statusline customization {{{2
+" TODO git
+set laststatus=2
+let g:mystatusline1 = '%<\ %{winnr()}\ %f\ %h%y%m%r\ [%{&ff}]\ [%{&fenc}]'
+let g:mystatusline2 = '%=%-14.(%l,%c%V%)\ %L\ %P\ '
+
+exec 'set statusline=' . g:mystatusline1 . g:mystatusline2
+" }}}
 
 " }}}
 
@@ -626,6 +642,22 @@ cab xasa .s/\(\a\<bar>[<>_-]\)\([^\x00-\xff]\&[^（），、：。“”；]\)/\
 
 " }}}
 
+" Plugins {{{1
+""""""""""""""""""""""""""""""""""""""""""""""""""""" 
+
+" Blockdiff {{{2
+vmap ,d1 :call BlockDiff_GetBlock1()<CR>
+vmap ,d2 :call BlockDiff_GetBlock2()<CR>
+" }}}
+" Colorizer {{{2
+nmap <silent> <F6> <Plug>Colorizer
+" }}}
+" Gundo {{{2
+"let g:gundo_disable=1
+nnoremap <F5> :GundoToggle<CR>
+" }}}
+
+" }}}
 " Others {{{1
 
 " Mathematica filetype
