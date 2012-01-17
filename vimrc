@@ -424,8 +424,8 @@ nmap <Leader>wl :botright vertical split<CR>
 nmap <Leader>s <C-W>s<C-W>j
 nmap <Leader>v <C-W>v
 
-" Switch windows in order
-noremap <C-Tab> <C-W>w
+" Switch two windows back and forth
+noremap <C-Tab> <C-W>p
 
 " For switch to split windows
 map <M-j> <C-W>j
