@@ -294,7 +294,293 @@ endif
 
 " }}}
 
+" Mappings {{{1
+""""""""""""""""""""""""""""""""""""""""""""""""""""" 
 
+" General {{{2
+
+" Set map leader  b de gHiIJK   pq  tu wxy 
+let mapleader=","
+
+" To allow overriding the Alt key
+if g:isw
+	set winaltkeys=no
+elseif g:ism && has("mac")
+	set macmeta
+endif
+
+" }}}
+
+" Insert mode credits {{{2
+" Mappings to facilitate the creation of text
+"
+" Author: Suresh Govindachar
+" Date: November 5, 2001
+" To enable viewing messages from commands issued using the mappings presented here
+"set cmdheight=2
+" }}}
+
+" Movements {{{2
+
+map - $
+
+" For navigate in visible lines
+nmap \ gj
+nmap <BS> gk
+
+"Basic motions
+imap <A-h> <Left>
+imap <A-j> <Down>
+imap <A-k> <Up>
+imap <A-l> <Right>
+imap <A--> <PageDown>
+imap <A-=> <PageUp>
+imap <A-6> <Home>
+imap <A-4> <End>
+
+" Page down and up
+map <C-J> <PageDown>
+map <C-K> <PageUp>
+" }}}
+
+" Tabs {{{2
+" For tab creating
+nmap <C-t> :tabnew<CR>
+
+" Tab close
+nmap <Leader>q :tabclose
+
+" Tab previous and next
+noremap <C-H> gT
+noremap <C-L> gt
+
+" Switch tabs and windows by numbers
+function! s:mapleadernumber()
+	for i in range(1, 9)
+		exec 'nmap <Leader>' . i . ' ' . i . 'gt'
+		exec 'nmap <M-' . i . '> :' . i . 'wincmd w<CR>'
+	endfor
+endfunction
+call <SID>mapleadernumber()
+" }}}
+
+" Windows {{{2
+
+" Close windows
+nmap <Leader>c <C-W>c
+nmap <Leader>o <C-W>o
+
+" Open windows
+nmap <Leader>wh :topleft vertical split<CR>
+nmap <Leader>wj :botright split<CR>
+nmap <Leader>wk :topleft split<CR>
+nmap <Leader>wl :botright vertical split<CR>
+
+" Split windows
+nmap <Leader>s <C-W>s<C-W>j
+nmap <Leader>v <C-W>v
+
+" Switch windows in order
+noremap <C-Tab> <C-W>w
+
+" For switch to split windows
+map <M-j> <C-W>j
+map <M-k> <C-W>k
+map <M-h> <C-W>h
+map <M-l> <C-W>l
+map <M-J> <C-W>J
+map <M-K> <C-W>K
+map <M-H> <C-W>H
+map <M-L> <C-W>L
+
+" For changing the size of split windows
+nmap <M-[> <C-W>-
+nmap <M-]> <C-W>+
+nmap <M-,> <C-W><
+nmap <M-.> <C-W>>
+nmap <M-=> <C-W>=
+
+" }}}
+
+" GUI Windows {{{2
+" see gvimrc
+" Move (Win)   Alt+→←↑↓
+" Change size  Ctrl+Alt+→←↑↓
+" Toggle size  F1 F2
+" }}}
+
+" Visual block, yank, paste {{{2
+
+" Leave cursor in the end of visual block
+vnoremap y ygv<Esc>
+nnoremap P gP
+
+" Copy and paste according to OS conventions
+if g:isw
+	" Copy, use <c-q> to operate original <c-c>
+	vnoremap <C-C> "+y
+	noremap <C-Q>		<C-V>
+	map <C-V>		"+gP
+	cmap <C-V>		<C-R>+
+	" from http://vim.wikia.com/wiki/Recover_from_accidental_Ctrl-U
+	" Pasting blockwise and linewise selections is not possible in Insert and
+	" Visual mode without the +virtualedit feature.  They are pasted as if they
+	" were characterwise instead.
+	" Uses the paste.vim autoload script.
+	"exe 'inoremap <script> <C-V>' paste#paste_cmd['i']
+	exe 'vnoremap <script> <C-V>' paste#paste_cmd['v']
+	exe 'inoremap <script> <C-V> <C-g>u'.paste#paste_cmd['i']
+	vnoremap <C-X> "+x
+else
+	" Redefine <D-v> in macmap.vim FIXME fail...
+	"execute 'inoremap <script> <special> <D-v>' paste#paste_cmd['i']
+	execute 'inoremap <script> <special> <D-v> <C-g>u'.paste#paste_cmd['i']
+endif
+" }}}
+
+" Search {{{2
+" For search highlight
+nmap <Leader>ns :let @/=""<CR>
+nmap <Leader>nh :nohlsearch<CR>
+
+" For quickfix
+"nmap <Leader>a :cp<CR>
+nmap <Leader>a :call <SID>searchupward()<CR>
+"nmap <Leader>z :cn<CR>
+nmap <Leader>z :call <SID>searchdownward()<CR>
+" Search cp cn etc. {{{3
+" E533 no more items
+function! s:searchupward()
+	try
+		cprevious
+	catch /^Vim\%((\a\+)\)\=:E42/	" catch error E42 No Erros
+		try
+			lprevious
+		catch /^Vim\%((\a\+)\)\=:E776/	" catch error E776 No Location List
+			echo "No Quickfix or Location list."
+		catch /^Vim\%((\a\+)\)\=:E553/	" catch error E553 No Location List
+			echo "No more items"
+		endtry
+	endtry
+endfunction
+
+function! s:searchdownward()
+	try
+		cnext
+	catch /^Vim\%((\a\+)\)\=:E42/	" catch error E42 No Erros
+		try
+			lnext
+		catch /^Vim\%((\a\+)\)\=:E776/	" catch error E776 No Location List
+			echo "No Quickfix or Location list."
+		catch /^Vim\%((\a\+)\)\=:E553/	" catch error E553 No Location List
+			echo "No more items"
+		endtry
+	endtry
+endfunction
+
+" }}}
+
+" Find the word under the cursor and jump to location list
+"nmap <Leader>l :lv /<c-r>=expand("<cword>")<cr>/ %<cr>:lw<cr>
+vmap <Leader>l "zy:lv /<C-R>z/ %<CR>:lw<CR>
+" Display the search items in location list 
+"nmap <Leader>l :call <SID>showsearchiteminlocationlist()<CR>
+"function! s:showsearchiteminlocationlist()
+"	execute 'lv /' . @/ . '/ % | lw'
+"endfunction
+
+" }}}
+
+" Modify texts {{{2
+
+" For insert enter when normal
+nmap <S-Enter> i<Enter><Esc>
+" For delete the Tab
+imap <S-Tab> <BS>
+
+" Move line
+nmap <C-Up> ddkP
+nmap <C-Down> ddp
+" }}}
+
+" Dispaly {{{2
+nmap ` :call <SID>changenumberdisplay()<CR>
+function! s:changenumberdisplay()
+	if &number
+		set relativenumber
+	else
+		set number
+	endif
+endfunction
+
+nnoremap <Space> @=((foldclosed(line('.')) < 0)?'zc':'zo')<CR>
+
+" }}}
+
+" Completions {{{2
+" Complete tags
+inoremap <C-]> <C-x><C-]>
+" Complete definition or macros
+inoremap <C-D> <C-x><C-D>
+" Complete file names
+inoremap <C-F> <C-x><C-F>
+" Complete whole lines
+" inoremap <C-L> <C-x><C-L>
+
+" }}}
+
+" Special {{{2
+
+" Edit vimrc
+nmap <Leader>rce :e $MYVIMRC<CR>
+" Reload vimrc
+nmap <Leader>rcl :so $MYVIMRC<CR>
+
+" Edit gvimrc
+nmap <Leader>rcge :e $MYGVIMRC<CR>
+" Reload gvimrc
+nmap <Leader>rcgl :so $MYGVIMRC<CR>
+
+" In windows, Alt+Space to act on icon menu
+if g:isw
+	noremap <M-Space> :simalt ~<CR>
+	inoremap <M-Space> <C-O>:simalt ~<CR>
+	cnoremap <M-Space> <C-C>:simalt ~<CR>
+endif
+
+" Jump among windows noremap
+noremap <A-o> <Tab>
+" }}}
+
+" }}}
+
+" Abbrevs {{{1
+""""""""""""""""""""""""""""""""""""""""""""""""""""" 
+if g:isw
+	ca xs mks! d:/w/xs1.vim
+	ca xl so d:/w/xs1.vim
+	cab xrj e d:\W\notes\rj.t2t
+	cab xhost e c:/windows/system32/drivers/etc/hosts<CR>
+elseif g:ism
+	ca xs mks! ~/Documents/xs1.vim
+	ca xl so ~/Documents/xs1.vim
+	cab xrj e ~/Documents/notes/rj.t2t
+	cab xhost e /etc/hosts<CR>
+	cab xbp e ~/.bash_profile
+	" Must in /etc/sudoers set username ALL=(ALL) NOPASSWD:ALL
+	cab xw w !sudo tee % > /dev/null
+endif
+
+cab xfn echo expand("%:p")
+"Insert date and time
+iab xdate <C-r>=strftime("%y-%m-%d %H:%M:%S")<CR>
+
+" XXX temp
+cab xe e ftp://xell@ftp.gowall1.veeserve.com:21/public_html/
+cab xasb .s/\([^\x00-\xff]\&[^（），、：。“”；]\)\(\a\<bar>[<>_-]\)/\1 \2/g
+cab xasa .s/\(\a\<bar>[<>_-]\)\([^\x00-\xff]\&[^（），、：。“”；]\)/\1 \2/g
+
+" }}}
 
 " Others {{{1
 

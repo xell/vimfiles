@@ -42,10 +42,130 @@ endif
 "}}}
 
 " Screen size settings {{{1
+" Initial sizes {{{2
 " those size responding to font h:9
-" TODO
-set lines=40
-set columns=101
+if g:ism
+	set lines=40
+	set columns=101
+else
+	set lines=45
+	set columns=100
+endif
+
+" those size responding to font h:12 (win)
+"set lines=25
+"set columns=80
+" }}}
+
+" Move the windows {{{2
+if g:isw
+	function! MoveWindows(incre, direction)
+		let x = getwinposx()
+		let y = getwinposy()
+		if a:direction =~ "up"
+			let y = y - a:incre
+		endif
+		if a:direction =~ "down"
+			let y = y + a:incre
+		endif
+		if a:direction =~ "left"
+			let x = x - a:incre
+		endif
+		if a:direction =~ "right"
+			let x = x + a:incre
+		endif
+		execute "winpos" . x . " " . y
+	endfunction
+	let g:incrementw = 15
+	nmap <silent> <M-Left> :call MoveWindows(g:incrementw,"left")<CR>
+	nmap <silent> <M-Right> :call MoveWindows(g:incrementw,"right")<CR>
+	nmap <silent> <M-Up> :call MoveWindows(g:incrementw,"up")<CR>
+	nmap <silent> <M-Down> :call MoveWindows(g:incrementw,"down")<CR>
+	imap <silent> <M-Left> <Esc>:call MoveWindows(g:incrementw,"left")<CR>
+	imap <silent> <M-Right> <Esc>:call MoveWindows(g:incrementw,"right")<CR>
+	imap <silent> <M-Up> <Esc>:call MoveWindows(g:incrementw,"up")<CR>
+	imap <silent> <M-Down> <Esc>:call MoveWindows(g:incrementw,"down")<CR>
+endif
+" }}}
+
+" Change the window size incrementally {{{2
+let g:increments = 3
+function! ChangeWindowSizeV(incre, direction)
+	let y = &lines
+	let x = &columns
+	if a:direction =~ "down"
+		let y += a:incre
+		execute 'set lines=' . y
+	elseif a:direction =~ "up"
+		let y -= a:incre
+		execute 'set lines=' . y
+	elseif a:direction =~ "left"
+		let x -= a:incre
+		execute 'set columns=' . x
+	elseif a:direction =~ "right"
+		let x += a:incre
+		execute 'set columns=' . x
+	endif
+	"execute 'set lines=' . x
+endfunction
+nmap <C-A-Down> :call ChangeWindowSizeV(g:increments, "down")<CR>
+nmap <C-A-Up> :call ChangeWindowSizeV(g:increments, "up")<CR>
+nmap <C-A-Left> :call ChangeWindowSizeV(g:increments, "left")<CR>
+nmap <C-A-Right> :call ChangeWindowSizeV(g:increments, "right")<CR>
+" }}}
+
+" Toggle between two sets of window sizes F1 F2 {{{2
+" toggle between two window size, see F1
+nmap <silent> <F1> :call <SID>sizeAndPositionOfWindowSmall()<CR>
+nmap <silent> <F2> :call <SID>sizeAndPositionOfWindow()<CR>
+if !exists("s:sizeandpositionofwindow")
+	let s:sizeandpositionofwindowsmall = 0
+endif
+function! s:sizeAndPositionOfWindowSmall()
+	if !s:sizeandpositionofwindowsmall
+		set lines=9
+		set columns=101
+		"winpos 50 60
+		let s:sizeandpositionofwindowsmall = !s:sizeandpositionofwindowsmall
+	else
+		if g:ism
+			set lines=40
+		else
+			set lines=45
+		endif
+		set columns=101
+		"winpos 66 103
+		let s:sizeandpositionofwindowsmall = !s:sizeandpositionofwindowsmall
+	endif
+endfunction
+
+" toggle between two window size, see F2
+if !exists("s:sizeandpositionofwindow")
+	let s:sizeandpositionofwindow = 0
+endif
+function! s:sizeAndPositionOfWindow()
+	if s:sizeandpositionofwindow
+		if g:ism
+			set lines=40
+		else
+			set lines=45
+		endif
+		set columns=101
+		"winpos 50 60
+		let s:sizeandpositionofwindow = !s:sizeandpositionofwindow
+	else
+		if g:ism
+			set lines=40
+			set columns=169
+		else
+			set lines=45
+			set columns=220
+		endif 
+		"winpos 66 103
+		let s:sizeandpositionofwindow = !s:sizeandpositionofwindow
+	endif
+endfunction
+" }}}
 " }}}
 
 " Set the guitablabel {{{1
