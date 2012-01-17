@@ -1,0 +1,10 @@
+viminfo
+dictionary.txt
+.netrwhist
+tags
+tags-*
+*.pyc
+descript.ion
+.DS_Store
+.com.apple.*
+*.sw[po]
