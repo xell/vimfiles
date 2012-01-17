@@ -170,6 +170,20 @@ set foldmethod=marker
 " Deal with large file
 "autocmd BufWinEnter * if line2byte(line("$") + 1) > 200000 | syntax clear | echomsg "Large File" | endif
 
+" Breakindent patch
+if exists("+breakindent")
+	set breakindent
+endif
+
+" When editing a file, always jump to the last known cursor position.
+" Don't do it when the position is invalid or when inside an event handler
+" (happens when dropping a file on gvim). g`
+" vimrcEx
+autocmd BufReadPost *
+			\ if line("'\"") > 0 && line("'\"") <= line("$") |
+			\   exe "normal! g`\"" |
+			\ endif
+
 " Special settings {{{2
 
 if g:isw
@@ -210,6 +224,36 @@ else
 	endif
 endif
 
+" }}}
+
+" Special settings for Mac {{{2
+if g:ism
+	" IME setting {{{3
+	
+	" function! s:setim()
+	" if &imd
+	" 	set imd
+	" 	set noimd
+	" 	echo "Chinese enable."
+	" else
+	" 	set imd
+	" 	echo "English only."
+	" endif
+	" endfunction
+
+	" nmap <D-i> :call <SID>setim()<CR>
+	" imap <D-i> <Esc>:call <SID>setim()<CR>i
+	
+	set imd
+	set noimd
+	" }}}
+
+	" Use vim internal help when press K
+	set keywordprg=
+
+	set visualbell
+
+endif
 " }}}
 
 " }}}
@@ -587,6 +631,16 @@ cab xasa .s/\(\a\<bar>[<>_-]\)\([^\x00-\xff]\&[^（），、：。“”；]\)/\
 " Mathematica filetype
 let filetype_m = "mma"
 
+" SH filetype, see *sh.vim*
+let g:is_bash=1
+let g:sh_fold_enabled=3
+
+" tex: Display the spell highlight beyond the syntax highlights
+" vimrcEx
+autocmd BufReadPost,FileReadPost *.tex syntax spell toplevel
+
+" Define command WhatSyntax for looking up syntax
+command! -nargs=0 -bar WhatSyntax echomsg synIDattr(synID(line("."),col("."),0),"name") synIDattr(synIDtrans(synID(line("."),col("."),0)),"name") synIDattr(synID(line("."),col("."),1),"name") synIDattr(synIDtrans(synID(line("."),col("."),1)),"name")
 " }}}
 
 " Modelines {{{1
