@@ -704,6 +704,135 @@ nnoremap <C-Enter> :WinFullScreen<CR>
 let g:user_zen_leader_key = '<c-e>'
 "let g:user_zen_expandabbr_key = '<c-h>'
 " }}}
+" BufExplorer {{{2
+let g:bufExplorerShowUnlisted=1
+" }}}
+" EasyMotion {{{2
+let g:EasyMotion_do_mapping = 0
+
+"nnoremap <silent> <Leader>j :call EasyMotionJK(0,0)<CR>
+"nnoremap <silent> <Leader>k :call EasyMotionJK(0,1)<CR>
+" let g:EasyMotion_mapping_f = ',f'
+" let g:EasyMotion_mapping_F = ''
+" let g:EasyMotion_mapping_t = ''
+" let g:EasyMotion_mapping_T = ''
+" let g:EasyMotion_mapping_w = ',w'
+" let g:EasyMotion_mapping_W = ''
+" let g:EasyMotion_mapping_b = ''
+" let g:EasyMotion_mapping_B = ''
+" let g:EasyMotion_mapping_e = ''
+" let g:EasyMotion_mapping_E = ''
+" let g:EasyMotion_mapping_ge = ''
+" let g:EasyMotion_mapping_gE = ''
+" let g:EasyMotion_mapping_j = ',j'
+" let g:EasyMotion_mapping_k = ',k'
+
+nnoremap <silent> <Leader>D :call EasyMotion#F(0,0)<CR>
+nnoremap <silent> <Leader>d :call EasyMotion#WB(0,0)<CR>
+" }}}
+" Quich Filter {{{2
+let g:filteringDefaultAutoFollow = 1
+
+" After / search, use this to show the search result window
+" just like quickfix list, but with sync scroll
+nnoremap ,l :call FilteringNew().addToParameter('alt', @/).run()<CR>
+" After / search, use this to enter a keword filtering the search
+" i.e. do a second search in the first search result
+nnoremap ,F :call FilteringNew().parseQuery(input('>'), '<Bar>').run()<CR>
+" Re-open previous "look" windows selectively
+nnoremap ,g :call FilteringGetForSource().return()<CR>
+
+" Old settings, name are more intuitive to understand
+" nmap <Leader>F :call Gather(input("Filter on term: "), 0)<CR>
+" nmap <Leader>l :call Gather(@/, 0)<CR>:echo<CR>
+" nmap <Leader>g :call GotoOpenSearchBuffer()<CR>
+" }}}
+" MarksBrowser {{{2
+"let g:marksCloseWhenSelected = 0
+let g:marksShowTypes = "abcdefghijklmnopqrstuvwxyz" . "ABCDEFGHIJKLMNOPQRSTUVWXYZ" . "0123456789.'`^<>\""
+nmap <Leader>mb :MarksBrowser<cr><cr>
+" Default
+"let s:all_marks = "abcdefghijklmnopqrstuvwxyz.'`^<>\""
+" }}}
+" Showmarks {{{2
+" Enable ShowMarks
+let showmarks_enable = 1
+" Show which marks
+let showmarks_include = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+" Ignore help, quickfix, non-modifiable buffers
+let showmarks_ignore_type = "hqm"
+" Hilight lower & upper marks
+"let showmarks_hlline_lower = 1
+"let showmarks_hlline_upper = 1
+"augroup MyShowMarks
+"	autocmd!
+"	autocmd BufRead,FileReadPost * normal ,mo
+"augroup END
+" }}}
+" Voom {{{2
+let g:voom_tree_placement="right"
+let g:voom_tree_width=30
+"let g:voom_return_key = '<C-Return>'
+"let g:voom_tab_key = ''
+"let g:voom_user_command = "so $VIM/vimfiles/voom_addons/mediawiki.vim"
+let g:voom_tab_key = '<C-Tab>'
+let g:voom_return_key = '<C-Return>'
+
+nmap <silent> <Leader>; :call BuildTOC()<CR>
+" BuildTOC  {{{3
+function! BuildTOC()
+	if !exists('t:toc_enable')
+		" Open TOC
+		let t:toc_enable = 'enable'
+		let t:col_ori = &columns
+		" Change window size
+		if t:col_ori <= 100
+			let col = g:voom_tree_width + t:col_ori
+			exec 'set columns=' . col
+		endif
+		if &ft == 'txt2tags'
+			exec 'Voom txt2tags'
+			return
+		elseif &ft == 'autohotkey'
+			exec 'Voom ahk'
+			return
+		elseif &ft == 'python'
+			exec 'Voom python'
+			return
+		elseif &ft == 'rst'
+			exec 'Voom rest'
+			return
+		elseif &ft == 'markdown' || &ft == 'pandoc'
+			exec 'Voom markdown'
+			return
+		" Style {\{3}\d [\{3}\d
+		elseif search('\({\{3}\d\)\|\([\{3}\d\)','nw')
+			exec 'Voom'
+			return
+		" Style {\{3}$
+		else
+			exec 'TToC ^.*{\{3}$'
+			return
+		endif
+	else
+		" Close TOC
+		unlet t:toc_enable
+		let winnum = bufwinnr('*_VOOM*')
+		if winnum != -1
+			exec winnum . 'wincmd w'
+			exec 'wincmd c'
+		endif
+		exec 'set columns=' . t:col_ori
+		unlet t:col_ori
+		return
+endfunction
+" }}}
+
+" }}}
+" TToC {{{2
+" Use function as a navigation tree toc
+nmap <Leader>tt :TToC \<fu\%[nction!]\s\zs.*\ze$<CR>
+" }}}
 
 " }}}
 " Others {{{1
