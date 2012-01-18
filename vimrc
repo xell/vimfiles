@@ -656,6 +656,54 @@ nmap <silent> <F6> <Plug>Colorizer
 "let g:gundo_disable=1
 nnoremap <F5> :GundoToggle<CR>
 " }}}
+" Increment {{{2
+command! -nargs=0 IncHelp echo "<,>Inc [s]tart_0 [i]ncre_1 [r]epeat_1 [w]idth_4 [f]ill [h]ex [o]ct [p]at_@ [c]onfirm"
+
+" }}}
+" LanguageTool {{{2
+if g:isw
+	let g:languagetool_jar = 'd:/P/languagetool/LanguageTool.jar'
+elseif g:ism
+	let g:languagetool_jar = '/usr/local/Cellar/languagetool/1.3.1/libexec/LanguageTool.jar'
+endif
+nmap <F7> :LanguageToolCheck<CR>
+" }}}
+" Thesaurus {{{2
+" TODO change the location of mthesaur.txt
+if g:isw
+	let g:thesaurus_file='d:/p/thesaurus/th_en_US_v2'
+	set thesaurus=d:/P/thesaurus/mthesaur.txt
+elseif g:ism
+	" mac or unix must use '/usr/share/myspell/dicts/th_en_US_v2.idx'
+	set thesaurus=~/Library/Thesaurus/mthesaur.txt
+endif
+imap <c-t> <Esc>bl:Thesaurus<CR>
+" }}}
+" tComment {{{2
+" While gcc respects indent blank, I defined gcl to put comment character
+" right in the first column.
+nnoremap gcl :let g:tcommentOptions = {'col': 1}<CR>:normal gcc<CR>:let g:tcommentOptions = {}<CR>
+let g:tcommentOptions = {}
+let g:tcommentBlockXML = "<!--%s-->\n"
+" Defind new pandoc type TODO block comment
+let g:tcomment_types = {'pandoc': "<!-- %s -->", 'pandoc_inline': "<!-- %s -->", 'pandoc_block': "<!-- %s -->\n  "}
+"call tcomment#DefineType('pandoc', "<!-- %s -->")
+"call tcomment#DefineType('pandoc_inline', "<!-- %s -->")
+"call tcomment#DefineType('pandoc_block', "<!-- %s -->\n  ")
+" }}}
+" Translate EnToCn {{{2
+"nmap <Leader>e :Trans<CR>
+" }}}
+" Matchit {{{2
+" TODO difine some new block
+" }}}
+" WinFullScreen {{{2
+nnoremap <C-Enter> :WinFullScreen<CR>
+" }}}
+" ZenCoding {{{2
+let g:user_zen_leader_key = '<c-e>'
+"let g:user_zen_expandabbr_key = '<c-h>'
+" }}}
 
 " }}}
 " Others {{{1

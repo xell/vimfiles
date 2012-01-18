@@ -1,0 +1,14 @@
+This is a mirror of http://www.vim.org/scripts/script.php?script_id=2528
+
+Usage:
+   Use the Thesaurus normal mode command to find the synonyms for the word
+   under the cursor. The plugin requires vim to be build with python support,
+   and uses the nltk python module for stemming the words. You can obtain
+   nltk from http://www.nltk.org, or via easy_install.
+
+   The plugin defaults to using the en_US thesaurus files, usually installed
+   with Openoffice.org. These files can be located in
+   /usr/share/myspell/dicts. A different thesaurus file can be specified via
+   the g:thesaurus_file variable. It expects the full path to the files,
+   without the extension. If none is specified, a value of
+   '/usr/share/myspell/dicts/th_en_US_v2' is assumed.

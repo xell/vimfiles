@@ -1,0 +1,40 @@
+This is a mirror of http://www.vim.org/scripts/script.php?script_id=3223
+
+This plugin integrates the LanguageTool grammar checker into Vim.
+Current version of LanguageTool can check grammar in many languages:
+en, eo, de, pl, fr, es, it, nl, lt, uk, ru, sk, sl, sv, ro, is, gl, ca,
+da, ml, be. See http://www.languagetool.org/ for more information about
+LanguageTool.
+
+The script defines 2 commands:
+
+* Use  :LanguageToolCheck  to check grammar in current buffer.
+  This will check for grammar mistakes in text of current buffer
+  and highlight the errors. It also opens a new scratch window with the
+  list of grammar errors with further explanations for each error.
+  Pressing <Enter> in scratch buffer will jump to that error. The
+  location list for the buffer being checked is also populated.
+  So you can use location commands such as :lopen to open the location
+  list window, :lne to jump to the next error, etc.
+
+* Use  :LanguageToolClear  to remove highlighting of grammar mistakes,
+  close the scratch window containing the list of errors, clear and
+  close the location list.
+
+See screenshots of grammar checking in English and French at:
+  http://dominique.pelle.free.fr/pic/LanguageToolVimPlugin_en.png
+  http://dominique.pelle.free.fr/pic/LanguageToolVimPlugin_fr.png
+
+See  :help LanguageTool  for more details
+
+Bugs:  
+  Column number reported by LanguageTool indicating the location of the 
+  error is sometimes incorrect. There is an opened ticket about this bug: 
+  http://sourceforge.net/tracker/?func=detail&aid=3054895&group_id=110216&atid=655717 
+  The script currently works around it by doing pattern matching with  
+  information context but it is not a perfect workaround: it can cause 
+  spurious highlighting of errors in rare cases.
+
+License:
+  The VIM LICENSE applies to LanguageTool.vim plugin
+  (see ":help copyright" except use "LanguageTool.vim" instead of Vim").

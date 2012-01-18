@@ -1,0 +1,13 @@
+This is a mirror of http://www.vim.org/scripts/script.php?script_id=2996
+
+put cursor on the english word in normal mode , then type :Trans , 
+or in Visual-mode type :TransV ,
+I map the :Trans and :TransV to <Space>,just like 
+nnoremap <Space> :Trans<CR>
+vnoremap <Space> <ESC>:TransV<CR>
+in .vimrc files.
+Now,Visual-mode only support 'v' and 'V','<C-V>' will be
+treated same as 'v' mode
+
+Tested in Gvim72 on WindowsXP
+
