@@ -1,0 +1,3 @@
+This is a mirror of http://www.vim.org/scripts/script.php?script_id=3615
+
+I like the ShowMarks plugin vimscript #152 ,but he has some bug in Vim 7,so I patch and upload it.

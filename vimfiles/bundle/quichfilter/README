@@ -1,0 +1,26 @@
+This is a mirror of http://www.vim.org/scripts/script.php?script_id=2759
+
+This plug-in provides filtering/search functionality to Vim, similar to e.g.
+PSPad. This plug-in offers a number of additional features:
+
+- Further filtering/searching inside the filtered results.
+- Syntaxt highlighting in the filtered results.
+- Show context line around found matches. You can dynamically change the number
+  of lines.
+- Easy jumping to and from the filter buffers, including auto-follow.
+
+In addition, the new 2.0 version (currently work in progress!) offers:
+- Fine-tuning of results (AND, OR and AND-NOT)
+- Showing context lines above, below or above and below the matches.
+- Show the raw results (no line numbering) for easy yanking.
+
+The search results are presented in a separate buffer (and window) and the
+script offers a number of convenience key-mappings to navigate from one result
+to the next.
+
+There are no default mapping to start the plug-in, but setting this up can be
+as easy as cut-n-paste from the help file. In the results buffer a number of
+mappings are set up, please refer to the help file for an overview in 2.0. For
+older releases, press ?. Since ? is a useful VIM command it's no longer mapped
+in 1.0.7. In a results window, type ":call ShowHelp()" and press enter. 
+

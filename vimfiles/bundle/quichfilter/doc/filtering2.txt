@@ -1,0 +1,422 @@
+
+                              FILTERING PLUG-IN
+                               Reference Manual
+                            by Niels Aan de Brugh
+
+INTRODUCTION
+ |filtering_what_is_this|  What is this plug-in?                                
+ |filtering_quick_start|   Quick Start                                           
+OPERATION
+ |filtering_basics|        Basic Operation                                            
+ |filtering_mapping|         Setting up a Mapping                                    
+ |filtering_navigation|      Navigating the Results                               
+ |filtering_return|          Retuning to Existing Results                             
+ |filtering_advanced|      Advanced Operation                                       
+ |filtering_terminology|     Some Terminology                                    
+ |filtering_extra|           Match Only Lines that are Followed by some Pattern        
+SCRIPTING AND CUSTOMIZATION
+ |filtering_api|           The API                                                       
+ |filtering_methods|         Methods                                                 
+ |filtering_callbacks|       Call-backs                                            
+ |filtering_parameters|      Parameters                                           
+
+What is this plug-in?                                  *filtering_what_is_this*
+
+    This plug-in allows you to quickly collect text from a buffer for analysis
+    and navigation. It is primarily written to support my own needs in
+    analysing large log files of software systems.
+
+    The plug-in is written in VimScript and has no external dependencies. This
+    version is a complete rewrite focusing on maintainability, but there are
+    some nice functionality and speed improvements as well.
+
+    This plug-in tries not to be intrusive in your own Vim workflow. It does
+    not even set up any keybindings, you'll need to do that youself.
+
+
+Quick Start                                             *filtering_quick_start*
+
+   This new version of the plug-in has a diffrent interface than the previous
+   one. To set up the keys as they were before, paste this into your .vimrc: >
+
+      nnoremap ,f :call FilteringNew().addToParameter('alt', @/).run()<CR>
+      nnoremap ,F :call FilteringNew().parseQuery(input('>'), '|').run()<CR>
+      nnoremap ,g :call FilteringGetForSource().return()<CR>
+
+<  Yes, the commands are a little longer than the previous version, but you'll
+   see this new form makes sense.
+
+
+Basic Operation                                              *filtering_basics*
+
+  Setting up a Mapping                                      *filtering_mapping*
+
+    By default the plug-in does not set any mappings, you'll have to do that
+    yourself. The API works by creating an object instance via
+    FilteringNew(), setting parameters and then calling run() on that
+    object.
+    
+    As a bare minimum, at least one search pattern should be set. Suppose you
+    want to set ,f as a mapping to filter based on whatever is in your search
+    buffer @/. This is done by adding the following line to your .vimrc: >
+
+      nnoremap ,f :call FilteringNew().addToParameter('alt', @/).run()<CR>
+
+<   The above makes use of the new interface of this plug-in, and you should
+    use it if you're just setting up the script. The legacy interface uses the
+    function Gather(), which is easier to set up but limiting for more
+    advanced use: >
+
+      nnoremap ,f :call Gather(@/, 0)<CR>                     (not preferred!)
+
+<   The following functions are used to set parameters:
+
+      addToParameter(<name>, <value>)  To add values to a list or number.
+      setParameter(<name>, <value>)    To set a single value.
+
+    Note: All setter functions on the filtering object return a reference to
+          the object itself, so methods can be chained.
+          The following is equivalent to the one-liner above: >
+
+      function FilterCurrentSearchBuffer()
+        let obj = FilteringNew()
+        call obj.addToParameter('alt', @/)
+        call obj.run()
+      endfunction
+
+      nnormap ,f :call FilterCurrentSearchBuffer()<CR>
+
+<         This makes more sense when multiple settings have to be changed and
+          putting it all on one line becomes messy.
+
+    Note: The parameters are also available as values in the dictionary 
+          object. Setting the internal variables directly is discouraged
+          because the setter functions have some error detection and
+          reporting. One of the aspects of error handling is that when you
+          chain multiple methods you still get only one error message.
+          Sometimes it can be convenient to operate on list attributes using
+          Vim's list functions.
+          Setting values via the setter functions usually does not have
+          side-effects other than changing attributes. Exceptions tp this rule
+          can be easily identified because there is a special-purpose methods
+          for some attributes.
+          
+
+  Navigating the Results                                 *filtering_navigation*
+
+    This section assumes the default mappings are used. If you have custom
+    mappings set up you know what to do...
+
+    In a result window you can move through the filtered results using <j> and
+    <k>. Pressing <Enter> jumps to the result in the original buffer. Pressing
+    <S-Enter> jumps to the result and closes the filter window. Pressing <Esc>
+    closes the filtering window.
+
+    Pressing <a> sets auto-jump, so the original buffer jumps through the
+    result as you move over them. The result is automatically centered in the
+    original window.
+
+    The default mappings do not (or rather: no longer) overwrite VIM search
+    commands, so you are free to use </>, <?> and so on to navigate the
+    results.
+
+
+  Retuning to Existing Results                               *filtering_return*
+
+    To return to the filtering window you can call return() on the result of
+    FilteringGetForSource() function in the original buffer.
+
+    FilteringGetForSource() returns a stub object if no filtering window is
+    open. Calling any method on this object prints an error message, once.
+
+    If you start multiple searches from the same buffer,
+    FilteringGetForSource() will ask you which one you mean.
+
+    If a filtering window is still open, return() returns the cursor to it.
+    You may want to map this to a shotcut like so: >
+
+      nnoremap ,g :call FilteringGetForSource().return()<CR>
+  
+<   There are additional side-effects in return(), it perfectly fine to
+    navigate to the results window in any other way.
+
+
+Advanced Operation                                         *filtering_advanced*
+
+  Some Terminology                                      *filtering_terminology*
+
+    Some terminology will help you understand the API and propery names
+    better.
+
+    The 'original' of a search is the buffer from which the text originates.
+    This can be your log or source code file for example.
+
+    The 'source' of a search is the buffer where you started the search (i.e.
+    where you called FilteringNew). This is usually the same as the original,
+    but it can also be a results window.
+
+    The 'target' is the buffer in which the results of a search are pasted.
+
+    An 'alternative' is one of the terms to look for. In many cases there is
+    just one alternative, but there can be as many as you like. All lines that
+    match one of the alternative is considered as a result.
+
+    An 'extra' pattern is a term that must be found after a potential result
+    before a certain stop condition is met. If the extra pattern is not found,
+    the matches line is not a valid result. There can be just one extra
+    pattern at this time, mainly because having more would be complex to work
+    with.
+
+    Finally, 'include' or 'exclude' are patterns that are matched on each line
+    that matches one of the alternatives. A matched line can be a valid result
+    if it matches all terms in include, and none of the terms in exclude.
+
+
+  Incremental Fine Tuning of Results                                 *fine_tune*
+
+    Using default mappings &, ! and | in the results Window it is possible to
+    fine tune the results, or to add more results in the case of |. The
+    mappings add the result to the 'include', 'exclude' and 'alt' lists
+    respectively.
+
+      &  All shown results must also match an additional pattern.
+
+      !  Filter out results that match an additional pattern.
+
+      |  Add lines that match a second search pattern.
+
+    The default mappings are based on the conventional operators to
+    logical and, not and or in many programming languages.
+
+
+  Match Only Lines that are Followed by some Pattern          *filtering_extra*
+
+    Sometimes it's useful to show only results that are followed by some
+    pattern. For example, show only protocol messages in a log file that
+    contain a certain value. In this case, an 'extra' pattern can be used.
+
+    By default key <e> is set up to specify an extra parameter.
+
+    This plug-in will look for the extra parameter before the stop
+    condition is met. The default stop condition can be modified via global
+    variable g:filteringExtraPatternStopCondition. It can also be specified
+    per query. The stop condition is any of the following:
+
+       * Encounter yet another pattern. You can look for all
+         lines that match A (alternative), if followed by B (extra) before you
+         see C (stop condition).
+         The default for C is a blank line.
+         Set g:filteringExtraPatternStopCondition to a string value containing
+         the pattern as accepted by match() (see :help match() ). The default
+         value is '^$', the empty line.
+
+       * After X lines.
+         This mode is used when g:filteringExtraPatternStopCondition
+         has a numeric positive value.
+     
+       * Indefinitely. This is useful when you just want to show
+         the result text from A to B, and don't care how many lines there are
+         between them.
+         Set g:filteringExtraPatternStopCondition to a numeric
+         non-positive value.
+
+    Note: the value of g:filteringExtraPatternStopCondition is read only duing
+          object creation, changes to this variable will not have
+          effect on existing searches.
+
+    Via the method parseQuery() a query can be parsed that contains one
+    alternative, an extra pattern and a stop condition. The format is as
+    follows: >
+
+      <alternative>[<seperator><extra-pattern>[<seperator><stop-condition>]]
+
+<   So: alternative, optionally followed by an extra pattern, optionally
+    followed by a stop condtion. The value of <sepeator> is passed as a second
+    parameter. The stop-condition is specified in the same way as the
+    value for g:filteringExtraPatternStopCondition.
+
+
+  Showing Context Lines
+
+    Sometimes it's convenient so see a couple of lines that are above or below
+    the matched line in the original buffer. These lines are called 'context'
+    lines. 
+    
+    Increasing the number of context lines is done via default mapping
+    <c>, decreasing is done via <C>. By default this will increase or
+    decrease the number of lines on the top and the bottom.
+
+    When you only wish to see either lines at the top, or at the bottom,
+    cycle through the modes via default mapping <d>.
+
+    It's possible to show all context lines between the match and the
+    extra pettern. This is toggled via default keys <t> and <D>.
+    (Key <t> is mapped because it was used in a previous version.)
+
+
+The API                                                         *filtering_api*
+
+  Functions                                                 *filtter_functions*
+
+    The following functions can be called from your scripts:
+
+    FilteringNew()
+      Creates a new (empty) filtering object.
+
+    FilteringGetForTarget()
+      Gets the filtering object for a results (target) buffer. Should be
+      run in that buffer.
+
+    FilteringGetForSource(...) 
+      Gets the filtering object for a source buffer. Should be run in that
+      buffer. If more than one search is still open for the source buffer,
+      a choice is offered to he user.
+      A FuncRef can be passed as an optional parameter, which is called when
+      a choice needs to be made. This function is called with a list of
+      filtering objects, and it should return just one.
+      Note: Searches that have not been run yet are not considered.
+
+
+  Methods                                                   *filtering_methods*
+
+    The following methods are available:
+
+    run()
+      Runs a search with the set parameters in the current buffer. To re-run a
+      search, use the reevaluate() function.
+
+    return()
+      Return to a results buffer if it still exists.
+
+    addToParameter(name, value)
+      Add a value to a search parameter. The search parameter must be a list
+      or number type. It can be used to toggle Boolean paramaters as well.
+
+    addInputToParameter(name, prompt)
+      The same as above, except ask the user for input using the given prompt.
+      This uses the on_input_requested call-back, which by default is just the
+      input() function.
+
+    setParameter(name, value)
+      Sets a parameter to some fixed value. This cannot be used to set lists.
+
+    setParameterToInput(name, prompt)
+      Same as above, except ask user for input. Uses on_input_requested
+      call-back, like addInputToParameter().
+
+    reevaluate()
+      When search parameters have changed, call this function to update the
+      output. This function will only perform a full run if needed, sometimes
+      the results of a previous search can be re-used.
+      Note: this does not mean that updates will always be fast. If there are
+      many results it can take seconds just to sort them and paste them in a
+      scatch-buffer. Doing a complete re-run is about twice as slow.
+
+    parseQuery(query)
+      Sets search parameters with values given in a query string format.
+      See |filter_extra|.
+
+    gotoLineInBuffer(buffer_nr, line_nr, close)
+      Goto line_nr in buffer_nr, and close the search window if close is true.
+      Buffer_nr is expected to be equal to the value of 'original' or
+      'source'. Use the convenience functions gotoSelectionInOriginal() and
+      gotoSelectionInSource() for the common use cases.
+
+    followInBuffer(buffer_nr, line_nr, blink_times)
+      If buffer buffer_nr is showing, scroll to line_nr (centered) and blink
+      blink_times. As with gotoLineInBuffer the value of buffer_nr is expected
+      to be equal to object field 'original' or 'source'. Use the convenience
+      functions followSelectionInOriginal() and followSelectionInSource() for
+      the common use cases.
+
+    getCurrentLineSelection()
+      Gets the line number of the results of the line the cursor is on. When
+      showing raw results, -1 is returned. 
+
+    destruct()
+      Cleans up the object reference in source and target buffers, and
+      destroys the results window.
+
+    blink(times)
+      Utility function to blink the cursor 'times' times.
+
+    toggleAutoFollow(kind)
+      Setter for auto follow mode. 'kind' must be 'source' or 'original'.
+      If source and original are the same buffer, a single call will change
+      both values. This is better for your sanity.
+        
+    The following additional methods are available for convenience:
+
+    gotoSelectionInOriginal(close)
+      Shorthand for:
+      obj.gotoLineInBuffer(obj.orginal, obj.getCurrentLineSelection(), close)
+
+    gotoSelectionInSource(close)
+      Shorthand for:
+      obj.gotoLineInBuffer(obj.source, obj.getCurrentLineSelection(), close)
+
+    followSelectionInOriginal(blink_times)
+      Shorthand for:
+      obj.followInBuffer(obj.original, obj.getCurrentLineSelection(), blink_times)
+
+    followSelectionInSource(blink_times)
+      Shorthand for:
+      obj.followInBuffer(obj.source, obj.getCurrentLineSelection(), blink_times)
+   
+
+  Call-backs                                              *filtering_callbacks*
+
+    Some call-backs can be set in the filtering object. These must be
+    <Funcref>s.        
+
+      on_result_buffer_created
+        Default: empty.
+        Called after creating a results buffer. Can be used to set auto
+        commands and such.
+
+      on_input_requested
+        Default: input()
+        Function to use to get a string input from the user. Must have the
+        same external behavior as the input() function.
+
+  Parameters                                             *filtering_parameters*
+
+    The following parameters can be set using addToParameter(), setParameter()
+    or similar functions.
+
+    For each parameter we give: name, type and default, followed by a short
+    description on the next line. Legenda for type: n = numeric, s = string,
+    ls = list of strings.
+
+      alt                        ls   []
+        Alternatives to search for.
+
+      include                    ls   []
+        Lines must also match all these.
+
+      exclude                    ls   []
+        Lines must NOT match any of these.
+
+      extra                      s    ''
+        Extra pattern (see above).
+
+      context_lines              n    g:filteringDefaultContextLines or 0
+        Default number of context lines to show.
+
+      extra_stop_lines           n    g:filteringExtraPatternDefaultLinesAhead or -1
+        Stop searching for extra pattern after N lines. -1 disables.
+
+      extra_stop_pattern         s    g:filteringExtraPatternDefaultStopPattern or '^$'
+        Stop searching for extra pattern after this pattern.
+
+      match_context_in_results   n    g:filteringMatchContextInResults or 1
+        When filtering a results windows, also check visible context lines.
+
+      show_match_to_extra        n    g:filteringShowMatchToExtra or 1
+        Always show context lines from the match to the extra pattern.
+
+      show_results_raw           n    g:filteringShowResultsRaw or 0
+        By default, show raw results (not recommended, since this will disable
+        most functionality).
+
+ vim: tw=78:ft=help
