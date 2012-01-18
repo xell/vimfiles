@@ -833,6 +833,16 @@ endfunction
 " Use function as a navigation tree toc
 nmap <Leader>tt :TToC \<fu\%[nction!]\s\zs.*\ze$<CR>
 " }}}
+" Taglist {{{2
+let g:Tlist_Show_One_File=1
+let Tlist_Sort_Type = "name"
+highlight link MyTagListFileName Identifier
+highlight link MyTagListTagName Type
+
+" For toggle the Tlist windows
+nmap <F10> :TlistToggle<CR>
+imap <F10> <ESC><F10>i
+" }}}
 
 " }}}
 " Others {{{1
