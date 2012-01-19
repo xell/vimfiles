@@ -836,6 +836,9 @@ nmap <Leader>tt :TToC \<fu\%[nction!]\s\zs.*\ze$<CR>
 " Taglist {{{2
 let g:Tlist_Show_One_File=1
 let Tlist_Sort_Type = "name"
+	let Tlist_Ctags_Cmd = 'd:/p/ctags/ctags.exe'
+if g:isw
+endif
 highlight link MyTagListFileName Identifier
 highlight link MyTagListTagName Type
 
@@ -843,7 +846,59 @@ highlight link MyTagListTagName Type
 nmap <F10> :TlistToggle<CR>
 imap <F10> <ESC><F10>i
 " }}}
+" ConqueTerm {{{2
+let g:ConqueTerm_FastMode = 0
+let g:ConqueTerm_Color = 1
+let g:ConqueTerm_Syntax = ''
+"let g:ConqueTerm_ReadUnfocused = 1
+if g:isw
+	let g:ConqueTerm_PyExe = 'd:/P/python26/python.exe'
+	let g:ConqueTerm_CodePage = 0
+	" 0709 conque has some problem in dealing with color on multi-byte
+	" cf. http://code.google.com/p/conque/issues/detail?id=56&can=1&q=conceal
+	" or 'conceal'
+	let g:ConqueTerm_ColorMode = ''
+endif
+" }}}
+" NERDTree {{{2
+nmap <Leader>t :NERDTreeToggle<CR>
+" }}}
+" FuzzyFinder {{{2
+let g:fuf_modesDisable = ['aroundmrufile', 'mrucmd', 'dir', 'bookmark', 'taggedfile', 'line', 'quickfix']
+let g:fuf_keyPreview = '<C-H>'
+let g:fuf_keyOpenTabpage = '<C-Return>'
 
+if g:isw
+	let g:fuf_abbrevMap = {
+				\ "^v:" : ["$VIM/**/",],
+				\ "^n:" : ["d:/W/notes/notes/"],
+				\ "^c:" : ["d:/Codes/ahk/"],
+				\ }
+elseif g:ism
+	let g:fuf_abbrevMap = {
+				\ "^v:" : ["$VIM/**/",],
+				\ "^n:" : ["~/Documents/notes/notes/"],
+				\ "^c:" : ["~/Codes/ahk/"],
+				\ }
+endif
+nmap <Leader>ff :FufMruFile<CR>
+nmap <Leader>ft :FufTag<CR>
+nmap <Leader>fe :FufFile<CR>
+nmap <Leader>fg :call <SID>fuf_test()<CR>
+function! s:fuf_test()
+	exec "call fuf#givenfile#launch('', 0, '>', split(glob('" . g:MyRuntimePath . "/**/*'), \"\\n\"))"
+endfunction
+nmap <Leader>fh :FufHelp<CR><C-E>
+nmap <Leader>fb :FufBuffer<CR>
+nmap <Leader>fc :call fuf#givencmd#launch('', 0, '>', <SID>getAllCommands())<CR>
+
+function! s:getAllCommands()
+  redir => commands
+  silent command
+  redir END
+  return map((split(commands, "\n")[3:]),
+	  \      '":" . matchstr(v:val, ''^....\zs\S*'')')
+endfunction
 " }}}
 " Others {{{1
 
