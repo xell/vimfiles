@@ -942,6 +942,45 @@ else
 	nnoremap <Leader>gK :silent !gitx --all<CR>
 endif
 " }}}
+" LaTeX {{{2
+" OPTIONAL: Starting with Vim 7, the filetype of empty .tex files defaults to
+" 'plaintex' instead of 'tex', which results in vim-latex not being loaded.
+" The following changes the default filetype back to 'tex':
+" See filetype.txt *ft-tex-plugin*
+let g:tex_flavor='latex'
+" See syntax.txt *g:tex_conceal*
+let g:tex_conceal="ag"
+" See syntax.txt *tex-nospell*
+let g:tex_comment_nospell = 1
+" See syntax.txt *tex-folding*, vim built-in vim fold support
+" It's based on fdm=syntax and is very inaccurate
+" When using latex-suite, it's deprecated de facto
+let g:tex_fold_enabled = 1
+
+" Set customized folding, see folding.vim
+let g:Tex_FoldedSections = 'part,chapter,chapterp,section,%%fakesection,'
+						\. 'subsection,subsubsection,'
+						\. 'paragraph'
+let g:Tex_UsePython=1
+let g:Tex_DefaultTargetFormat = 'pdf'
+"let g:Tex_CompileRule_dvi = 'latex --src-specials -interaction=nonstopmode $*'
+let g:Tex_CompileRule_pdf = 'xelatex --synctex=1 -src-specials -interaction=nonstopmode $*'
+" Set viewrule
+if g:isw
+	let g:Tex_ViewRule_pdf = 'sumatrapdf.exe -esc-to-exit -reuse-instance -inverse-search "' . $vimruntime . '\gvim.exe -c \":RemoteOpen +\%l \%f\""'
+elseif g:ism
+	let g:Tex_ViewRule_pdf = 'Skim'
+endif
+
+" Remap the jumpforward, originally <C-j>
+imap <C-J> <Plug>IMAP_JumpForward
+nmap <C-Y> <Plug>IMAP_JumpForward
+imap <A-;> <Plug>Tex_LeftRight
+nmap <A-;> <Plug>Tex_LeftRight
+" Change the default <F7>->FastCommandInsert to <C-F7>
+nmap <C-F7> <Plug>Tex_FastCommandInsert
+
+" }}}
 
 " }}}
 

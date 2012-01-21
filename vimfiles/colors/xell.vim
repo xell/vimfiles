@@ -10,8 +10,14 @@ if exists("syntax_on")
 endif
 let g:colors_name = "xell"
 
+"highlight Normal        guifg=#ffffff     guibg=#000000
+"highlight Normal        guifg=White       guibg=grey10
+ highlight Normal        guifg=White       guibg=#262626     ctermfg=White ctermbg=Black
+ highlight Comment       guifg=#808080     guibg=bg          ctermfg=Darkgray ctermbg=bg
+
+
+
  highlight Title         guifg=#9acd32
- highlight Comment       guifg=#808080               
  highlight Constant      guifg=#5f85aa                       gui=none
  highlight Identifier    guifg=#00c0c0               
 "highlight Statement     guifg=#c0c000                       gui=bold
@@ -28,9 +34,6 @@ let g:colors_name = "xell"
 "highlight StatusLine    guifg=#ffff00     guibg=#5f85aa     gui=none
  highlight StatusLine    guifg=#E8E7E6     guibg=#777777     gui=none ctermfg=11 ctermbg=12 cterm=none 
  highlight StatusLineNC  guifg=#D3CFCD     guibg=#444444     gui=none ctermfg=12 ctermbg=11 cterm=none 
-"highlight Normal        guifg=#ffffff     guibg=#000000
-"highlight Normal        guifg=White       guibg=grey10
- highlight Normal        guifg=White       guibg=#262626
 "highlight Search        guibg=#c0c000
  highlight Visual        guifg=Black       guibg=LightGray
 "highlight Search        guifg=Black       guibg=LightBlue
