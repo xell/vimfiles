@@ -31,11 +31,12 @@ endif
 
 " Temp {{{2
 " XXX need to be deleted after re-constructed
-if g:isw
-	let g:myvim_dir = 'V:'
-else
-	let g:myvim_dir = '/Users/xell/Z/testvimfiles'
-endif
+" if g:isw
+" 	let g:myvim_dir = 'V:'
+" else
+" 	let g:myvim_dir = '/Users/xell/Z/testvimfiles'
+" endif
+let g:myvim_dir = expand("<sfile>:p:h")
 let g:myvimfiles = g:myvim_dir . '/vimfiles'
 let g:myvimfiles_after = g:myvimfiles . '/after'
 " $VIM win: d:\p\vim
@@ -886,7 +887,8 @@ nmap <Leader>ft :FufTag<CR>
 nmap <Leader>fe :FufFile<CR>
 nmap <Leader>fg :call <SID>fuf_test()<CR>
 function! s:fuf_test()
-	exec "call fuf#givenfile#launch('', 0, '>', split(glob('" . g:MyRuntimePath . "/**/*'), \"\\n\"))"
+	" exec "call fuf#givenfile#launch('', 0, '>', split(glob('" . g:MyRuntimePath . "/**/*'), \"\\n\"))"
+	exec "call fuf#givenfile#launch('', 0, '>', split(glob('" . g:myvimfiles . "/**/*'), \"\\n\"))"
 endfunction
 nmap <Leader>fh :FufHelp<CR><C-E>
 nmap <Leader>fb :FufBuffer<CR>
@@ -900,6 +902,49 @@ function! s:getAllCommands()
 	  \      '":" . matchstr(v:val, ''^....\zs\S*'')')
 endfunction
 " }}}
+" Fugitive {{{2
+let g:fugitive_summary_format = '(%ci) %s'
+if &loadplugins
+	let g:mystatusline_fugitive = '\ %{Fugitive_statusline_mod()}'
+	exec 'set statusline=' . g:mystatusline1 . g:mystatusline_fugitive . g:mystatusline2
+endif
+function! Fugitive_statusline_mod()
+	if exists("*fugitive#statusline")
+		return substitute(fugitive#statusline(), '\[Git\|\]', '', 'g')
+	else
+		return 'GIT'
+	endif
+endfunction
+
+" }}}
+" Gitv {{{2
+nnoremap <Leader>gv :Gitv!<CR>
+nnoremap <Leader>gV :Gitv<CR>
+" }}}
+" Git-Vim {{{2
+let g:git_no_map_default = 1
+nnoremap <Leader>ga :Gadd<CR>
+nnoremap <Leader>gd :Gdiff<CR>
+nnoremap <Leader>gD :call GitDiff('--cached')<CR>
+nnoremap <Leader>gs :Gstatus<CR>
+nnoremap <Leader>gS :Git status -s -b<CR>
+nnoremap <Leader>gl :GitLog
+nnoremap <Leader>gL :Glog<CR>:cw<CR>:match Special /[+-]\d\{4})\s\zs.*\ze$/<CR>
+nnoremap <Leader>gc :Gcommit<CR>
+nnoremap <Leader>gC :Gcommit -a<CR>
+nnoremap <Leader>gp :GitPullRebase<CR>
+nnoremap <Leader>ge :Gedit<CR>
+if g:isw
+	nnoremap <Leader>gk :silent !start gitk.cmd<CR>
+	nnoremap <Leader>gK :silent !start gitk.cmd --all<CR>
+else
+	nnoremap <Leader>gk :silent !gitx<CR>
+	nnoremap <Leader>gK :silent !gitx --all<CR>
+endif
+" }}}
+
+" }}}
+
 " Others {{{1
 
 " Mathematica filetype

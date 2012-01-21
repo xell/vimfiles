@@ -215,11 +215,11 @@ if g:isw
 
 	"---------------------------------------
 	"set guifont=Megatops_Procoder_1.0:h12
-	"set guifontwide=ÐÂËÎÌå:h12:cGB2312
+	"set guifontwide=æ–°å®‹ä½“:h12:cGB2312
 
 	"---------------------------------------
 	"set guifont=Megatops_Procoder_1.0:h12
-	"set guifontwide=ÐÂËÎÌå:h12:cGB2312
+	"set guifontwide=æ–°å®‹ä½“:h12:cGB2312
 
 	"---------------------------------------
 	"set guifont=Yahei_Mono:h10
@@ -246,10 +246,10 @@ endif
 " for encoding see http://www.gracecode.com/archives/2989/
 " if has("gui_win32")
 "     exec 'set guifont='.iconv('Courier_New', &enc, 'gbk').':h11:cANSI'
-"     exec 'set guifontwide='.iconv('Î¢ÈíÑÅºÚ', &enc, 'gbk').':h11'
+"     exec 'set guifontwide='.iconv('å¾®è½¯é›…é»‘', &enc, 'gbk').':h11'
 " endif
 
 " }}}
 
 " Modelines {{{1
-" vim:fmr={{{,}}}:fdm=marker:foldcolumn=3:lbr:fileencoding=gbk:ff=unix
+" vim:fmr={{{,}}}:fdm=marker:foldcolumn=3:lbr:fileencoding=utf-8:ff=unix
