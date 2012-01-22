@@ -206,15 +206,17 @@ behave mswin
 	
 	" In case temp is no c:\tmp and/or c:\temp
 	set directory=.,$TEMP,$TMP
+
 endif
 
 " After set on, \ will be converted to / automatically in windows
-" ex: in win, typing d:\ and hit <Tab>, it will be d:/ automatically
+" Ex in win, typing d:\ and hit <Tab>, it will be d:/ automatically
+" It effects expand("%:p")
 " IMPORTANT: win32 users will need to have 'shellslash' set so that latex
 " can be called correctly.
-if g:isw
-	set shellslash
-endif
+" if g:isw
+" 	set shellslash
+" endif
 
 " IMPORTANT: grep will sometimes skip displaying the file name if you
 " search in a singe file. This will confuse Latex-Suite. Set your grep
