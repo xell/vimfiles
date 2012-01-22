@@ -228,7 +228,7 @@ if exists("g:myvimfiles")
 	exec 'set dictionary=' . g:myvimfiles . '/dictionary.txt'
 else
 	if g:isw
-		exec 'set dictionary=' . substitute($VIM, '\', '/', 'g') . '/vimfiles/dictionary.txt'
+		exec 'set dictionary=' . $VIM . '\vimfiles\dictionary.txt'
 	else
 		exec 'set dictionary=' . glob('~/.vim') . '/dictionary.txt'
 	endif
@@ -266,6 +266,24 @@ if g:ism
 endif
 " }}}
 
+" }}}
+
+" Xell Global Variables {{{1
+let g:urlpattern = '\%(\(https\?\|ftp\):\/\{2}[^ ">\]]\+\)'
+if g:isw
+	" Setting codepage used for iconv etc.
+	" Ex cp936 for Simply Chinese Windows OS
+	" let g:codepage = 'cp' . matchstr(system("chcp"), '\zs\d\+\ze[^[:graph:]]*$')
+	let g:codepage = 'cp936'
+
+	let g:webbrowser = 'd:\p\chromium\chrome.exe'
+	let g:webserver_host = 'http://127.0.0.1:8800'
+	let g:webserver_dir = 'd:\Codes\web'
+elseif g:ism
+	let g:webbrowser = 'open -a Google\ Chrome'
+	let g:webserver_host = 'http://localhost:80/~xell'
+	let g:webserver_dir = glob('~/Sites/')
+endif
 " }}}
 
 " UI and Display {{{1
@@ -620,10 +638,10 @@ noremap <A-o> <Tab>
 " Abbrevs {{{1
 """"""""""""""""""""""""""""""""""""""""""""""""""""" 
 if g:isw
-	ca xs mks! d:/w/xs1.vim
-	ca xl so d:/w/xs1.vim
+	ca xs mks! d:\w\xs1.vim
+	ca xl so d:\w\xs1.vim
 	cab xrj e d:\W\notes\rj.t2t
-	cab xhost e c:/windows/system32/drivers/etc/hosts<CR>
+	cab xhost e c:\windows\system32\drivers\etc\hosts<CR>
 elseif g:ism
 	ca xs mks! ~/Documents/xs1.vim
 	ca xl so ~/Documents/xs1.vim
@@ -665,7 +683,7 @@ command! -nargs=0 IncHelp echo "<,>Inc [s]tart_0 [i]ncre_1 [r]epeat_1 [w]idth_4 
 " }}}
 " LanguageTool {{{2
 if g:isw
-	let g:languagetool_jar = 'd:/P/languagetool/LanguageTool.jar'
+	let g:languagetool_jar = 'd:\P\languagetool\LanguageTool.jar'
 elseif g:ism
 	let g:languagetool_jar = '/usr/local/Cellar/languagetool/1.3.1/libexec/LanguageTool.jar'
 endif
@@ -674,7 +692,7 @@ nmap <F7> :LanguageToolCheck<CR>
 " Thesaurus {{{2
 " TODO change the location of mthesaur.txt
 if g:isw
-	let g:thesaurus_file='d:/p/thesaurus/th_en_US_v2'
+	let g:thesaurus_file='d:\p\thesaurus\th_en_US_v2'
 	set thesaurus=d:/P/thesaurus/mthesaur.txt
 elseif g:ism
 	" mac or unix must use '/usr/share/myspell/dicts/th_en_US_v2.idx'
@@ -839,8 +857,8 @@ nmap <Leader>tt :TToC \<fu\%[nction!]\s\zs.*\ze$<CR>
 " Taglist {{{2
 let g:Tlist_Show_One_File=1
 let Tlist_Sort_Type = "name"
-	let Tlist_Ctags_Cmd = 'd:/p/ctags/ctags.exe'
 if g:isw
+	let Tlist_Ctags_Cmd = 'd:\p\ctags\ctags.exe'
 endif
 highlight link MyTagListFileName Identifier
 highlight link MyTagListTagName Type
@@ -855,7 +873,7 @@ let g:ConqueTerm_Color = 1
 let g:ConqueTerm_Syntax = ''
 "let g:ConqueTerm_ReadUnfocused = 1
 if g:isw
-	let g:ConqueTerm_PyExe = 'd:/P/python26/python.exe'
+	let g:ConqueTerm_PyExe = 'd:\P\python26\python.exe'
 	let g:ConqueTerm_CodePage = 0
 	" 0709 conque has some problem in dealing with color on multi-byte
 	" cf. http://code.google.com/p/conque/issues/detail?id=56&can=1&q=conceal
@@ -873,15 +891,15 @@ let g:fuf_keyOpenTabpage = '<C-Return>'
 
 if g:isw
 	let g:fuf_abbrevMap = {
-				\ "^v:" : ["$VIM/**/",],
-				\ "^n:" : ["d:/W/notes/notes/"],
-				\ "^c:" : ["d:/Codes/ahk/"],
+				\ "^v:" : ['$VIM\**\',],
+				\ "^n:" : ['d:\W\notes\notes\'],
+				\ "^c:" : ['d:\Codes\ahk\'],
 				\ }
 elseif g:ism
 	let g:fuf_abbrevMap = {
-				\ "^v:" : ["$VIM/**/",],
-				\ "^n:" : ["~/Documents/notes/notes/"],
-				\ "^c:" : ["~/Codes/ahk/"],
+				\ "^v:" : ['$VIM/**/',],
+				\ "^n:" : ['~/Documents/notes/notes/'],
+				\ "^c:" : ['~/Codes/ahk/'],
 				\ }
 endif
 nmap <Leader>ff :FufMruFile<CR>
