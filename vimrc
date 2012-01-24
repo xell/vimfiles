@@ -269,21 +269,33 @@ endif
 " }}}
 
 " Xell Global Variables {{{1
-let g:urlpattern = '\%(\(https\?\|ftp\):\/\{2}[^ ">\]]\+\)'
+let g:urlpattern = '\%(\(https\?\|ftp\):\/\{2}[^ ">\])]\+\)'
 if g:isw
 	" Setting codepage used for iconv etc.
 	" Ex cp936 for Simply Chinese Windows OS
 	" let g:codepage = 'cp' . matchstr(system("chcp"), '\zs\d\+\ze[^[:graph:]]*$')
 	let g:codepage = 'cp936'
 
-	let g:webbrowser = 'd:\p\chromium\chrome.exe'
+	let g:webbrowser = 'c:\Program Files\Internet Explorer\iexplore.exe'
 	let g:webserver_host = 'http://127.0.0.1:8800'
 	let g:webserver_dir = 'd:\Codes\web'
+
+	let g:proxy_list = 'd:\Codes\pac\xell.proxylist'
+	let g:proxy_pac = 'd:\Codes\pac\proxylist.pac'
+
+	let g:ahk_exec = 'd:\P\autohotkey\AutoHotkey.exe'
+	let g:ahk_help = 'd:\P\autohotkey\AutoHotkey.chm'
 elseif g:ism
-	let g:webbrowser = 'open -a Google\ Chrome'
+	let g:webbrowser = 'Google Chrome.app'
 	let g:webserver_host = 'http://localhost:80/~xell'
-	let g:webserver_dir = glob('~/Sites/')
+	let g:webserver_dir = glob('~/Sites')
+
+	let g:proxy_list = '/Users/xell/Codes/pac/xell.proxylist'
+	let g:proxy_pac = '/Users/xell/.xellproxy/proxylist.pac'
 endif
+
+" TODO
+" g:processing_doc_path
 " }}}
 
 " UI and Display {{{1
@@ -422,6 +434,11 @@ imap <A-4> <End>
 " Page down and up
 map <C-J> <PageDown>
 map <C-K> <PageUp>
+
+
+" Move to url
+nmap <Tab> :call xelltoolkit#goto_next_word(g:urlpattern)<CR>
+nmap <S-Tab> :call xelltoolkit#goto_pre_word(g:urlpattern)<CR>
 " }}}
 
 " Tabs {{{2
@@ -517,6 +534,10 @@ else
 	"execute 'inoremap <script> <special> <D-v>' paste#paste_cmd['i']
 	execute 'inoremap <script> <special> <D-v> <C-g>u'.paste#paste_cmd['i']
 endif
+
+" Open or yank web url
+nmap <expr> <Leader>Y OpenInBrowser(1, xelltoolkit#get_word_at_cursor(g:urlpattern))
+nmap <expr> <Leader>y xelltoolkit#get_copy(xelltoolkit#get_word_at_cursor(g:urlpattern))
 " }}}
 
 " Search {{{2
@@ -605,6 +626,8 @@ inoremap <C-]> <C-x><C-]>
 inoremap <C-D> <C-x><C-D>
 " Complete file names
 inoremap <C-F> <C-x><C-F>
+" Complete dictionary
+inoremap <C-K> <C-x><C-K>
 " Complete whole lines
 " inoremap <C-L> <C-x><C-L>
 
@@ -693,7 +716,7 @@ nmap <F7> :LanguageToolCheck<CR>
 " TODO change the location of mthesaur.txt
 if g:isw
 	let g:thesaurus_file='d:\p\thesaurus\th_en_US_v2'
-	set thesaurus=d:/P/thesaurus/mthesaur.txt
+	set thesaurus=d:\P\thesaurus\mthesaur.txt
 elseif g:ism
 	" mac or unix must use '/usr/share/myspell/dicts/th_en_US_v2.idx'
 	set thesaurus=~/Library/Thesaurus/mthesaur.txt
@@ -987,7 +1010,7 @@ let g:Tex_DefaultTargetFormat = 'pdf'
 let g:Tex_CompileRule_pdf = 'xelatex --synctex=1 -src-specials -interaction=nonstopmode $*'
 " Set viewrule
 if g:isw
-	let g:Tex_ViewRule_pdf = 'sumatrapdf.exe -esc-to-exit -reuse-instance -inverse-search "' . $vimruntime . '\gvim.exe -c \":RemoteOpen +\%l \%f\""'
+	let g:Tex_ViewRule_pdf = 'sumatrapdf.exe -esc-to-exit -reuse-instance -inverse-search "' . $VIMRUNTIME . '\gvim.exe -c \":RemoteOpen +\%l \%f\""'
 elseif g:ism
 	let g:Tex_ViewRule_pdf = 'Skim'
 endif
@@ -1022,4 +1045,4 @@ command! -nargs=0 -bar WhatSyntax echomsg synIDattr(synID(line("."),col("."),0),
 " }}}
 
 " Modelines {{{1
-" vim:fmr={{{,}}}:fdm=marker:foldcolumn=3:lbr:fileencoding=gbk:ff=unix
+" vim:fmr={{{,}}}:fdm=marker:foldcolumn=3:lbr:fileencoding=utf-8:ff=unix
