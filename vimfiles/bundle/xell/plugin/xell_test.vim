@@ -2,12 +2,12 @@
 " let codepage = 'cp' . matchstr(system("chcp"), '\zs\d\+\ze[^[:graph:]]*$')
 " ech iconv(system('dir'), codepage, 'utf-8')
 
-let s:a = 0
+" function! GetChar()
+" 	let line = getline('.')
+" 	let col = col('.') - 1
+" 	return strpart(getline('.'), col('.') - 2, 1) =~? '\S'
+" endfunction
 
-if s:a
-	command! TestCommand call TestFunction()
+" imap <buffer> <expr> <Tab> GetChar()
 
-	function! TestFunction()
-		echo "test"
-	endfunction
-endif
+" dkjfkd dkfjjjjjjjda111aaaassf 01       dk afk
