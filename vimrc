@@ -615,6 +615,20 @@ imap <S-Tab> <BS>
 " Move line
 nmap <C-Up> ddkP
 nmap <C-Down> ddp
+
+" IMAP plugin (in latex-suite)
+if &loadplugins
+augroup MyIMAPs
+	autocmd!
+	autocmd VimEnter * call IMAP('()', '(<++>)<++>', '')
+	autocmd VimEnter * call IMAP('[]', '[<++>]<++>', '')
+	autocmd VimEnter * call IMAP('{}', '{<++>}<++>', '')
+	autocmd VimEnter * call IMAP('<>', '<<++>><++>', '')
+	autocmd VimEnter * call IMAP('""', '"<++>"<++>', '')
+	autocmd VimEnter * call IMAP("''", "'<++>'<++>", '')
+	autocmd VimEnter * call IMAP('%%', '%<++>%<++>', '')
+augroup END
+endif
 " }}}
 
 " Dispaly {{{2
