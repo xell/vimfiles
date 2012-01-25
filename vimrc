@@ -390,12 +390,36 @@ if g:ism
 endif
 
 " Statusline customization {{{2
-" TODO git
 set laststatus=2
-let g:mystatusline1 = '%<\ %{winnr()}\ %f\ %h%y%m%r\ [%{&ff}]\ [%{&fenc}]'
+let g:mystatusline1 = '\ %{winnr()}\ %<%f\ %h%y%m%r\ [%{&ff}]\ [%{&fenc}]'
 let g:mystatusline2 = '%=%-14.(%l,%c%V%)\ %L\ %P\ '
 
 exec 'set statusline=' . g:mystatusline1 . g:mystatusline2
+
+" Highlight statusbar according to the type of buffer {{{3
+" TODO make colors compatible with other colorscheme
+let g:aug_vimsb_enable = 1
+augroup vimSB
+	autocmd!
+	autocmd BufNew,BufEnter,BufRead,BufWrite,TabEnter,TabLeave,WinEnter,WinLeave * if g:aug_vimsb_enable | call <SID>XellBufferStatuslineHighlight() | endif
+	au QuickfixCmdPost make call xelltoolkit#qf_make_conv()
+augroup END
+
+function! s:XellBufferStatuslineHighlight()
+	let buffername = bufname("%")
+	if empty(buffername)
+		highlight StatusLine guifg=White guibg=Green
+		"highlight StatusLineNC guifg=LightGreen guibg=White
+	elseif buffername =~ '\.tmp$'
+		highlight StatusLine guifg=White guibg=Red
+		"highlight StatusLineNC guifg=White guibg=LightRed
+	else
+		highlight StatusLine ctermfg=11 ctermbg=12 cterm=none guifg=#E8E7E6 guibg=#777777 gui=none
+		highlight StatusLineNC ctermfg=12 ctermbg=11 cterm=none guifg=#D3CFCD guibg=#444444 gui=none
+	endif
+endfunction
+" }}}
+
 " }}}
 
 " }}}
@@ -415,15 +439,6 @@ elseif g:ism && has("mac")
 	set macmeta
 endif
 
-" }}}
-
-" Insert mode credits {{{2
-" Mappings to facilitate the creation of text
-"
-" Author: Suresh Govindachar
-" Date: November 5, 2001
-" To enable viewing messages from commands issued using the mappings presented here
-"set cmdheight=2
 " }}}
 
 " Movements {{{2
@@ -488,7 +503,7 @@ nmap <Leader>s <C-W>s<C-W>j
 nmap <Leader>v <C-W>v
 
 " Switch two windows back and forth
-noremap ; <C-W>p
+noremap \ <C-W>p
 
 " For switch to split windows
 map <M-j> <C-W>j
@@ -1159,6 +1174,8 @@ nmap <silent> <S-F6> :call ShowLiveWordCount()<CR>
 " Xell TempFile {{{2
 nmap <C-s> :call XellWriteFiles()<CR>
 imap <C-s> <Esc><C-s>a
+" Delete all tmp files
+autocmd VimLeavePre * if has("XellDeleteTempFiles") | call XellDeleteTempFiles() | endif
 " }}}
 " }}}
 
