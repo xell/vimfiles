@@ -503,7 +503,7 @@ nmap <Leader>s <C-W>s<C-W>j
 nmap <Leader>v <C-W>v
 
 " Switch two windows back and forth
-noremap \ <C-W>p
+noremap ` <C-W>p
 
 " For switch to split windows
 map <M-j> <C-W>j
@@ -647,7 +647,7 @@ endif
 " }}}
 
 " Dispaly {{{2
-nmap ` :call <SID>changenumberdisplay()<CR>
+nmap <Leader><Leader>n :call <SID>changenumberdisplay()<CR>
 function! s:changenumberdisplay()
 	if &number
 		set relativenumber
