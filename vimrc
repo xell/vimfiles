@@ -488,7 +488,7 @@ nmap <Leader>s <C-W>s<C-W>j
 nmap <Leader>v <C-W>v
 
 " Switch two windows back and forth
-noremap <C-Tab> <C-W>p
+noremap ; <C-W>p
 
 " For switch to split windows
 map <M-j> <C-W>j
@@ -1152,6 +1152,13 @@ let g:neocomplcache_omni_patterns.cpp = '\h\w*\%(\.\|->\)\h\w*\|\h\w*::'
 command! -bang -nargs=? OpenInBrowser call OpenInBrowser(<bang>1, '<args>')
 command! -nargs=0 OpenInDefaultPrg call xelltoolkit#run('', expand("%:p"))
 command! -nargs=1 Es call xelltoolkit#edit_samename_file('<args>')
+" }}}
+" Xell WordCount {{{2
+nmap <silent> <S-F6> :call ShowLiveWordCount()<CR>
+" }}}
+" Xell TempFile {{{2
+nmap <C-s> :call XellWriteFiles()<CR>
+imap <C-s> <Esc><C-s>a
 " }}}
 " }}}
 
