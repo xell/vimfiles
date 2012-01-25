@@ -13,9 +13,9 @@ set cpo&vim
 
 " }}}
 
-command -bang -nargs=? Open call Open(<bang>1, '<args>')
-
-function! OpenInBrowser(strict, ...) " {{{1
+" Open in user specified browser {{{1
+" Use ! to enforce unsupported file
+function! OpenInBrowser(strict, ...)
 	let is_web_protocol = 0
 
 	" If uri is specified
@@ -47,7 +47,7 @@ function! OpenInBrowser(strict, ...) " {{{1
 		" Determine if the filetype is supported by browser
 		if a:strict
 			let cur_file_ext = matchstr(cur_file_path, '\.\zs[^.]\+\ze$')
-			if cur_file_ext !~? 'txt\|html\|htm\|xml\|php'
+			if cur_file_ext !~? 'txt\|html\|htm\|xhtml\|xml\|php'
 				call xelltoolkit#echo_msg('The filetype is not supported by Browser. Please add ! to enforce.')
 				return
 			elseif cur_file_ext == 'php' && cur_file_path !~? webserver_dir
@@ -72,7 +72,22 @@ function! OpenInBrowser(strict, ...) " {{{1
 endfunction
 " }}}
 
+" Windows Only - Open the folder of current buffer in TC {{{1
+if g:isw
+	command! -nargs=0 OpenFolder call OpenFolder()
 
+	function! OpenFolder()
+		let slash = &shellslash ? '/' : '\'
+		let totalcmd_exec = 'd:\p\totalcmd\totalcmd.exe'
+		if executable(totalcmd_exec)
+			call xelltoolkit#system(totalcmd_exec . ' /O /T /L="' . expand("%:p:h") . slash . '"')
+			" exec 'silent !start d:\p\totalcmd\totalcmd.exe  /O /T /L="' . expand("%:p:h") . '\"'
+		else
+			call xelltoolkit#run('', expand("%:p:h") . slash)
+		endif
+	endfunction
+endif
+" }}}
 
 " End {{{1
 let &cpo = s:savecpo

@@ -52,47 +52,49 @@ function! xelltoolkit#goto_pre_word(pattern) " {{{1
 endfunction
 " }}}
 
-" e: only echo | n: no silent | u: utf-8, no iconv
-" TODO modify as with #run
-function! xelltoolkit#shell_exec(cmd, ...) " {{{1
-	let exec_cmd_ori = a:cmd
-	let exec_cmd_esc = escape(a:cmd, '!#;|%')
+" default: verbose, show message whatever
+" d: dry-run, only display the statement
+" s: silent run unless v:shell_error
+" c: copy the output
+function! xelltoolkit#system(cmd, ...) " {{{1
 	if g:isw
-		" let exec_cmd_esc = substitute(exec_cmd_esc, '\/', '\\', 'g')
-		" Hack for soffice macro:/// or other protocol like file:/// XXX
-		" let exec_cmd_esc = substitute(exec_cmd_esc, ':\\\\\\', ':\/\/\/', 'g')
-		if (a:cmd =~? '[^\x00-\xff]') && (a:0 == 0 || (a:0 != 0 && a:1 !~? 'u'))
-			let exec_cmd_esc = iconv(exec_cmd_esc, 'utf-8', g:codepage)
-		endif
-		let exec_cmd_icv = exec_cmd_esc
-	elseif g:ism
-		let exec_cmd_icv = exec_cmd_esc
-	endif
+		let cmd = a:cmd
+		let cmd_iconv = iconv(cmd, 'utf-8', g:codepage)
 
-	if a:0 != 0 && a:1 =~? '[en]\+'
-		if a:1 == 'e'
-			echo "ori : " . exec_cmd_ori
-			echo "esc : " . exec_cmd_esc
-			echo "icv : " . exec_cmd_icv
-		elseif a:1 == 'n'
-			if g:isw
-				echo iconv(system(exec_cmd_icv), g:codepage, 'utf-8')
-			elseif g:ism
-				echo system(exec_cmd_icv)
+		if a:0 == 0
+			echo iconv(system(cmd_iconv), g:codepage, 'utf-8')
+		elseif a:0 == 1 && a:1 == 'd'
+			echo cmd
+			echo cmd_iconv
+		elseif a:0 == 1 && a:1 == 's'
+			let msg = system(cmd_iconv)
+			if v:shell_error
+				call xelltoolkit#echo_msg('Wrong: ' . iconv(msg, g:codepage, 'utf-8'))
 			endif
+		elseif a:0 == 1 && a:1 == 'c'
+			let @+ = iconv(system(cmd_iconv), g:codepage, 'utf-8')
+		else
+			call xelltoolkit#echo_msg('Flag must be d, s or c!')
 		endif
-	elseif a:0 == 0
-		let msg = system(exec_cmd_icv)
-		if v:shell_error
-			if g:isw
-				let msg = iconv(msg, g:codepage, 'utf-8')
+	elseif g:ism
+		let cmd = a:cmd
+		if a:0 == 0
+			echo system(cmd)
+		elseif a:0 == 1 && a:1 == 'd'
+			echo cmd
+		elseif a:0 == 1 && a:1 == 's'
+			let msg = system(cmd)
+			if v:shell_error
+				call xelltoolkit#echo_msg('Wrong: ' . msg . 'utf-8')
 			endif
-			call xelltoolkit#echo_msg('Invalid command. Shell return: ' . msg)
+		elseif a:0 == 1 && a:1 == 'c'
+			let @+ = system(cmd)
+		else
+			call xelltoolkit#echo_msg('Flag must be d, s or c!')
 		endif
 	else
-		call xelltoolkit#echo_msg('Wrong flag, which must be e, n and/or u.')
+		call xelltoolkit#echo_msg('Not support!')
 	endif
-
 endfunction
 " }}}
 
@@ -101,8 +103,15 @@ endfunction
 " s: silent run unless v:shell_error
 " c: copy the output
 function! xelltoolkit#run(prg, file, ...) " {{{1
-	" Windows {{{2
+	" Something useful {{{2
+	" exec iconv('silent! ! start "Title" "c:\Program Files\Internet Explorer\iexplore.exe" "d:\测试\新的.html"', 'utf-8', g:codepage)
+	" echo iconv(system(iconv(' start /b "Title" "c:\Program Files\Internet Explorer\iexplore.exe" d:\测试 a\!新的.html', 'utf-8', g:codepage)), g:codepage, 'utf-8')
+	" IE is special, don't need double-quotes even if there is space in
+	" filename.
+	" }}}
+	
 	if g:isw
+	" Windows {{{2
 		" let prg = a:prg =~ '\s' ? ' start /b "Title" ' . shellescape(a:prg) : a:prg
 		if a:prg == ''
 			let prg = ' start /b "Title" '
@@ -144,8 +153,8 @@ function! xelltoolkit#run(prg, file, ...) " {{{1
 			call xelltoolkit#echo_msg('Flag must be d, s or c!')
 		endif
 		" }}}
-	" Mac {{{2
 	elseif g:ism
+	" Mac {{{2
 		if a:prg =~? '\.app$'
 			let prg = 'open -a ' . fnameescape(a:prg)
 		elseif a:prg == ''

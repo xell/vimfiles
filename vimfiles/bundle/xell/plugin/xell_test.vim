@@ -2,8 +2,12 @@
 " let codepage = 'cp' . matchstr(system("chcp"), '\zs\d\+\ze[^[:graph:]]*$')
 " ech iconv(system('dir'), codepage, 'utf-8')
 
-command! -nargs=* TestCommand call TestFunction('aaa' . ' <args>')
+let s:a = 0
 
-function! TestFunction(str)
-	echo a:str
-endfunction
+if s:a
+	command! TestCommand call TestFunction()
+
+	function! TestFunction()
+		echo "test"
+	endfunction
+endif

@@ -269,33 +269,46 @@ endif
 " }}}
 
 " Xell Global Variables {{{1
+if g:isw
+elseif g:ism
+endif
+
+" URL {{{2
 let g:urlpattern = '\%(\(https\?\|ftp\):\/\{2}[^ ">\])]\+\)'
 if g:isw
-	" Setting codepage used for iconv etc.
-	" Ex cp936 for Simply Chinese Windows OS
-	" let g:codepage = 'cp' . matchstr(system("chcp"), '\zs\d\+\ze[^[:graph:]]*$')
-	let g:codepage = 'cp936'
-
 	let g:webbrowser = 'c:\Program Files\Internet Explorer\iexplore.exe'
 	let g:webserver_host = 'http://127.0.0.1:8800'
 	let g:webserver_dir = 'd:\Codes\web'
-
-	let g:proxy_list = 'd:\Codes\pac\xell.proxylist'
-	let g:proxy_pac = 'd:\Codes\pac\proxylist.pac'
-
-	let g:ahk_exec = 'd:\P\autohotkey\AutoHotkey.exe'
-	let g:ahk_help = 'd:\P\autohotkey\AutoHotkey.chm'
 elseif g:ism
 	let g:webbrowser = 'Google Chrome.app'
 	let g:webserver_host = 'http://localhost:80/~xell'
 	let g:webserver_dir = glob('~/Sites')
+endif
+" }}}
 
+" Proxy {{{2
+if g:isw
+	let g:proxy_list = 'd:\Codes\pac\xell.proxylist'
+	let g:proxy_pac = 'd:\Codes\pac\proxylist.pac'
+elseif g:ism
 	let g:proxy_list = '/Users/xell/Codes/pac/xell.proxylist'
 	let g:proxy_pac = '/Users/xell/.xellproxy/proxylist.pac'
 endif
+" }}}
 
-" TODO
-" g:processing_doc_path
+" Other {{{2
+if g:isw
+	" Setting codepage used for iconv etc.
+	" Ex cp936 for Simply Chinese Windows OS
+	"let g:codepage = 'cp' . matchstr(system("chcp"), '\zs\d\+\ze[^[:graph:]]*$')
+	let g:codepage = 'cp936'
+
+	let g:ahk_exec = 'd:\P\autohotkey\AutoHotkey.exe'
+	let g:ahk_help = 'd:\P\autohotkey\AutoHotkey.chm'
+endif
+" }}}
+
+
 " }}}
 
 " UI and Display {{{1
@@ -435,10 +448,6 @@ imap <A-4> <End>
 map <C-J> <PageDown>
 map <C-K> <PageUp>
 
-
-" Move to url
-nmap <Tab> :call xelltoolkit#goto_next_word(g:urlpattern)<CR>
-nmap <S-Tab> :call xelltoolkit#goto_pre_word(g:urlpattern)<CR>
 " }}}
 
 " Tabs {{{2
@@ -591,6 +600,9 @@ vmap <Leader>l "zy:lv /<C-R>z/ %<CR>:lw<CR>
 "	execute 'lv /' . @/ . '/ % | lw'
 "endfunction
 
+" Move to url
+nmap <Tab> :call xelltoolkit#goto_next_word(g:urlpattern)<CR>
+nmap <S-Tab> :call xelltoolkit#goto_pre_word(g:urlpattern)<CR>
 " }}}
 
 " Modify texts {{{2
@@ -747,6 +759,9 @@ nnoremap <C-Enter> :WinFullScreen<CR>
 " ZenCoding {{{2
 let g:user_zen_leader_key = '<c-e>'
 "let g:user_zen_expandabbr_key = '<c-h>'
+
+" If you want to complete tags using |omnifunc| then add this.
+let g:use_zen_complete_tag = 1
 " }}}
 " BufExplorer {{{2
 let g:bufExplorerShowUnlisted=1
@@ -1000,6 +1015,9 @@ let g:tex_comment_nospell = 1
 " When using latex-suite, it's deprecated de facto
 let g:tex_fold_enabled = 1
 
+" Display the spell highlight beyond the syntax highlights
+autocmd BufReadPost,FileReadPost *.tex syntax spell toplevel
+
 " Set customized folding, see folding.vim
 let g:Tex_FoldedSections = 'part,chapter,chapterp,section,%%fakesection,'
 						\. 'subsection,subsubsection,'
@@ -1024,7 +1042,11 @@ nmap <A-;> <Plug>Tex_LeftRight
 nmap <C-F7> <Plug>Tex_FastCommandInsert
 
 " }}}
-
+" Xell URI {{{2
+command! -bang -nargs=? OpenInBrowser call OpenInBrowser(<bang>1, '<args>')
+command! -nargs=0 OpenInDefaultPrg call xelltoolkit#run('', expand("%:p"))
+command! -nargs=1 Es call xelltoolkit#edit_samename_file('<args>')
+" }}}
 " }}}
 
 " Others {{{1
@@ -1036,12 +1058,28 @@ let filetype_m = "mma"
 let g:is_bash=1
 let g:sh_fold_enabled=3
 
-" tex: Display the spell highlight beyond the syntax highlights
-" vimrcEx
-autocmd BufReadPost,FileReadPost *.tex syntax spell toplevel
+" TODO
+" g:processing_doc_path
 
 " Define command WhatSyntax for looking up syntax
 command! -nargs=0 -bar WhatSyntax echomsg synIDattr(synID(line("."),col("."),0),"name") synIDattr(synIDtrans(synID(line("."),col("."),0)),"name") synIDattr(synID(line("."),col("."),1),"name") synIDattr(synIDtrans(synID(line("."),col("."),1)),"name")
+
+" NFO view {{{2
+" 能够漂亮地显示.NFO文件
+" function! s:setFileEncodings(encodings)
+"     let b:myfileencodingsbak=&fileencodings
+"     let &fileencodings=a:encodings
+" endfunction
+" function! s:restoreFileEncodings()
+"     let &fileencodings=b:myfileencodingsbak
+"     unlet b:myfileencodingsbak
+" endfunction
+" 
+" au BufReadPre *.nfo call <SID>setFileEncodings('cp437')|set ambiwidth=single
+" au BufReadPost *.nfo call <SID>restoreFileEncodings()|set ambiwidth=double
+
+" }}}
+
 " }}}
 
 " Modelines {{{1
