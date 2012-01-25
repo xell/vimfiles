@@ -251,5 +251,19 @@ endif
 
 " }}}
 
+" Xell Fullscreen and Writeroom {{{1
+" TODO refine the code
+let g:Fullscreen_Enabled = 0
+let g:writeroomstarted = 0
+
+if g:isw
+	let g:shell_fullscreen_items = 'mTe'
+endif
+nmap <silent> <F11> <Esc>:if !g:writeroomstarted \| call FullScreenToggle() \| else \| echo "WriteRoom mode. Please end it." \| endif<CR>
+command! -nargs=0 WRS call WriteRoomStart()
+command! -nargs=0 WRSNew call WriteRoomStart('new')
+command! -nargs=0 WRE call WriteRoomEnd()
+" }}}
+
 " Modelines {{{1
 " vim:fmr={{{,}}}:fdm=marker:foldcolumn=3:lbr:fileencoding=utf-8:ff=unix
