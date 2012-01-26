@@ -918,8 +918,8 @@ endfunction
 
 " }}}
 " TToC {{{2
-" Use function as a navigation tree toc
-nmap <Leader>tt :TToC \<fu\%[nction!]\s\zs.*\ze$<CR>
+" Use function as a navigation tree toc, for example
+" nmap <Leader>tt :TToC \<fu\%[nction!]\s\zs.*\ze$<CR>
 " }}}
 " Taglist {{{2
 let g:Tlist_Show_One_File=1
@@ -949,7 +949,9 @@ if g:isw
 endif
 " }}}
 " NERDTree {{{2
+let NERDTreeShowBookmarks = 1
 nmap <Leader>t :NERDTreeToggle<CR>
+nmap <Leader>b :NERDTreeFromBookmark 
 " }}}
 " FuzzyFinder {{{2
 let g:fuf_modesDisable = ['aroundmrufile', 'mrucmd', 'dir', 'bookmark', 'taggedfile', 'line', 'quickfix']
