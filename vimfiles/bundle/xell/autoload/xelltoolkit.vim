@@ -232,3 +232,23 @@ function! xelltoolkit#qf_make_conv()  " {{{1
     call setqflist(qflist)
 endfunction "}}}
 
+" TODO
+function! xelltoolkit#imap(lhs, rhs, buffer) " {{{1
+	let lhs = a:lhs
+	let rhs = a:rhs
+	let num_of_left = strlen(rhs) - match(rhs, '<++>', 0) - 5
+	let rhs = substitute(a:rhs, '<++>', '', '')
+	let str_left = ''
+	while (num_of_left >= 0)
+		let str_left .= '<Left>'
+		let num_of_left -= 1
+	endwhile
+
+	if a:buffer
+		exec 'inoremap <buffer> ' . lhs . ' ' . rhs . str_left
+	else
+		exec 'inoremap ' . lhs . ' ' . rhs . str_left
+	endif
+endfunction
+" }}}
+

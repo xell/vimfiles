@@ -241,20 +241,20 @@ if g:ism
 	" IME setting {{{3
 	
 	" function! s:setim()
-	" if &imd
-	" 	set imd
-	" 	set noimd
-	" 	echo "Chinese enable."
-	" else
-	" 	set imd
-	" 	echo "English only."
-	" endif
+	" 	if &imd
+	" 		set imd
+	" 		set noimd
+	" 		echo "Chinese enable."
+	" 	else
+	" 		set imd
+	" 		echo "English only."
+	" 	endif
 	" endfunction
 
 	" nmap <D-i> :call <SID>setim()<CR>
 	" imap <D-i> <Esc>:call <SID>setim()<CR>i
 	
-	set imd
+	" set imd
 	set noimd
 	" }}}
 
@@ -631,19 +631,6 @@ imap <S-Tab> <BS>
 nmap <C-Up> ddkP
 nmap <C-Down> ddp
 
-" IMAP plugin (in latex-suite)
-if &loadplugins
-augroup MyIMAPs
-	autocmd!
-	autocmd VimEnter * call IMAP('()', '(<++>)<++>', '')
-	autocmd VimEnter * call IMAP('[]', '[<++>]<++>', '')
-	autocmd VimEnter * call IMAP('{}', '{<++>}<++>', '')
-	autocmd VimEnter * call IMAP('<>', '<<++>><++>', '')
-	autocmd VimEnter * call IMAP('""', '"<++>"<++>', '')
-	autocmd VimEnter * call IMAP("''", "'<++>'<++>", '')
-	autocmd VimEnter * call IMAP('%%', '%<++>%<++>', '')
-augroup END
-endif
 " }}}
 
 " Dispaly {{{2
@@ -1064,13 +1051,55 @@ elseif g:ism
 	let g:Tex_ViewRule_pdf = 'Skim'
 endif
 
-" Remap the jumpforward, originally <C-j>
-imap <C-J> <Plug>IMAP_JumpForward
-nmap <C-Y> <Plug>IMAP_JumpForward
 imap <A-;> <Plug>Tex_LeftRight
 nmap <A-;> <Plug>Tex_LeftRight
 " Change the default <F7>->FastCommandInsert to <C-F7>
 nmap <C-F7> <Plug>Tex_FastCommandInsert
+
+" }}}
+" IMAP {{{2
+if g:ism
+	let g:Imap_FreezeImap = 1
+	" Remap the jumpforward, originally <C-j>
+	imap <D-C-J> <Plug>IMAP_JumpForward
+	nmap <D-C-Y> <Plug>IMAP_JumpForward
+elseif g:isw
+	" Remap the jumpforward, originally <C-j>
+	imap <C-J> <Plug>IMAP_JumpForward
+	nmap <C-Y> <Plug>IMAP_JumpForward
+endif
+
+if g:ism
+	function! s:imap_jump()
+		let isfound = search('<++>', 'cW')
+		if isfound
+			normal 4x
+		endif
+	endfunction
+	
+
+	inoremap <C-j> <C-O>:call <SID>imap_jump()<CR>
+
+	call xelltoolkit#imap('()', '(<++>)<++> ', 0)
+	call xelltoolkit#imap('[]', '[<++>]<++> ', 0)
+	call xelltoolkit#imap('{}', '{<++>}<++> ', 0)
+	call xelltoolkit#imap('<>', '<<++>><++> ', 0)
+	call xelltoolkit#imap('""', '"<++>"<++> ', 0)
+	call xelltoolkit#imap("''", "'<++>'<++> ", 0)
+	call xelltoolkit#imap('%%', '%<++>%<++> ', 0)
+
+elseif &loadplugins && g:isw
+	augroup MyIMAPs
+		autocmd!
+		autocmd VimEnter * call IMAP('()', '(<++>)<++>', '')
+		autocmd VimEnter * call IMAP('[]', '[<++>]<++>', '')
+		autocmd VimEnter * call IMAP('{}', '{<++>}<++>', '')
+		autocmd VimEnter * call IMAP('<>', '<<++>><++>', '')
+		autocmd VimEnter * call IMAP('""', '"<++>"<++>', '')
+		autocmd VimEnter * call IMAP("''", "'<++>'<++>", '')
+		autocmd VimEnter * call IMAP('%%', '%<++>%<++>', '')
+	augroup END
+endif
 
 " }}}
 " Neocomplcache {{{2
