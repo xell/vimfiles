@@ -1,13 +1,34 @@
 
-" let codepage = 'cp' . matchstr(system("chcp"), '\zs\d\+\ze[^[:graph:]]*$')
-" ech iconv(system('dir'), codepage, 'utf-8')
+function! Testcj()
+	let isfound = search('<++>', 'cW')
+	if isfound
+		if col('.') == col('$') - 4
+			normal 4x
+			startinsert!
+		else
+			normal 4x
+			startinsert
+		endif
+	endif
+endfunction
 
-" function! GetChar()
-" 	let line = getline('.')
-" 	let col = col('.') - 1
-" 	return strpart(getline('.'), col('.') - 2, 1) =~? '\S'
-" endfunction
+" inoremap <C-j> <Esc>:call Testcj()<CR>
 
-" imap <buffer> <expr> <Tab> GetChar()
+function! Testimap(lhs, rhs, buffer)
+	let lhs = a:lhs
+	let rhs = a:rhs
+	
+	let num_of_left = strlen(rhs) - match(rhs, '<++>', 0) - 5
+	let rhs = substitute(a:rhs, '<++>', '', '')
+	
+	exec 'inoremap ' . lhs . ' ' . rhs . '<C-O>' . num_of_left . 'h'
+	
 
-" dkjfkd dkfjjjjjjjda111aaaassf 01       dk afk
+endfunction
+
+" call Testimap('[]', 'dakajdkf[<++>]<++>', 0)
+
+" [] dkjfdk
+" dakajdkf[dkjdfk]
+"
+"

@@ -1073,20 +1073,26 @@ if g:ism
 	function! s:imap_jump()
 		let isfound = search('<++>', 'cW')
 		if isfound
-			normal 4x
+			if col('.') == col('$') - 4
+				normal 4x
+				startinsert!
+			else
+				normal 4x
+				startinsert
+			endif
 		endif
 	endfunction
 	
 
 	inoremap <C-j> <C-O>:call <SID>imap_jump()<CR>
 
-	call xelltoolkit#imap('()', '(<++>)<++> ', 0)
-	call xelltoolkit#imap('[]', '[<++>]<++> ', 0)
-	call xelltoolkit#imap('{}', '{<++>}<++> ', 0)
-	call xelltoolkit#imap('<>', '<<++>><++> ', 0)
-	call xelltoolkit#imap('""', '"<++>"<++> ', 0)
-	call xelltoolkit#imap("''", "'<++>'<++> ", 0)
-	call xelltoolkit#imap('%%', '%<++>%<++> ', 0)
+	call xelltoolkit#imap('()', '(<++>)<++>', 0)
+	call xelltoolkit#imap('[]', '[<++>]<++>', 0)
+	call xelltoolkit#imap('{}', '{<++>}<++>', 0)
+	call xelltoolkit#imap('<>', '<<++>><++>', 0)
+	call xelltoolkit#imap('""', '"<++>"<++>', 0)
+	call xelltoolkit#imap("''", "'<++>'<++>", 0)
+	call xelltoolkit#imap('%%', '%<++>%<++>', 0)
 
 elseif &loadplugins && g:isw
 	augroup MyIMAPs
