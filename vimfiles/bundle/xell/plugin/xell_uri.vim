@@ -32,6 +32,17 @@ function! OpenInBrowser(strict, ...)
 		let cur_file_path = expand("%:p")
 	endif
 
+	if !is_web_protocol && exists('g:notes_open_rules') && a:strict
+		let cur_file_ext = xelltoolkit#fname_ext(cur_file_path)
+		if has_key(g:notes_open_rules, cur_file_ext)
+			let cur_file_path = {g:notes_open_rules[cur_file_ext]}(cur_file_path)
+			if cur_file_path == ''
+				call xelltoolkit#echo_msg('There is no output HTML file of the current file.')
+				return 1
+			endif
+		endif
+	endif
+
 	" If it's url, which can only be given via args
 	if is_web_protocol
 		let uri = cur_file_path
@@ -46,7 +57,7 @@ function! OpenInBrowser(strict, ...)
 
 		" Determine if the filetype is supported by browser
 		if a:strict
-			let cur_file_ext = matchstr(cur_file_path, '\.\zs[^.]\+\ze$')
+			let cur_file_ext = xelltoolkit#fname_ext(cur_file_path)
 			if cur_file_ext !~? 'txt\|html\|htm\|xhtml\|xml\|php'
 				call xelltoolkit#echo_msg('The filetype is not supported by Browser. Please add ! to enforce.')
 				return
@@ -73,6 +84,7 @@ endfunction
 " }}}
 
 " Windows Only - Open the folder of current buffer in TC {{{1
+" In Mac, just use !open .
 if g:isw
 	command! -nargs=0 OpenFolder call OpenFolder()
 

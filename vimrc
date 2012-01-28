@@ -296,6 +296,20 @@ elseif g:ism
 endif
 " }}}
 
+" Notes {{{2
+if g:isw
+	let g:xell_notes_root = 'D:\W\notes\notes'
+	let g:xell_notes_ex_root = 'D:\W\notes\notes_export'
+elseif g:ism
+	let g:xell_notes_root = glob('~/Documents/notes/notes')
+	let g:xell_notes_ex_root = glob('~/Documents/notes/notes_export')
+endif
+
+" Specify use what function to look for the output html of notes file
+let g:notes_open_rules = {'t2t': 'GetOutputHTML', 'md': 'GetOutputHTML', 'mkd': 'GetOutputHTML', 'markdown': 'GetOutputHTML'}
+
+" }}}
+
 " Other {{{2
 if g:isw
 	" Setting codepage used for iconv etc.
@@ -503,7 +517,8 @@ nmap <Leader>s <C-W>s<C-W>j
 nmap <Leader>v <C-W>v
 
 " Switch two windows back and forth
-noremap ` <C-W>p
+noremap <Return> <C-W>p
+noremap ` <C-W>w
 
 " For switch to split windows
 map <M-j> <C-W>j
@@ -618,6 +633,43 @@ vmap <Leader>l "zy:lv /<C-R>z/ %<CR>:lw<CR>
 " Move to url
 nmap <Tab> :call xelltoolkit#goto_next_word(g:urlpattern)<CR>
 nmap <S-Tab> :call xelltoolkit#goto_pre_word(g:urlpattern)<CR>
+
+" Find General {{{3
+nmap <C-F> :call <SID>find_general()<CR>
+
+" Default -i; include only this filetype; no exclude
+function! s:find_general()
+	let words = input('What to find: ')
+	if words == ''
+		call xelltoolkit#echo_msg('Find pattern cannot be empty!')
+		return
+	endif
+
+	let option = input('Option (-i): ')
+	if option == ''
+		let option = '-i'
+	endif
+
+	let include = input('This filetype (Y/n): ')
+	if include == '' || include ==? 'y'
+		" Only find the file ext of current buffer
+		let include = expand('%:e')
+	elseif include ==? 'n'
+		let include = input('All non-bin filetypes (Y/n): ')
+		" All non binary filetypes
+		if include == '' || include ==? 'y'
+			let include = ''
+		elseif include ==? 'n'
+			let include = input('Specifiy filetypes: ')
+		endif
+	endif
+
+	let exclude = input('What to exclude: ')
+	
+	call xelltoolkit#grep_in_lcd_r(option, include, exclude, words)
+endfunction
+" }}}
+
 " }}}
 
 " Modify texts {{{2

@@ -200,6 +200,25 @@ function! xelltoolkit#fname2pattern(fname) " {{{1
 endfunction
 " }}}
 
+function! xelltoolkit#fname_ext(fname) " {{{1
+	return matchstr(a:fname, '\.\zs[^.]\+\ze$')
+endfunction
+" }}}
+
+function! xelltoolkit#fname_head(fname) " {{{1
+	if g:isw
+		return substitute(a:fname, '\\[^\]\+$', '', '')
+	elseif g:ism
+		return substitute(a:fname, '\/[^/]\+$', '', '')
+	endif
+endfunction
+" }}}
+
+function! xelltoolkit#fname_ext_mod(fname, ext_mod) " {{{1
+	return substitute(a:fname, '\.\zs[^.]\+\ze$', a:ext_mod, '')
+endfunction
+" }}}
+
 " Note echo_msg will alwasy display unprintable chars as it is
 function! xelltoolkit#echo_msg(msg) " {{{1
 	" redraw
@@ -232,7 +251,6 @@ function! xelltoolkit#qf_make_conv()  " {{{1
     call setqflist(qflist)
 endfunction "}}}
 
-" TODO
 function! xelltoolkit#imap(lhs, rhs, buffer) " {{{1
 	let lhs = a:lhs
 	let rhs = a:rhs
@@ -252,3 +270,41 @@ function! xelltoolkit#imap(lhs, rhs, buffer) " {{{1
 endfunction
 " }}}
 
+function! xelltoolkit#grep_in_lcd_r(option, include, exclude, pattern) " {{{
+	if !executable('grep')
+		call xelltoolkit#echo_msg('No grep program!')
+		return 1
+	endif
+	
+	" No search for binary
+	" Vim :grep implies -H (filename) and -n (line number)
+	let grep_exec = 'grep -Ir'
+	if a:option != ''
+		let grep_exec .= ' ' . a:option
+	endif
+
+	if a:include != ''
+		if a:include =~? ','
+			let grep_exec .= ' --include=*.{' . a:include . '}'
+		else
+			let grep_exec .= ' --include=*.' . a:include
+		endif
+	else
+		let grep_exec .= ' --include=*.*'
+	endif
+
+	if a:exclude != ''
+		let grep_exec .= ' ' . '--exclude=*.{' . a:exclude . '}'
+	endif
+
+	if a:pattern == ''
+		call xelltoolkit#echo_msg('Pattern cannot be empty!.')
+		return
+	else
+		let grep_exec .= ' "' . a:pattern . '" .'
+	endif
+
+	exec 'silent ' . grep_exec
+	cwindow
+
+endfunction
