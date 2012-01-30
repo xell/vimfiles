@@ -298,7 +298,7 @@ endif
 
 " Docs {{{2
 " Specify use what function to look for the output html of doc file
-let g:browser_open_rules = {'t2t': 'GetOutputHTML', 'md': 'GetOutputHTML', 'mkd': 'GetOutputHTML', 'markdown': 'GetOutputHTML'}
+let g:browser_open_rules = {'t2t': 'GetOutputHTML', 'md': 'GetOutputHTML', 'mkd': 'GetOutputHTML', 'markdown': 'GetOutputHTML', 'rst': 'GetOutputHTML'}
 
 " These convert rule functions generally only consider current buffer
 " Definition : function Wrapper(out_type, config)

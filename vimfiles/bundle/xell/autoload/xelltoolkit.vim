@@ -270,7 +270,7 @@ function! xelltoolkit#edit_samename_file(ext) " {{{1
 	else
 		let e_filename = cur_filename . '.' . a:ext
 	endif
-	exec 'edit ' . e_filename
+	exec 'edit ' . fnameescape(e_filename)
 endfunction "}}}
 
 " :h QuickFixCmdPost-example
