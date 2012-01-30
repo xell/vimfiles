@@ -52,6 +52,24 @@ function! xelltoolkit#goto_pre_word(pattern) " {{{1
 endfunction
 " }}}
 
+function! xelltoolkit#slash() " {{{1
+	if g:isw && !&shellslash
+		return '\'
+	else
+		return '/'
+	endif
+endfunction
+" }}}
+
+function! xelltoolkit#slash_p() " {{{1
+	if g:isw && !&shellslash
+		return '\\'
+	elseif g:ism
+		return '\/'
+	endif
+endfunction
+" }}}
+
 " default: verbose, show message whatever
 " d: dry-run, only display the statement
 " s: silent run unless v:shell_error
@@ -192,6 +210,15 @@ function! xelltoolkit#run(prg, file, ...) " {{{1
 endfunction
 " }}}
 
+function! xelltoolkit#fname_escape(fname) " {{{1
+	if g:isw
+		return shellescape(a:fname)
+	elseif g:ism
+		return fnameescape(a:fname)
+	endif
+endfunction
+" }}}
+
 function! xelltoolkit#fname2pattern(fname) " {{{1
 	let fname = a:fname
 	let fname = escape(fname, '/\~&[]{}')
@@ -206,6 +233,7 @@ endfunction
 " }}}
 
 function! xelltoolkit#fname_head(fname) " {{{1
+	return substitute(a:fname, xelltoolkit#slash_p() . '[^' . xelltoolkit#slash() . ']\+$', '', '')
 	if g:isw
 		return substitute(a:fname, '\\[^\]\+$', '', '')
 	elseif g:ism
@@ -214,12 +242,19 @@ function! xelltoolkit#fname_head(fname) " {{{1
 endfunction
 " }}}
 
+function! xelltoolkit#fname_name(fname) " {{{1
+	let slash_p = xelltoolkit#slash_p()
+	"c.f. :ech matchstr('/a/b/c.d_f.e', '\zs[^\/]\+\ze\.[^\/]\+')
+	return matchstr(a:fname, '\zs[^' . slash_p . ']\+\ze\.[^' . slash_p . ']\+')
+endfunction
+" }}}
+
 function! xelltoolkit#fname_ext_mod(fname, ext_mod) " {{{1
 	return substitute(a:fname, '\.\zs[^.]\+\ze$', a:ext_mod, '')
 endfunction
 " }}}
 
-" Note echo_msg will alwasy display unprintable chars as it is
+" Note : echo_msg will alwasy display unprintable chars as it is
 function! xelltoolkit#echo_msg(msg) " {{{1
 	" redraw
 	echohl WarningMsg

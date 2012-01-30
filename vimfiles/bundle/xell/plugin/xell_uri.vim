@@ -32,10 +32,10 @@ function! OpenInBrowser(strict, ...)
 		let cur_file_path = expand("%:p")
 	endif
 
-	if !is_web_protocol && exists('g:notes_open_rules') && a:strict
+	if !is_web_protocol && exists('g:browser_open_rules') && a:strict
 		let cur_file_ext = xelltoolkit#fname_ext(cur_file_path)
-		if has_key(g:notes_open_rules, cur_file_ext)
-			let cur_file_path = {g:notes_open_rules[cur_file_ext]}(cur_file_path)
+		if has_key(g:browser_open_rules, cur_file_ext)
+			let cur_file_path = {g:browser_open_rules[cur_file_ext]}(cur_file_path)
 			if cur_file_path == ''
 				call xelltoolkit#echo_msg('There is no output HTML file of the current file.')
 				return 1
@@ -49,11 +49,7 @@ function! OpenInBrowser(strict, ...)
 	" If it's file
 	elseif cur_file_path =~? '^\(\/\|\a:\\\)'
 		let webserver_dir = xelltoolkit#fname2pattern(g:webserver_dir)
-		if g:isw && !&shellslash
-			let webserver_dir .= '\'
-		else
-			let webserver_dir .= '/'
-		endif
+		let webserver_dir .= xelltoolkit#slash()
 
 		" Determine if the filetype is supported by browser
 		if a:strict

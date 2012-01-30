@@ -296,6 +296,28 @@ elseif g:ism
 endif
 " }}}
 
+" Docs {{{2
+" Specify use what function to look for the output html of doc file
+let g:browser_open_rules = {'t2t': 'GetOutputHTML', 'md': 'GetOutputHTML', 'mkd': 'GetOutputHTML', 'markdown': 'GetOutputHTML'}
+
+" These convert rule functions generally only consider current buffer
+" Definition : function Wrapper(out_type, config)
+let g:docs_convert_rules = {'txt2tags': 'Txt2tagsConversionWrapper'}
+
+" Text2tags specification {{{3
+if g:isw
+	let g:t2t_cmd = 'd:\p\txt2tags\txt2tags.py'
+	let g:t2t_cf_path = 'd:\w\_special\_tpl\t2t'
+elseif g:ism
+	let g:t2t_cmd = '/P/apps/txt2tags/txt2tags'
+	let g:t2t_cf_path = glob('~/Documents/_special/_tpl/t2t')
+endif
+
+let g:t2t_target_ext = {'html': 'html', 'md': 'md', 'rst': 'rst', 'txt': 'txt', 'html5': 'html', 'rtf': 'rtf', 'tex': 'tex'}
+" }}}
+
+" }}}
+
 " Notes {{{2
 if g:isw
 	let g:xell_notes_root = 'D:\W\notes\notes'
@@ -305,8 +327,9 @@ elseif g:ism
 	let g:xell_notes_ex_root = glob('~/Documents/notes/notes_export')
 endif
 
-" Specify use what function to look for the output html of notes file
-let g:notes_open_rules = {'t2t': 'GetOutputHTML', 'md': 'GetOutputHTML', 'mkd': 'GetOutputHTML', 'markdown': 'GetOutputHTML'}
+let g:xell_notes_ext = 't2t'
+let g:xell_notes_index = 'index'
+let g:xell_notes_temp = 'temp'
 
 " }}}
 
