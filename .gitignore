@@ -9,3 +9,5 @@ descript.ion
 .com.apple.*
 *.sw[po]
 xell_test.vim
+vim73/*
+vim73\*
