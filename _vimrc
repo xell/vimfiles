@@ -27,27 +27,31 @@ if has("win32") || has("win64")
 else
 	let g:ism = 1
 endif
+
+if g:isw
+	let g:myvimfiles = expand("<sfile>:p:h") . '/vimfiles'
+elseif g:ism
+	let g:myvimfiles = glob('~/.vim')
+endif
+
 " }}}
 
 " Temp {{{2
 " XXX need to be deleted after re-constructed
-" if g:isw
-" 	let g:myvim_dir = 'V:'
-" else
-" 	let g:myvim_dir = '/Users/xell/Z/testvimfiles'
-" endif
-let g:myvim_dir = expand("<sfile>:p:h")
-let g:myvimfiles = g:myvim_dir . '/vimfiles'
-let g:myvimfiles_after = g:myvimfiles . '/after'
+" g:myvimfiles
 " $VIM win: d:\p\vim
 "      mac: /Applications/MacVim.app/Contents/Resources/vim
 " $VRT win: d:\p\vim\vim73
 "      mac: /Applications/MacVim.app/Contents/Resources/vim/runtime
 " BIN  win: d:\p\vim\vim73\gvim.exe vim.exe
 "      mac: /Applications/MacVim.app/Contents/MacOS/MacVim Vim
-exec 'set runtimepath=' . g:myvimfiles . ',$VIMRUNTIME,' . g:myvimfiles_after
-let $MYVIMRC = g:myvim_dir . '/vimrc'
-let $MYGVIMRC = g:myvim_dir . '/gvimrc'
+
+" let g:myvim_dir = expand("<sfile>:p:h")
+" let g:myvimfiles = g:myvim_dir . '/vimfiles'
+" let g:myvimfiles_after = g:myvimfiles . '/after'
+" exec 'set runtimepath=' . g:myvimfiles . ',$VIMRUNTIME,' . g:myvimfiles_after
+" let $MYVIMRC = g:myvim_dir . '/vimrc'
+" let $MYGVIMRC = g:myvim_dir . '/gvimrc'
 " }}}
 
 " Pathogen {{{2
