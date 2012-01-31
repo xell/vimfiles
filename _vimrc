@@ -599,6 +599,11 @@ else
 	" Redefine <D-v> in macmap.vim FIXME fail...
 	"execute 'inoremap <script> <special> <D-v>' paste#paste_cmd['i']
 	execute 'inoremap <script> <special> <D-v> <C-g>u'.paste#paste_cmd['i']
+
+	vnoremap <D-C> "+y
+	noremap  <D-V> "+gP
+	cnoremap <D-V> <C-R>+
+	inoremap <D-V> <C-R>+
 endif
 
 " Open or yank web url
