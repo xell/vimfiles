@@ -483,8 +483,8 @@ endif
 map - $
 
 " For navigate in visible lines
-nmap \ gj
-nmap <BS> gk
+" nmap \ gj
+" nmap <BS> gk
 
 "Basic motions
 imap <A-h> <Left>
@@ -540,7 +540,7 @@ nmap <Leader>s <C-W>s<C-W>j
 nmap <Leader>v <C-W>v
 
 " Switch two windows back and forth
-noremap <Return> <C-W>p
+noremap <Backspace> <C-W>p
 noremap ` <C-W>w
 
 " For switch to split windows
