@@ -20,6 +20,8 @@ syn case ignore
 syn spell toplevel
 if g:pandoc_syntax_accuracy
 	syn sync linebreaks=1
+	" syn sync minlines=10
+	" syn sync fromstart
 else
 	syn sync minlines=10
 	syn sync maxlines=50
@@ -100,10 +102,14 @@ syn match pdcSuperscript /\^\([^\^\\ ]\|\(\\ \)\)\+\^/   contains=@Spell
 " Code: Inline and block
 " Code {{{1
 " `code`
-syn region pdcCode start=/`\S/ end=/`\|^\s*$/ oneline containedin=ALL
-syn region pdcCode start=/``[^`]*/ end=/``\|^\s*$/ oneline containedin=ALL
-syn match pdcCodePre /<pre>.\{-}<\/pre>/ skipnl containedin=ALL
-syn match pdcCodePre /<code>.\{-}<\/code>/ skipnl containedin=ALL
+" syn region pdcCode start=/`\S/ end=/`\|^\s*$/ oneline containedin=ALL
+" syn region pdcCode start=/``[^`]*/ end=/``\|^\s*$/ oneline containedin=ALL
+" syn match pdcCodePre /<pre>.\{-}<\/pre>/ skipnl containedin=ALL
+" syn match pdcCodePre /<code>.\{-}<\/code>/ skipnl containedin=ALL
+syn region pdcCode start=/`\S/ end=/`\|^\s*$/ oneline
+syn region pdcCode start=/``[^`]*/ end=/``\|^\s*$/ oneline
+syn match pdcCodePre /<pre>.\{-}<\/pre>/ skipnl
+syn match pdcCodePre /<code>.\{-}<\/code>/ skipnl
 
 " Old code block def
 " syn match  pdcCodeBlock    '\(\s\{4,}\|\t\{1,}\).*\n' contained nextgroup=pdcCodeBlock
