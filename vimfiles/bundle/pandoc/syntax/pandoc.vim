@@ -68,7 +68,7 @@ endif
 " Blankline, Docinfo, Heading {{{1
 syn cluster pdcBeautifiers contains=pdcStrike,pdcEmphasis,pdcStrong,pdcCode
 
-syn match pdcBlankLine   '\(^\s*\n\|\%^\)'    nextgroup=pdcAtxHeader,pdcSetexHeader,pdcCodeBlock,pdcBlockquote,pdcHRule,pdcListItem transparent
+syn match pdcBlankLine   '\(^\s*\n\|\%^\)'    nextgroup=pdcAtxHeader,pdcSetexHeader,pdcCodeBlock,pdcBlockquote,pdcHRule,pdcListItem,pdcTableHeader,pdcTableMultiStart transparent
 " ,pdcListItem,pdcListItem1,pdcHRule,pdcTableHeader,pdcTableMultiStart,pdcBlockquote transparent
 
 " Title Block i.e. the first three lines headed with %
@@ -212,8 +212,24 @@ syn match pdcHRule  /\s\{0,3}\(\*\s*\)\{3,}\n/	contained nextgroup=pdcHRule
 " syn match pdcNewLine '  $'
 syn match pdcNewLine /\(  \|\\\)$/
 
-" Table TODO
 
+" }}}
+
+" Table: TODO
+" Tables {{{1
+"   Regular Table
+syn match pdcTableHeader /\s*\w\+\(\s\+\w\+\)\+\s*\n\s*-\+\(\s\+-\+\)\+\s*\n/ contained nextgroup=pdcTableBody
+syn match pdcTableBody	 /\s*\w\+\(\s\+\w\+\)\+\s*\n/ contained nextgroup=pdcTableBody,pdcTableCaption skipnl
+syn match pdcTableCaption /\n\+\s*Table.*\n/ contained nextgroup=pdcTableCaptionCont 
+syn match pdcTableCaptionCont /\s*\S.\+\n/ contained nextgroup=pdcTableCaptionCont 
+
+"   Multi-line Table
+syn match pdcTableMultiStart /^\s\{0,3}-\+\s*\n\ze\(\s*\w\+\(\s\+\w\+\)\+\s*\n\)\+\s*-\+\(\s\+-\+\)\+\s*\n/ contained nextgroup=pdcTableMultiHeader
+syn match pdcTableMultiEnd /^\s\{0,3}-\+/ contained nextgroup=pdcTableMultiCaption skipnl
+syn match pdcTableMultiHeader /\(\s*\w\+\(\s\+\w\+\)\+\s*\n\)\+\s*-\+\(\s\+-\+\)\+\s*\n/ contained nextgroup=pdcTableMultiBody 
+syn match pdcTableMultiBody /^\(\s\{3,}[^-]\|[^-\s]\).*$/ contained nextgroup=pdcTableMultiBody,pdcTableMultiSkipNL,pdcTableMultiEnd skipnl
+syn match pdcTableMultiSkipNL /^\s*\n/ contained nextgroup=pdcTableMultiBody,pdcTableMultiEnd skipnl
+syn match pdcTableMultiCaption /\n*\s*Table.*\n/ contained nextgroup=pdcTableCaptionCont 
 " }}}
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -259,6 +275,17 @@ hi link pdcListItem   Statement
 
 hi link pdcDefinitionBlockTerm Identifier
 hi link pdcDefinitionBlockMark Operator
+
+hi link pdcTableMultiStart	Comment
+hi link pdcTableMultiEnd	Comment
+hi link pdcTableHeader		Define
+hi link pdcTableMultiHeader	Define
+hi link pdcTableBody		Identifier
+hi link pdcTableMultiBody	Identifier
+hi link pdcTableCaption		Label
+hi link pdcTableMultiCaption	Label
+hi link pdcTableCaptionCont	Label
+
 " }}}
 
 let b:current_syntax = "pandoc"
