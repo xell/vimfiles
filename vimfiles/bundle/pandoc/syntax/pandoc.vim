@@ -106,6 +106,7 @@ syn match pdcSuperscript /\^\([^\^\\ ]\|\(\\ \)\)\+\^/   contains=@Spell
 " syn region pdcCode start=/``[^`]*/ end=/``\|^\s*$/ oneline containedin=ALL
 " syn match pdcCodePre /<pre>.\{-}<\/pre>/ skipnl containedin=ALL
 " syn match pdcCodePre /<code>.\{-}<\/code>/ skipnl containedin=ALL
+
 syn region pdcCode start=/`\S/ end=/`\|^\s*$/ oneline
 syn region pdcCode start=/``[^`]*/ end=/``\|^\s*$/ oneline
 syn match pdcCodePre /<pre>.\{-}<\/pre>/ skipnl
@@ -215,21 +216,24 @@ syn match pdcNewLine /\(  \|\\\)$/
 
 " }}}
 
-" Table: TODO
+" Table:
 " Tables {{{1
-"   Regular Table
-syn match pdcTableHeader /\s*\w\+\(\s\+\w\+\)\+\s*\n\s*-\+\(\s\+-\+\)\+\s*\n/ contained nextgroup=pdcTableBody
-syn match pdcTableBody	 /\s*\w\+\(\s\+\w\+\)\+\s*\n/ contained nextgroup=pdcTableBody,pdcTableCaption skipnl
+" Regular Table
+" syn match pdcTableHeader /\s*\w\+\(\s\+\w\+\)\+\s*\n\s*-\+\(\s\+-\+\)\+\s*\n/ contained nextgroup=pdcTableBody
+syn match pdcTableHeader /\s*\S\+\(\s\+\S\+\)\+\s*\n\s*-\+\(\s\+-\+\)\+\s*\n/ contained nextgroup=pdcTableBody
+syn match pdcTableBody	 /\s*\S\+\(\s\+\S\+\)\+\s*\n/ contained nextgroup=pdcTableBody,pdcTableCaption skipnl
 syn match pdcTableCaption /\n\+\s*Table.*\n/ contained nextgroup=pdcTableCaptionCont 
 syn match pdcTableCaptionCont /\s*\S.\+\n/ contained nextgroup=pdcTableCaptionCont 
 
-"   Multi-line Table
-syn match pdcTableMultiStart /^\s\{0,3}-\+\s*\n\ze\(\s*\w\+\(\s\+\w\+\)\+\s*\n\)\+\s*-\+\(\s\+-\+\)\+\s*\n/ contained nextgroup=pdcTableMultiHeader
+" Multi-line Table
+syn match pdcTableMultiStart /^\s\{0,3}-\+\s*\n\ze\(\s*\S\+\(\s\+\S\+\)\+\s*\n\)\+\s*-\+\(\s\+-\+\)\+\s*\n/ contained nextgroup=pdcTableMultiHeader
 syn match pdcTableMultiEnd /^\s\{0,3}-\+/ contained nextgroup=pdcTableMultiCaption skipnl
-syn match pdcTableMultiHeader /\(\s*\w\+\(\s\+\w\+\)\+\s*\n\)\+\s*-\+\(\s\+-\+\)\+\s*\n/ contained nextgroup=pdcTableMultiBody 
+syn match pdcTableMultiHeader /\(\s*\S\+\(\s\+\S\+\)\+\s*\n\)\+\s*-\+\(\s\+-\+\)\+\s*\n/ contained nextgroup=pdcTableMultiBody 
 syn match pdcTableMultiBody /^\(\s\{3,}[^-]\|[^-\s]\).*$/ contained nextgroup=pdcTableMultiBody,pdcTableMultiSkipNL,pdcTableMultiEnd skipnl
 syn match pdcTableMultiSkipNL /^\s*\n/ contained nextgroup=pdcTableMultiBody,pdcTableMultiEnd skipnl
 syn match pdcTableMultiCaption /\n*\s*Table.*\n/ contained nextgroup=pdcTableCaptionCont 
+
+" TODO Grid table c.f. rst syntax
 " }}}
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

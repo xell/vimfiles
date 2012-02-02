@@ -179,6 +179,9 @@ set nowrapscan
 " Set general fold method to triple { like
 set foldmethod=marker
 
+" Set ignore files when completion
+set wildignore=*.o,*.ojb,*.pyc,*.DS_Store,*.db,*.dll,*.exe,*.a
+
 " Deal with large file
 "autocmd BufWinEnter * if line2byte(line("$") + 1) > 200000 | syntax clear | echomsg "Large File" | endif
 
@@ -587,27 +590,28 @@ nnoremap P gP
 " Copy and paste according to OS conventions
 if g:isw
 	" Copy, use <c-q> to operate original <c-c>
-	vnoremap <C-C> "+y
-	noremap <C-Q>		<C-V>
-	map <C-V>		"+gP
-	cmap <C-V>		<C-R>+
+	vnoremap <C-c> "+y
+	noremap <C-q>		<C-V>
+	map <C-v>		"+gP
+	cmap <C-v>		<C-R>+
 	" from http://vim.wikia.com/wiki/Recover_from_accidental_Ctrl-U
 	" Pasting blockwise and linewise selections is not possible in Insert and
 	" Visual mode without the +virtualedit feature.  They are pasted as if they
 	" were characterwise instead.
 	" Uses the paste.vim autoload script.
 	"exe 'inoremap <script> <C-V>' paste#paste_cmd['i']
-	exe 'vnoremap <script> <C-V>' paste#paste_cmd['v']
-	exe 'inoremap <script> <C-V> <C-g>u'.paste#paste_cmd['i']
-	vnoremap <C-X> "+x
+	exe 'vnoremap <script> <C-v>' paste#paste_cmd['v']
+	exe 'inoremap <script> <C-v> <C-g>u'.paste#paste_cmd['i']
+	vnoremap <C-x> "+x
 else
 	" Redefine <D-v> in macmap.vim FIXME fail...
 	"execute 'inoremap <script> <special> <D-v>' paste#paste_cmd['i']
 	execute 'inoremap <script> <special> <D-v> <C-g>u'.paste#paste_cmd['i']
 
-	vnoremap <D-C> "+y
-	noremap  <D-V> "+gP
-	cnoremap <D-V> <C-R>+
+	vnoremap <D-c> "+y
+	noremap  <D-v> "+gP
+	cnoremap <D-v> <C-R>+
+	inoremap <D-v> <C-R>+
 	inoremap <D-V> <C-R>+
 endif
 
@@ -710,6 +714,8 @@ endfunction
 " }}}
 
 " Modify texts {{{2
+
+inoremap jj <Esc>
 
 " For insert enter when normal
 nmap <S-Enter> i<Enter><Esc>
