@@ -182,6 +182,8 @@ function! xelltoolkit#run(prg, file, ...) " {{{1
 		endif
 		" Note mac can handle like 'http://ww.google.com/\#
 		let file = fnameescape(a:file)
+		" Temp hack, for http://www.com/c?a=1&b=2
+		let file = escape(file, '&')
 
 		if file == ''
 			let cmd = prg
