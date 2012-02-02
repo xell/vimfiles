@@ -134,48 +134,57 @@ syn match pdcLeadingBlank '^\(\s\{11}\|\s\{7}\|\s\{3}\)\zs\s\ze' containedin=ALL
 " syn match pdcList '^\s*(@)\s\S'me=e-1
 " hi link pdcList   Statement
 "}}}
-" Normal Lists {{{2
-syn match pdcListCont /\s*[^-+*].*\n/ contained nextgroup=pdcListCont,pdcListItem,pdcListSkipNL transparent
-
-"   Skip empty lines
-syn match pdcListSkipNL /\s*\n/ contained nextgroup=pdcListItem,pdcListSkipNL
-
-"   Unorder list
-syn match  pdcListItem /\s*[-*+]\s\+/ contained nextgroup=pdcListSkipNL,pdcListCont skipnl
-
-"   Order list, numeric
-syn match  pdcListItem  /\s*(\?\(\d\+\|#\)[\.)]\s\+/ contained nextgroup=pdcListSkipNL,pdcListCont skipnl
-
-"   Order list, roman numerals (does not guarantee correct roman numerals)
-syn match  pdcListItem  /\s*(\?[ivxlcdm]\+[\.)]\s\+/ contained nextgroup=pdcListSkipNL,pdcListCont skipnl
-
-"   Order list, lowercase letters
-syn match  pdcListItem  /\s*(\?\l[\.)]\s\+/ contained nextgroup=pdcListSkipNL,pdcListCont skipnl
-
-"   Order list, uppercase letters, does not include '.'
-syn match  pdcListItem  /\s*(\?\u[\)]\s\+/ contained nextgroup=pdcListSkipNL,pdcListCont skipnl
-
-"   Order list, uppercase letters, special case using '.' and two or more spaces
-syn match  pdcListItem  /\s*\u\.\([ ]\{2,}\|\t\+\)/ contained nextgroup=pdcListSkipNL,pdcListCont skipnl
-
-"  Numbered Example list (doesn't handle hyphens or underscores in labels)
-syn match  pdcListItem  /\s*(\?@\a*[\.)]\s\+/ contained nextgroup=pdcListSkipNL,pdcListCont skipnl
-" }}}
+" " Normal Lists {{{2
+" syn match pdcListCont /\s*[^-+*].*\n/ contained nextgroup=pdcListCont,pdcListItem,pdcListSkipNL transparent
+" 
+" "   Skip empty lines
+" syn match pdcListSkipNL /\s*\n/ contained nextgroup=pdcListItem,pdcListSkipNL
+" 
+" "   Unorder list
+" syn match  pdcListItem /\s*[-*+]\s\+/ contained nextgroup=pdcListSkipNL,pdcListCont skipnl
+" 
+" "   Order list, numeric
+" syn match  pdcListItem  /\s*(\?\(\d\+\|#\)[\.)]\s\+/ contained nextgroup=pdcListSkipNL,pdcListCont skipnl
+" 
+" "   Order list, roman numerals (does not guarantee correct roman numerals)
+" syn match  pdcListItem  /\s*(\?[ivxlcdm]\+[\.)]\s\+/ contained nextgroup=pdcListSkipNL,pdcListCont skipnl
+" 
+" "   Order list, lowercase letters
+" syn match  pdcListItem  /\s*(\?\l[\.)]\s\+/ contained nextgroup=pdcListSkipNL,pdcListCont skipnl
+" 
+" "   Order list, uppercase letters, does not include '.'
+" syn match  pdcListItem  /\s*(\?\u[\)]\s\+/ contained nextgroup=pdcListSkipNL,pdcListCont skipnl
+" 
+" "   Order list, uppercase letters, special case using '.' and two or more spaces
+" syn match  pdcListItem  /\s*\u\.\([ ]\{2,}\|\t\+\)/ contained nextgroup=pdcListSkipNL,pdcListCont skipnl
+" 
+" "  Numbered Example list (doesn't handle hyphens or underscores in labels)
+" syn match  pdcListItem  /\s*(\?@\a*[\.)]\s\+/ contained nextgroup=pdcListSkipNL,pdcListCont skipnl
+" " }}}
 " Definitions {{{2
 
 syn match pdcDefinitionBlock /^.*\n\(^\s*\n\)*\s\{0,2}[:~]\(\s\{1,3}\|\t\).*\n\(\(^\s\{4,}\|^\t\).*\n\)*/ skipnl contains=pdcDefinitionBlockTerm,pdcDefinitionBlockMark,pdcEmphasis,pdcStrong,pdcStrike,pdcSubscript,pdcSuperscript,@Spell
 syn match pdcDefinitionBlockTerm /^.*\n\(^\s*\n\)*\(\s*[:~]\)\@=/ contained containedin=pdcDefinitionBlock contains=pdcEmphasis
 syn match pdcDefinitionBlockMark /^\s*[:~]/ contained containedin=pdcDefinitionBlock
 " }}}
+
+syn match pdcListItem /^\s*\([*+-]\|\((*\d\+[.)]\+\)\|\((*\l[.)]\+\)\)\s\+/he=e-1
+syn match pdcListItem /^\s*(*\u[.)]\+\s\{2,}/he=e-1
+syn match pdcListItem /^\s*(*[#][.)]\+\s\{1,}/he=e-1
+syn match pdcListItem /^\s*(*@.\{-}[.)]\+\s\{1,}/he=e-1
+
+
+
+
 " }}}
 
 " Link:
 " Links and footnote {{{1
 
 " [LinkText] or [LinkText] [ID] ==================================
-syn match pdcLinkText /\[[^]]\+\]\(\s\?\[[^]]\+\]\)\?/ contains=@Spell,pdcLinkLeft,pdcLinkRight
-syn match pdcLinkLeft /\[/ contained conceal
-syn match pdcLinkRight /\]/ contained conceal
+syn match pdcLinkText /\[.\{-}\]\%(\s\?\[.\{-}\]\)\?/ contains=@Spell,pdcLinkSE
+" syn match pdcLinkLeft /\[/ contained conceal
+syn match pdcLinkSE /\[\|\]/ contained conceal
 
 " [LinkText](url) ================================================
 " syn match pdcLinkTextInLine /\[[^]]\+\]([^)]\+)/ contains=@Spell,pdcLinkURLInLine
@@ -183,16 +192,17 @@ syn match pdcLinkRight /\]/ contained conceal
 " syn match pdcLinkTextInLine '\(\[[^]]\+\]\)(\([^ ]\+\%(\s"[^"]\+"\)\?\))' contains=pdcLinkURLInLine
 " syn match pdcLinkURLInLine '\]\zs(\([^ ]\+\%(\s"[^"]\+"\)\?\))\ze' contained conceal
 
-syn match pdcLinkTextInLine '\(\[[^]]\+\]\)(\([^ ]\{-}\%(\s"[^"]\{-}"\)\?\))' contains=pdcLinkURLInLine
+" syn match pdcLinkTextInLine '\(\[[^]]\+\]\)(\([^ ]\{-}\%(\s"[^"]\{-}"\)\?\))' contains=pdcLinkURLInLine
 " syn match pdcLinkURLInLine '\]\zs(\([^ ]\{-}\%(\s"[^"]\{-}"\)\?\))\ze' contained conceal
 
+syn match pdcLinkTextInLine '\[.\{-}\](\@='
 syn match pdcLinkURLInLine '\]\@<=(.\{-})' conceal
 
 " ![Figure] =====================================================
 syn match pdcFigure '!\[\@='
 
 " [LinkRef]: http... ============================================
-syn match pdcLinkRef '^\s*\[[^]]\+\]:\s\+\S.*$'
+syn match pdcLinkRef '^\s*\[.\{-}\]:\s\+\S.*$'
 
 " Footnote ======================================================
 syn match pdcFootnoteID /\[\^[^\]]\+\]/ nextgroup=pdcFootnoteDef
