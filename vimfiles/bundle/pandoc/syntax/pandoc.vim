@@ -172,30 +172,33 @@ syn match pdcDefinitionBlockMark /^\s*[:~]/ contained containedin=pdcDefinitionB
 " Link:
 " Links and footnote {{{1
 
-" [LinkText] or [LinkText] [ID]
+" [LinkText] or [LinkText] [ID] ==================================
 syn match pdcLinkText /\[[^]]\+\]\(\s\?\[[^]]\+\]\)\?/ contains=@Spell,pdcLinkLeft,pdcLinkRight
 syn match pdcLinkLeft /\[/ contained conceal
 syn match pdcLinkRight /\]/ contained conceal
 
-" [LinkText](url)
+" [LinkText](url) ================================================
 " syn match pdcLinkTextInLine /\[[^]]\+\]([^)]\+)/ contains=@Spell,pdcLinkURLInLine
 " syn match pdcLinkURLInLine /\zs([^)]\+)\ze/ contained conceal
 " syn match pdcLinkTextInLine '\(\[[^]]\+\]\)(\([^ ]\+\%(\s"[^"]\+"\)\?\))' contains=pdcLinkURLInLine
 " syn match pdcLinkURLInLine '\]\zs(\([^ ]\+\%(\s"[^"]\+"\)\?\))\ze' contained conceal
+
 syn match pdcLinkTextInLine '\(\[[^]]\+\]\)(\([^ ]\{-}\%(\s"[^"]\{-}"\)\?\))' contains=pdcLinkURLInLine
-syn match pdcLinkURLInLine '\]\zs(\([^ ]\{-}\%(\s"[^"]\{-}"\)\?\))\ze' contained conceal
+" syn match pdcLinkURLInLine '\]\zs(\([^ ]\{-}\%(\s"[^"]\{-}"\)\?\))\ze' contained conceal
 
-" ![Figure]
-syn match pdcFigure '^\s*\zs!\ze\['
+syn match pdcLinkURLInLine '\]\@<=(.\{-})' conceal
 
-" [LinkRef]: http...
+" ![Figure] =====================================================
+syn match pdcFigure '!\[\@='
+
+" [LinkRef]: http... ============================================
 syn match pdcLinkRef '^\s*\[[^]]\+\]:\s\+\S.*$'
 
-" Footnote
+" Footnote ======================================================
 syn match pdcFootnoteID /\[\^[^\]]\+\]/ nextgroup=pdcFootnoteDef
-" syn region pdcFootnoteDef  start=/:/ end=/^\n\+\(\(\t\+\|[ ]\{4,}\)\S\)\@!/ contained contains=pdcFootnoteDef
 syn region pdcFootnoteDef matchgroup=pdcFootnoteID start=/\^\[/ matchgroup=pdcFootnoteID end=/\]/ oneline
 
+" syn region pdcFootnoteDef  start=/:/ end=/^\n\+\(\(\t\+\|[ ]\{4,}\)\S\)\@!/ contained contains=pdcFootnoteDef
 " }}}
 
 " Other:

@@ -27,13 +27,14 @@ let b:did_ftplugin = 1
 "
 setlocal indentexpr=
 setlocal nolinebreak
-setlocal concealcursor=n
-setlocal conceallevel=2
-setlocal expandtab
 
+setlocal expandtab
 setlocal tabstop=4
 setlocal softtabstop=4
 setlocal shiftwidth=4
+
+setlocal concealcursor=n
+setlocal conceallevel=2
 
 setlocal formatoptions+=roc
 " Do not add two spaces at end of punctuation when joining lines
@@ -121,7 +122,7 @@ endfunction
 " Taken from
 " http://stackoverflow.com/questions/3828606/vim-markdown-folding/4677454#4677454
 "
-command! -nargs=0 ToggleFoldMethod call <SID>toggle_fold_method()
+command! -buffer -nargs=0 ToggleFoldMethod call <SID>toggle_fold_method()
 let b:folder_complex = 1
 setlocal foldexpr=MarkdownLevel()
 setlocal foldmethod=expr
@@ -571,6 +572,8 @@ endfunction "}}}
 " TODO
 "" Jump back to existing reference link (or fn link)
 " map <buffer><silent> <LocalLeader>br :call pandoc_misc#Pandoc_Back_From_Ref()<cr>
+
+" NoMatchParen
 
 " XXX Disabled {{{1
 " # Save folding between sessions
