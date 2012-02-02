@@ -324,8 +324,9 @@ let g:t2t_target_ext = {'html': 'html', 'md': 'md', 'rst': 'rst', 'txt': 'txt', 
 " }}}
 
 " Pandoc specification {{{3
-let g:pandoc_syntax_accuracy = 0
-let g:pandoc_syntax_full_html_tex = 0
+let g:pandoc_syntax_accuracy = 1
+let g:pandoc_syntax_full_html_tex = 1
+let g:pandoc_syntax_table = 0
 " }}}
 
 " }}}
