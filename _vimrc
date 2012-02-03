@@ -309,7 +309,7 @@ let g:browser_open_rules = {'t2t': 'GetOutputHTML', 'md': 'GetOutputHTML', 'mkd'
 
 " These convert rule functions generally only consider current buffer
 " Definition : function Wrapper(out_type, config)
-let g:docs_convert_rules = {'txt2tags': 'Txt2tagsConversionWrapper', 'pandoc': 'PandocConversionWrapper'}
+let g:docs_convert_rules = {'txt2tags': 'Txt2tagsConversionWrapper', 'pandoc': 'PandocConversionWrapper', 'rst': 'RstConversionWrapper'}
 
 " Text2tags specification {{{3
 if g:isw
