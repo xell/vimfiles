@@ -309,7 +309,7 @@ let g:browser_open_rules = {'t2t': 'GetOutputHTML', 'md': 'GetOutputHTML', 'mkd'
 
 " These convert rule functions generally only consider current buffer
 " Definition : function Wrapper(out_type, config)
-let g:docs_convert_rules = {'txt2tags': 'Txt2tagsConversionWrapper'}
+let g:docs_convert_rules = {'txt2tags': 'Txt2tagsConversionWrapper', 'pandoc': 'PandocConversionWrapper'}
 
 " Text2tags specification {{{3
 if g:isw
@@ -327,6 +327,27 @@ let g:t2t_target_ext = {'html': 'html', 'md': 'md', 'rst': 'rst', 'txt': 'txt', 
 let g:pandoc_syntax_accuracy = 1
 let g:pandoc_syntax_full_html_tex = 1
 let g:pandoc_syntax_table = 0
+
+let g:pandoc_target_ext = {'plain': 'txt', 'markdown': 'md', 'rst': 'rst', 'html': 'html', 'html5': 'html', 'latex': 'tex', 'mediawiki': 'wiki', 'opendocument': 'fodt', 'odt': 'odt', 'docx': 'docx', 'slidy': 'html', 'dzslides': 'html', 'rtf': 'rtf'}
+
+let slash = xelltoolkit#slash()
+
+if g:isw
+	let g:pandoc_exec = 'd:\p\pandoc\bin\pandoc.exe'
+	let g:pandoc_tpl_root = 'd:\W\_special\_tpl\pandoc'
+	let g:pandoc_csl_root = g:pandoc_tpl_root . '\csl'
+	let g:pandoc_css_root = g:pandoc_tpl_root . '\css'
+elseif g:ism
+	let g:pandoc_exec = 'pandoc'
+	let g:pandoc_tpl_root = '/Users/xell/Documents/_special/_tpl/pandoc'
+	let g:pandoc_csl_root = g:pandoc_tpl_root . '/csl'
+	let g:pandoc_css_root = g:pandoc_tpl_root . '/css'
+endif
+let g:pandoc_bib = 'biblio.bib'
+let g:pandoc_csl = g:pandoc_csl_root . slash . 'Chinese-GB7714-2005-Numeric-1.0.csl'
+
+let g:pandoc_toc_general = 1
+let g:pandoc_reference_links = 0
 " }}}
 
 " }}}

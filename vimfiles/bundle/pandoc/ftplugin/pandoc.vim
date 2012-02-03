@@ -575,6 +575,38 @@ endfunction "}}}
 
 " NoMatchParen
 
+" Conversion Wrapper {{{1
+function! PandocConversionWrapper(out_type, config)
+	if expand('%:p') =~? xelltoolkit#fname2pattern(g:xell_notes_root) 
+				\ && a:out_type == '' && a:config == ''
+		call s:pandoc_convert_bulk()
+		return
+	endif
+
+	if a:out_type == ''
+		let out_type = 'html'
+	else
+		let out_type = a:out_type
+	endif
+
+	if a:config == ''
+		let config = 'htmlp'
+	else
+		let config = a:config
+	endif
+
+	" Only convert current buffer
+	call PandocConverter('', out_type, config)
+
+endfunction
+" }}}
+
+" Bulk converter (placeholder)  {{{1
+function! s:pandoc_convert_bulk()
+	call xelltoolkit#echo_msg('Not support yet.')
+endfunction
+" }}}
+
 " XXX Disabled {{{1
 " # Save folding between sessions
 "

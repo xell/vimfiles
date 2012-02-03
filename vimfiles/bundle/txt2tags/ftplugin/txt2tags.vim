@@ -214,14 +214,11 @@ endfunction "}}}
 
 " Following comes the converter
 
-" Buffer command T2TConvert {{{1
-command! -buffer -nargs=* T2TConvert call <SID>t2t_convert(<f-args>)
-" }}}
-
-" Wrapper {{{1
+" Conversion Wrapper {{{1
 " Default : file %; out_type html; config 
 function! Txt2tagsConversionWrapper(out_type, config)
-	if expand('%:p') =~? xelltoolkit#fname2pattern(g:xell_notes_root) && a:out_type == '' && a:config == ''
+	if expand('%:p') =~? xelltoolkit#fname2pattern(g:xell_notes_root) 
+				\ && a:out_type == '' && a:config == ''
 		call s:t2t_convert_bulk()
 		return
 	endif
@@ -243,7 +240,6 @@ function! Txt2tagsConversionWrapper(out_type, config)
 
 endfunction
 " }}}
-
 
 " Bulk converter (placeholder)  {{{1
 function! s:t2t_convert_bulk()
