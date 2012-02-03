@@ -81,7 +81,7 @@ endfunction
 " Open the folder of current buffer {{{1
 " Windows : try to open it in TC, or else in Explorer
 " Mac : open in Finder
-command! -nargs=0 OpenFolder call OpenFolder()
+command! -nargs=0 OpenInFolder call OpenInFolder()
 
 function! OpenInFolder()
 	if g:isw
