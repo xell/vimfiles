@@ -589,14 +589,8 @@ function! PandocConversionWrapper(out_type, config)
 		let out_type = a:out_type
 	endif
 
-	if a:config == ''
-		let config = 'htmlp'
-	else
-		let config = a:config
-	endif
-
 	" Only convert current buffer
-	call PandocConverter('', out_type, config)
+	call PandocConverter('', out_type, a:config)
 
 endfunction
 " }}}

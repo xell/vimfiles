@@ -34,6 +34,8 @@ elseif g:ism
 	let g:myvimfiles = glob('~/.vim')
 endif
 
+let g:slash = xelltoolkit#slash()
+
 " }}}
 
 " Temp {{{2
@@ -330,21 +332,21 @@ let g:pandoc_syntax_table = 0
 
 let g:pandoc_target_ext = {'plain': 'txt', 'markdown': 'md', 'rst': 'rst', 'html': 'html', 'html5': 'html', 'latex': 'tex', 'mediawiki': 'wiki', 'opendocument': 'fodt', 'odt': 'odt', 'docx': 'docx', 'slidy': 'html', 'dzslides': 'html', 'rtf': 'rtf'}
 
-let slash = xelltoolkit#slash()
-
 if g:isw
 	let g:pandoc_exec = 'd:\p\pandoc\bin\pandoc.exe'
 	let g:pandoc_tpl_root = 'd:\W\_special\_tpl\pandoc'
 	let g:pandoc_csl_root = g:pandoc_tpl_root . '\csl'
 	let g:pandoc_css_root = g:pandoc_tpl_root . '\css'
+	let g:pandoc_html_tpl_root = g:pandoc_tpl_root . '\html'
 elseif g:ism
 	let g:pandoc_exec = 'pandoc'
 	let g:pandoc_tpl_root = '/Users/xell/Documents/_special/_tpl/pandoc'
 	let g:pandoc_csl_root = g:pandoc_tpl_root . '/csl'
 	let g:pandoc_css_root = g:pandoc_tpl_root . '/css'
+	let g:pandoc_htmltpl_root = g:pandoc_tpl_root . '/html'
 endif
 let g:pandoc_bib = 'biblio.bib'
-let g:pandoc_csl = g:pandoc_csl_root . slash . 'Chinese-GB7714-2005-Numeric-1.0.csl'
+let g:pandoc_csl = g:pandoc_csl_root . g:slash . 'Chinese-GB7714-2005-Numeric-1.0.csl'
 
 let g:pandoc_toc_general = 1
 let g:pandoc_reference_links = 0
@@ -481,7 +483,7 @@ function! s:XellBufferStatuslineHighlight()
 	if empty(buffername)
 		highlight StatusLine guifg=White guibg=Green
 		"highlight StatusLineNC guifg=LightGreen guibg=White
-	elseif buffername =~ '\.tmp$'
+	elseif buffername =~ '\%(\.tmp\|0\)$'
 		highlight StatusLine guifg=White guibg=Red
 		"highlight StatusLineNC guifg=White guibg=LightRed
 	else

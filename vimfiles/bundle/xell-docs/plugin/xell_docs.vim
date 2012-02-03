@@ -41,6 +41,26 @@ function! Convertx(in_type, out_type, config) " {{{1
 endfunction
 " }}}
 
+" Docs configuration reader {{{1
+function! s:conf_read(config, flag)
+	return matchstr(a:config, '\c,\zs' . a:flag . '[^,]*')
+endfunction
+
+function! GetDocsConf(config_g, config_l, flag)
+	let config_g = s:conf_read(a:config_g, a:flag)
+	let config_l = s:conf_read(a:config_l, a:flag)
+
+	" XXX No bug-proof
+	if config_l != ''
+		return config_l
+	elseif config_g != ''
+		return config_g
+	else
+		return ''
+	endif
+endfunction
+" }}}
+
 " End {{{1
 let &cpo = s:savecpo
 unlet s:savecpo

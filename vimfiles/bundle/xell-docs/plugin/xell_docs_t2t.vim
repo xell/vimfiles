@@ -10,7 +10,6 @@
 " css/note.css
 " Txt2tags converter {{{1
 function! T2TConverter(input, out_type, config)
-	let slash = xelltoolkit#slash()
 	
 	" Output targets {{{2
 	if !has_key(g:t2t_target_ext, a:out_type)
@@ -32,17 +31,17 @@ function! T2TConverter(input, out_type, config)
 	" Config {{{2
 	" Default
 	if a:config == 'normal' && a:out_type == 'html'
-		let style_file = xelltoolkit#fname_escape(g:t2t_cf_path . slash . 'css' . slash . 'normal.css')
-		let config_file = xelltoolkit#fname_escape(g:t2t_cf_path . slash . 't2tcf_html.t2t')
+		let style_file = xelltoolkit#fname_escape(g:t2t_cf_path . g:slash . 'css' . g:slash . 'normal.css')
+		let config_file = xelltoolkit#fname_escape(g:t2t_cf_path . g:slash . 't2tcf_html.t2t')
 		let config = ' --style=' . style_file . ' --config-file=' . config_file
 	elseif a:config == 'note' && a:out_type == 'html'
-		let style_file = xelltoolkit#fname_escape(g:t2t_cf_path . slash . 'css' . slash . 'note.css')
-		let config_file = xelltoolkit#fname_escape(g:t2t_cf_path . slash . 't2tcf_n_html.t2t')
+		let style_file = xelltoolkit#fname_escape(g:t2t_cf_path . g:slash . 'css' . g:slash . 'note.css')
+		let config_file = xelltoolkit#fname_escape(g:t2t_cf_path . g:slash . 't2tcf_n_html.t2t')
 		let config = ' --style=' . style_file . ' --config-file=' . config_file
 
 	" XXX hack : use a:out_type for config, don't care about a:config
 	else
-		let config_file = xelltoolkit#fname_escape(g:t2t_cf_path . slash . 't2tcf_' . a:out_type . '.t2t')
+		let config_file = xelltoolkit#fname_escape(g:t2t_cf_path . g:slash . 't2tcf_' . a:out_type . '.t2t')
 		if filereadable(config_file)
 			let config = ' --config-file=' . config_file
 		else

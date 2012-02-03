@@ -39,7 +39,7 @@ endfunction
 " Note taking {{{1
 nmap <silent> <Leader>. :call <SID>note_taking()<CR>
 function! s:note_taking() "{{{2
-	let index_file = g:xell_notes_root . xelltoolkit#slash() . g:xell_notes_index . '.' . g:xell_notes_ext
+	let index_file = g:xell_notes_root . g:slash . g:xell_notes_index . '.' . g:xell_notes_ext
 	if filereadable(glob(index_file))
 		execute 'e ' . index_file
 	else
@@ -50,7 +50,7 @@ endfunction "}}}
 
 nmap <silent> <Leader>/ :call <SID>note_taking_temp()<CR>
 function! s:note_taking_temp() "{{{2
-	let temp_file = g:xell_notes_root . xelltoolkit#slash() . g:xell_notes_temp . '.' . g:xell_notes_ext
+	let temp_file = g:xell_notes_root . g:slash . g:xell_notes_temp . '.' . g:xell_notes_ext
 	if filereadable(glob(temp_file))
 		execute 'e ' . temp_file
 		normal G
@@ -60,7 +60,7 @@ function! s:note_taking_temp() "{{{2
 	endif
 endfunction "}}}
 
-nmap <silent> <Leader>p :execute 'e ' . g:xell_notes_root . xelltoolkit#slash() . 'plan.t2t'<CR>
+nmap <silent> <Leader>p :execute 'e ' . g:xell_notes_root . g:slash . 'plan.t2t'<CR>
 " }}}
 
 " TODO

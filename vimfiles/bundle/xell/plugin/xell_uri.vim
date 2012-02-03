@@ -48,8 +48,7 @@ function! OpenInBrowser(strict, ...)
 		let uri = cur_file_path
 	" If it's file
 	elseif cur_file_path =~? '^\(\/\|\a:\\\)'
-		let webserver_dir = xelltoolkit#fname2pattern(g:webserver_dir)
-		let webserver_dir .= xelltoolkit#slash()
+		let webserver_dir = xelltoolkit#fname2pattern(g:webserver_dir) . g:slash
 
 		" Determine if the filetype is supported by browser
 		if a:strict
@@ -79,22 +78,24 @@ function! OpenInBrowser(strict, ...)
 endfunction
 " }}}
 
-" Windows Only - Open the folder of current buffer in TC {{{1
-" In Mac, just use !open .
-if g:isw
-	command! -nargs=0 OpenFolder call OpenFolder()
+" Open the folder of current buffer {{{1
+" Windows : try to open it in TC, or else in Explorer
+" Mac : open in Finder
+command! -nargs=0 OpenFolder call OpenFolder()
 
-	function! OpenFolder()
-		let slash = &shellslash ? '/' : '\'
+function! OpenInFolder()
+	if g:isw
 		let totalcmd_exec = 'd:\p\totalcmd\totalcmd.exe'
 		if executable(totalcmd_exec)
-			call xelltoolkit#system(totalcmd_exec . ' /O /T /L="' . expand("%:p:h") . slash . '"')
+			call xelltoolkit#system(totalcmd_exec . ' /O /T /L="' . expand("%:p:h") . g:slash . '"')
 			" exec 'silent !start d:\p\totalcmd\totalcmd.exe  /O /T /L="' . expand("%:p:h") . '\"'
 		else
-			call xelltoolkit#run('', expand("%:p:h") . slash)
+			call xelltoolkit#run('', expand("%:p:h") . g:slash)
 		endif
-	endfunction
-endif
+	elseif g:ism
+		call xelltoolkit#system('open .')
+	endif
+endfunction
 " }}}
 
 " End {{{1
