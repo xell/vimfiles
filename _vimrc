@@ -34,8 +34,6 @@ elseif g:ism
 	let g:myvimfiles = glob('~/.vim')
 endif
 
-let g:slash = xelltoolkit#slash()
-
 " }}}
 
 " Temp {{{2
@@ -278,6 +276,9 @@ endif
 " }}}
 
 " Xell Global Variables {{{1
+
+let g:slash = xelltoolkit#slash()
+
 if g:isw
 elseif g:ism
 endif
