@@ -20,7 +20,7 @@ function! PandocConverter(input, out_type, config)
 	if a:out_type =~? 'html\|slidy\|dzslides'
 		call Pandoc_html_conv(a:input, a:out_type, a:config)
 	elseif a:out_type =~? 'rst\|latex\|odt\|docx'
-		call Pandoc_{a:out_type}_conv(a:input, a:out_type, a:config)
+		call Pandoc_{a:out_type}_conv(a:input, a:config)
 	else
 		call Pandoc_other_conv(a:input, a:out_type, a:config)
 	endif
@@ -31,7 +31,7 @@ endfunction
 " Other Config:
 "     toc       : t
 "     ref_link  : r
-"     language  : l @ xell @ rst
+"     language  : l @ xell
 let g:pandoc_conf_other = 'T,R,lzh'
 function! Pandoc_other_conv(input, out_type, config) " {{{1
 
@@ -74,7 +74,7 @@ function! Pandoc_other_conv(input, out_type, config) " {{{1
 	let o_fname = xelltoolkit#fname_escape(xelltoolkit#fname_ext_mod(input, o_fname_suf . g:pandoc_target_ext[a:out_type]))
 
 	" Markdown pre-process {{{2
-	let input = s:mkd_preproc_no_numbering(input, 'tmp.md', a:config)
+	let input = s:mkd_preproc_no_numbering(input, 'tmp.md', g:pandoc_conf_other, a:config)
 	" }}}
 
 	let conf .= ' -o ' . o_fname . ' ' . xelltoolkit#fname_escape(input)
@@ -95,10 +95,10 @@ endfunction
 " }}}
 
 
-" HTML Config: !(a w f) {{{1
+" HTML Config: !(a w f)
 "     template  : p
 "     toc       : t
-"     language  : l @ xell @ rst
+"     language  : l @ xell
 "     css       : c : implies '--self-contained'
 "     num_sec   : n
 "     self_cont : z
@@ -106,7 +106,6 @@ endfunction
 "     num_chap  : h @ xell
 "     rst?      : s
 "     slide_inc : i
-" }}}
 let g:pandoc_conf_html = 'p,T,lzh,cnormal,N,z,f,V,h,s,I'
 function! Pandoc_html_conv(input, out_type, config) " {{{1
 
@@ -188,7 +187,7 @@ function! Pandoc_html_conv(input, out_type, config) " {{{1
 
 	" Markdown pre-process {{{2
 	if GetDocsConf(conf_s, conf_l, 'n') ==# 'N'
-		let input = s:mkd_preproc_numbering(input, 'tmp.md', a:config)
+		let input = s:mkd_preproc_numbering(input, 'tmp.md', g:pandoc_conf_html, a:config)
 	else
 		let input = s:mkd_preproc_no_numbering_html(input, 'tmp.md', a:config)
 	endif
@@ -215,99 +214,194 @@ function! Pandoc_rst_conv(input, out_type, config) " {{{1
 endfunction
 " }}}
 
-"=================================================================
-" Change xell-def cross-refs into texts
-" 标题 [=] 图 [-] 表 [~]
+" DOCX Config: !(a w f)
+"     refer     : p
+"     toc       : t
+"     clean_\s  : E
+"     language  : l @ xell
+"     num_sec   : n
+"     num_level : v @ xell number by whole artical
+"     num_chap  : h @ xell
+let g:pandoc_conf_docx = 'pnormal,t,E,lzh,N,V,h'
+function! Pandoc_docx_conv(input, config) " {{{1
 
-" For other targets, no numbering, basic conversion
-function! s:mkd_preproc_no_numbering(in, out_fname, config) " {{{1 
-
-	" Set language prefix and suffix {{{2
-	let conf_s = ',' . g:pandoc_conf_other
+	let conf_g = ',' . g:pandoc_conf_general
+	let conf_s = ',' . g:pandoc_conf_docx
 	let conf_l = a:config == '' ? a:config : ',' . a:config
 
-	let conf_v_lang = strpart(GetDocsConf(conf_s, conf_l, 'l'), 1)
-	" Either zh or en, no other lang support yet
-	if conf_v_lang == 'zh'
-		let fig_prefix = '图“'
-		let fig_suffix = '”'
-		let tbl_prefix = '表“'
-		let tbl_suffix = '”'
-		let sec_prefix = '本文“'
-		let sec_suffix = '”'
+	let input = s:inputfile(a:input)
+	let conf = ' -f markdown -t docx'
+
+	" General config {{{2
+	if GetDocsConf(conf_g, conf_l, 'a') ==# 'A'
+		let conf .= ' -s'
+	endif
+	if GetDocsConf(conf_g, conf_l, 'w') ==# 'w'
+		let conf .= ' --no-wrap'
+	endif
+	if GetDocsConf(conf_g, conf_l, 'f') =~? 'f\w'
+		let o_fname_suf = matchstr(GetDocsConf(conf_g, conf_l, 'f'), '\cf\zs.*$') . '.'
 	else
-		let fig_prefix = ' Fig: "'
-		let fig_suffix = '"'
-		let tbl_prefix = ' Table: "'
-		let tbl_suffix = '"'
-		let sec_prefix = ' "'
-		let sec_suffix = '"'
+		let o_fname_suf = ''
 	endif
 	" }}}
 
-	let out = xelltoolkit#fname_head(a:in) . g:slash . a:out_fname
-	let file = readfile(a:in)
+	" Specific config {{{2
+	" template p
+	let conf_v_tpl = strpart(GetDocsConf(conf_s, conf_l, 'p'), 1) 
+	if conf_v_tpl != ''
+		let conf_v_tpl = xelltoolkit#fname_escape(g:pandoc_docx_root . g:slash . conf_v_tpl . '.docx')
+		let conf .= ' --reference-docx=' . conf_v_tpl
+	endif
 
-	let line_index = 0
-	let end_of_file = len(file)
-	while (line_index < end_of_file)
-		let cur = file[line_index]
+	" toc t
+	if GetDocsConf(conf_s, conf_l, 't') ==# 'T'
+		let conf .= ' --toc'
+	endif
 
-		" Figures {{{2
-		if cur =~ '\[-'
-			while (1)
-				let item = matchlist(cur, '\[-\([^]]\+\)\]', 0)
-				if item != []
-					let cur = substitute(cur, '\s\?\[-' . item[1] . '\]', fig_prefix . item[1] . fig_suffix, '')
-				else
-					break
-				endif
-			endwhile
-			let file[line_index] = cur
-		endif
-		" }}}
+	" number-sections n
+	if GetDocsConf(conf_s, conf_l, 'n') ==# 'N'
+		let conf .= ' -N'
+	endif
+	" }}}
 
-		" Tables {{{2
-		if cur =~ '\[\~'
-			while (1)
-				let item = matchlist(cur, '\[\~\([^]]\+\)\]', 0)
-				if item != []
-					let cur = substitute(cur, '\s\?\[\~' . item[1] . '\]', tbl_prefix . item[1] . tbl_suffix, '')
-				else
-					break
-				endif
-			endwhile
-			let file[line_index] = cur
-		endif
-		" }}}
+	" Biblio config {{{2
+	let conf .= s:pandoc_bib_conf(a:input)
+	" }}}
 
-		" Sections {{{2
-		if cur =~ '\[='
-			while (1)
-				let item = matchlist(cur, '\[=\([^]]\+\)\]', 0)
-				if item != []
-					let cur = substitute(cur, '\s\?\[=' . item[1] . '\]', sec_prefix . item[1] . sec_suffix, '')
-				else
-					break
-				endif
-			endwhile
-			let file[line_index] = cur
-		endif
-		" }}}
-		
-		let line_index = line_index + 1
-	endwhile
+	let o_fname = xelltoolkit#fname_escape(xelltoolkit#fname_ext_mod(input, o_fname_suf . g:pandoc_target_ext['docx']))
 
-	call writefile(file, out)
-	return out
+	" Markdown pre-process {{{2
+	if GetDocsConf(conf_s, conf_l, 'e') ==# 'E'
+		let input = s:mkd_preproc_clean(input, 'tmp.md')
+	endif
+	if GetDocsConf(conf_s, conf_l, 'n') ==# 'N'
+		let input = s:mkd_preproc_numbering(input, 'tmp.md', g:pandoc_conf_docx, a:config)
+	else
+		let input = s:mkd_preproc_no_numbering(input, 'tmp.md', g:pandoc_conf_docx, a:config)
+	endif
+	" }}}
+
+	let conf .= ' -o ' . o_fname . ' ' . xelltoolkit#fname_escape(input)
+
+	call xelltoolkit#system(g:pandoc_exec . conf)
+
+	" Delete pre-process file {{{2
+	let del_err = delete(input)
+	if del_err
+		call xelltoolkit#echo_msg('Error while deleting temp file: ' . input)
+		return ''
+	endif
+	" }}}
+
+	return o_fname
+
 endfunction
 " }}}
+
+" ODT Config: !(a w f)
+"     refer     : p
+"     toc       : t
+"     clean_\s  : E
+"     language  : l @ xell
+"     num_sec   : n
+"     num_level : v @ xell number by whole artical
+"     num_chap  : h @ xell
+"     rst?      : s
+let g:pandoc_conf_odt = 'pnormal,T,E,lzh,N,V,h,s'
+function! Pandoc_odt_conv(input, config) " {{{1
+
+	let conf_g = ',' . g:pandoc_conf_general
+	let conf_s = ',' . g:pandoc_conf_odt
+	let conf_l = a:config == '' ? a:config : ',' . a:config
+
+	" For md -> rst -> odt conversion {{{2
+	if GetDocsConf(conf_s, conf_l, 's') ==# 'S'
+		let rst_temp_file = Pandoc_rst_conv(a:input, a:out_type, a:config)
+		call RstConverter(rst_temp_file, a:out_type, a:config)
+		return
+	endif
+	" }}}
+
+	let input = s:inputfile(a:input)
+	let conf = ' -f markdown -t odt'
+
+	" General config {{{2
+	if GetDocsConf(conf_g, conf_l, 'a') ==# 'A'
+		let conf .= ' -s'
+	endif
+	if GetDocsConf(conf_g, conf_l, 'w') ==# 'w'
+		let conf .= ' --no-wrap'
+	endif
+	if GetDocsConf(conf_g, conf_l, 'f') =~? 'f\w'
+		let o_fname_suf = matchstr(GetDocsConf(conf_g, conf_l, 'f'), '\cf\zs.*$') . '.'
+	else
+		let o_fname_suf = ''
+	endif
+	" }}}
+
+	" Specific config {{{2
+	" template p
+	let conf_v_tpl = strpart(GetDocsConf(conf_s, conf_l, 'p'), 1) 
+	if conf_v_tpl != ''
+		let conf_v_tpl = xelltoolkit#fname_escape(g:pandoc_odt_root . g:slash . conf_v_tpl . '.odt')
+		let conf .= ' --reference-odt=' . conf_v_tpl
+	endif
+
+	" toc t
+	if GetDocsConf(conf_s, conf_l, 't') ==# 'T'
+		let conf .= ' --toc'
+	endif
+
+	" number-sections n
+	if GetDocsConf(conf_s, conf_l, 'n') ==# 'N'
+		let conf .= ' -N'
+	endif
+	" }}}
+
+	" Biblio config {{{2
+	let conf .= s:pandoc_bib_conf(a:input)
+	" }}}
+
+	let o_fname = xelltoolkit#fname_escape(xelltoolkit#fname_ext_mod(input, o_fname_suf . g:pandoc_target_ext['odt']))
+
+	" Markdown pre-process {{{2
+	if GetDocsConf(conf_s, conf_l, 'e') ==# 'E'
+		let input = s:mkd_preproc_clean(input, 'tmp.md')
+	endif
+	if GetDocsConf(conf_s, conf_l, 'n') ==# 'N'
+		let input = s:mkd_preproc_numbering(input, 'tmp.md', g:pandoc_conf_odt, a:config)
+	else
+		let input = s:mkd_preproc_no_numbering(input, 'tmp.md', g:pandoc_conf_odt, a:config)
+	endif
+	" }}}
+
+	let conf .= ' -o ' . o_fname . ' ' . xelltoolkit#fname_escape(input)
+
+	call xelltoolkit#system(g:pandoc_exec . conf)
+
+	" Delete pre-process file {{{2
+	let del_err = delete(input)
+	if del_err
+		call xelltoolkit#echo_msg('Error while deleting temp file: ' . input)
+		return ''
+	endif
+	" }}}
+
+	return o_fname
+
+endfunction
+" }}}
+
+"=================================================================
+" Change xell-def cross-refs into texts, etc.
+" 标题 [=] 图 [-] 表 [~]
 
 " For md -> html with n, no numbering, change section links
 function! s:mkd_preproc_no_numbering_html(in, out_fname, config) " {{{1
 
 	" Set language prefix and suffix {{{2
-	let conf_s = ',' . g:pandoc_conf_other
+	let conf_s = ',' . g:pandoc_conf_html
 	let conf_l = a:config == '' ? a:config : ',' . a:config
 
 	let conf_v_lang = strpart(GetDocsConf(conf_s, conf_l, 'l'), 1)
@@ -389,12 +483,96 @@ function! s:mkd_preproc_no_numbering_html(in, out_fname, config) " {{{1
 endfunction
 " }}}
 
-" For md -> all, numbering
-function! s:mkd_preproc_numbering(in, out_fname, config) " {{{1
+" For md -> all, no numbering, basic conversion
+function! s:mkd_preproc_no_numbering(in, out_fname, config_s, config_l) " {{{1 
 
 	" Set language prefix and suffix {{{2
-	let conf_s = ',' . g:pandoc_conf_other
-	let conf_l = a:config == '' ? a:config : ',' . a:config
+	let conf_s = ',' . a:config_s
+	let conf_l = a:config_l == '' ? a:config_l : ',' . a:config_l
+
+	let conf_v_lang = strpart(GetDocsConf(conf_s, conf_l, 'l'), 1)
+	" Either zh or en, no other lang support yet
+	if conf_v_lang == 'zh'
+		let fig_prefix = '图“'
+		let fig_suffix = '”'
+		let tbl_prefix = '表“'
+		let tbl_suffix = '”'
+		let sec_prefix = '本文“'
+		let sec_suffix = '”'
+	else
+		let fig_prefix = ' Figure "'
+		let fig_suffix = '"'
+		let tbl_prefix = ' Table "'
+		let tbl_suffix = '"'
+		let sec_prefix = ' "'
+		let sec_suffix = '"'
+	endif
+	" }}}
+
+	let out = xelltoolkit#fname_head(a:in) . g:slash . a:out_fname
+	let file = readfile(a:in)
+
+	let line_index = 0
+	let end_of_file = len(file)
+	while (line_index < end_of_file)
+		let cur = file[line_index]
+
+		" Figures {{{2
+		if cur =~ '\[-'
+			while (1)
+				let item = matchlist(cur, '\[-\([^]]\+\)\]', 0)
+				if item != []
+					let cur = substitute(cur, '\s\?\[-' . item[1] . '\]', fig_prefix . item[1] . fig_suffix, '')
+				else
+					break
+				endif
+			endwhile
+			let file[line_index] = cur
+		endif
+		" }}}
+
+		" Tables {{{2
+		if cur =~ '\[\~'
+			while (1)
+				let item = matchlist(cur, '\[\~\([^]]\+\)\]', 0)
+				if item != []
+					let cur = substitute(cur, '\s\?\[\~' . item[1] . '\]', tbl_prefix . item[1] . tbl_suffix, '')
+				else
+					break
+				endif
+			endwhile
+			let file[line_index] = cur
+		endif
+		" }}}
+
+		" Sections {{{2
+		if cur =~ '\[='
+			while (1)
+				let item = matchlist(cur, '\[=\([^]]\+\)\]', 0)
+				if item != []
+					let cur = substitute(cur, '\s\?\[=' . item[1] . '\]', sec_prefix . item[1] . sec_suffix, '')
+				else
+					break
+				endif
+			endwhile
+			let file[line_index] = cur
+		endif
+		" }}}
+		
+		let line_index = line_index + 1
+	endwhile
+
+	call writefile(file, out)
+	return out
+endfunction
+" }}}
+
+" For md -> all, numbering
+function! s:mkd_preproc_numbering(in, out_fname, config_s, config_l) " {{{1
+
+	" Set language prefix and suffix {{{2
+	let conf_s = ',' . a:config_s
+	let conf_l = a:config_l == '' ? a:config_l : ',' . a:config_l
 
 	let conf_v_lang = strpart(GetDocsConf(conf_s, conf_l, 'l'), 1)
 	" Either zh or en, no other lang support yet
@@ -660,6 +838,29 @@ function! s:mkd_preproc_numbering(in, out_fname, config) " {{{1
 	call writefile(mkdfile, out)
 	return out
 
+endfunction
+" }}}
+
+" For md -> docx, odt, etc. cleaning the blank between zh and en
+function! s:mkd_preproc_clean(in, out_fname) " {{{1
+	let out = xelltoolkit#fname_head(a:in) . g:slash . a:out_fname
+	let file = readfile(a:in)
+
+	let line_index = 0
+	let end_of_file = len(file)
+	while (line_index < end_of_file)
+		let cur = file[line_index]
+
+		let cur = substitute(cur, '[^\x00-\xff]\zs\s\ze\%(\w\|\[\|\]\)', '', 'g')
+		let cur = substitute(cur, '\%(\w\|\[\|\]\)\zs\s\ze[^\x00-\xff]', '', 'g')
+
+		let file[line_index] = cur
+
+		let line_index = line_index + 1
+	endwhile
+
+	call writefile(file, out)
+	return out
 endfunction
 " }}}
 

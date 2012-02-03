@@ -338,19 +338,21 @@ if g:isw
 	let g:pandoc_tpl_root = 'd:\W\_special\_tpl\pandoc'
 	let g:pandoc_csl_root = g:pandoc_tpl_root . '\csl'
 	let g:pandoc_css_root = g:pandoc_tpl_root . '\css'
-	let g:pandoc_html_tpl_root = g:pandoc_tpl_root . '\html'
+	let g:pandoc_htmltpl_root = g:pandoc_tpl_root . '\html'
+	let g:pandoc_docx_root = g:pandoc_tpl_root . '\docx'
+	let g:pandoc_odt_root = g:pandoc_tpl_root . '\odt'
 elseif g:ism
 	let g:pandoc_exec = 'pandoc'
 	let g:pandoc_tpl_root = '/Users/xell/Documents/_special/_tpl/pandoc'
 	let g:pandoc_csl_root = g:pandoc_tpl_root . '/csl'
 	let g:pandoc_css_root = g:pandoc_tpl_root . '/css'
 	let g:pandoc_htmltpl_root = g:pandoc_tpl_root . '/html'
+	let g:pandoc_docx_root = g:pandoc_tpl_root . '/docx'
+	let g:pandoc_odt_root = g:pandoc_tpl_root . '/odt'
 endif
 let g:pandoc_bib = 'biblio.bib'
 let g:pandoc_csl = g:pandoc_csl_root . g:slash . 'Chinese-GB7714-2005-Numeric-1.0.csl'
 
-let g:pandoc_toc_general = 1
-let g:pandoc_reference_links = 0
 " }}}
 
 " }}}
