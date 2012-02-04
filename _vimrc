@@ -880,7 +880,7 @@ nnoremap gcl :let g:tcommentOptions = {'col': 1}<CR>:normal gcc<CR>:let g:tcomme
 let g:tcommentOptions = {}
 let g:tcommentBlockXML = "<!--%s-->\n"
 " Defind new pandoc type TODO block comment
-let g:tcomment_types = {'pandoc': "<!-- %s -->", 'pandoc_inline': "<!-- %s -->", 'pandoc_block': "<!-- %s -->\n  "}
+let g:tcomment_types = {'pandoc': "<!-- %s -->", 'pandoc_inline': "<!-- %s -->", 'pandoc_block': "<!-- %s -->\n  ", 'proxylist': '#%s'}
 "call tcomment#DefineType('pandoc', "<!-- %s -->")
 "call tcomment#DefineType('pandoc_inline', "<!-- %s -->")
 "call tcomment#DefineType('pandoc_block', "<!-- %s -->\n  ")
