@@ -1081,6 +1081,7 @@ elseif g:ism
 				\ }
 endif
 nmap <Leader>ff :FufMruFile<CR>
+nmap <Leader>fd :FufCoverageFile<CR>
 nmap <Leader>ft :FufTag<CR>
 nmap <Leader>fe :FufFile<CR>
 nmap <Leader>fg :call <SID>fuf_test()<CR>
