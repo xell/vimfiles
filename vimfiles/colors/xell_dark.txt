@@ -1,0 +1,55 @@
+Basis:None
+Background:Dark
+Dark:
+	Normal:White,#262626
+# group-name
+	Comment:#808080
+#Constant String Character Number Boolean Float
+	Constant:#5f85aa,Style=None
+#Identifier Function
+	Identifier:#00c0c0
+#Statement Conditional Repeat Label Operator Keyword Exception
+	Statement:#f0e68c
+#PreProc Include Define Macro PreCondit
+	PreProc:#00ff00
+#Type StorageClass Structure Typedef
+	Type:#60ff60
+#Special SpecialChar Tag Delimiter SpecialComment Debug
+	Special:#ffa0a0
+#Underlined Link
+	Underlined:#80a0ff,Style=Underline
+#Ignore
+	Ignore:#494949
+#Error
+	Error:#ff0000
+#Todo TODO FIXME XXX
+	Todo:#000000,#ff9b37
+
+# highlight-groups highlight-default
+	Cursor:#262626,LightGray
+	DiffAdd:Black,#7cdede
+	DiffChange:Black,#e493ff
+	DiffDelete:Black,#ff9b9b
+	DiffText:White,#b70000
+	Directory:#60ff60
+	IncSearch:Red,Black
+	Folded:#5fa6c8
+	FoldColumn:White
+	LineNr:Yellow
+	NonText:#39546f
+	Pmenu:BG=Grey30
+	PmenuSel:White,#5f85aa
+	PmenuSbar:BG=DarkGray
+	PmenuThumb:BG=Black
+	Search:#fa8072,Style=Bold,Style=Underline
+	StatusLine:#e8e7e6,#777777,Style=None
+	StatusLineNC:#d3cfcd,#444444,Style=None
+	Title:#9acd32
+	VertSplit:#d3cfcd,#444444,Style=None
+	Visual:Black,LightGray
+
+# xell	
+	Temp:#ff9b37
+
+
+# vim:ft=EasyColour

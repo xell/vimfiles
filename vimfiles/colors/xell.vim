@@ -13,6 +13,7 @@ let g:colors_name = "xell"
 "highlight Normal        guifg=#ffffff     guibg=#000000
 "highlight Normal        guifg=White       guibg=grey10
  highlight Normal        guifg=White       guibg=#262626     ctermfg=White ctermbg=Black
+"highlight clear Normal
  highlight Comment       guifg=#808080     guibg=bg          ctermfg=Darkgray ctermbg=bg
 
 
