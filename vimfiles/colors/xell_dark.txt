@@ -1,11 +1,11 @@
 Basis:None
 Background:Dark
 Dark:
-	Normal:White,#262626
+	Normal:#f5f5f5,#262626
 # group-name
 	Comment:#808080
 #Constant String Character Number Boolean Float
-	Constant:#5f85aa,Style=None
+	Constant:#5f85aa
 #Identifier Function
 	Identifier:#00c0c0
 #Statement Conditional Repeat Label Operator Keyword Exception
@@ -26,6 +26,7 @@ Dark:
 	Todo:#000000,#ff9b37
 
 # highlight-groups highlight-default
+	Conceal:BG=Black
 	Cursor:#262626,LightGray
 	DiffAdd:Black,#7cdede
 	DiffChange:Black,#e493ff
@@ -36,17 +37,19 @@ Dark:
 	Folded:#5fa6c8
 	FoldColumn:White
 	LineNr:Yellow
+	ModeMsg:#777777
 	NonText:#39546f
 	Pmenu:BG=Grey30
 	PmenuSel:White,#5f85aa
 	PmenuSbar:BG=DarkGray
 	PmenuThumb:BG=Black
 	Search:#fa8072,Style=Bold,Style=Underline
+	SpecialKey:#ffa0a0
 	StatusLine:#e8e7e6,#777777,Style=None
 	StatusLineNC:#d3cfcd,#444444,Style=None
 	Title:#9acd32
 	VertSplit:#d3cfcd,#444444,Style=None
-	Visual:Black,LightGray
+	Visual:Black,LightGreen
 
 # xell	
 	Temp:#ff9b37
