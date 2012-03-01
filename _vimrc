@@ -286,7 +286,7 @@ endif
 " URL {{{2
 let g:urlpattern = '\%(\(https\?\|ftp\):\/\{2}[^ ">\])]\+\)'
 if g:isw
-	let g:webbrowser = 'c:\Program Files\Internet Explorer\iexplore.exe'
+	let g:webbrowser = ''
 	let g:webserver_host = 'http://127.0.0.1:8800'
 	let g:webserver_dir = 'd:\Codes\web'
 elseif g:ism
