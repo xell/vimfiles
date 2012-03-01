@@ -212,15 +212,16 @@ endfunction "}}}
 " }}}
 " }}}
 
-" Following comes the converter
-
 " Conversion Wrapper {{{1
 " Default : file %; out_type html; config 
-function! Txt2tagsConversionWrapper(out_type, config)
+function! Txt2tagsConvertBufferWrapper(out_type, config)
 	if expand('%:p') =~? xelltoolkit#fname2pattern(g:xell_notes_root) 
 				\ && a:out_type == '' && a:config == ''
-		call s:t2t_convert_bulk()
-		return
+		let answer = input("It's a note. Process convert?(y/N)")
+		if answer !=? 'y'
+			echo "Conversion canceled."
+			return
+		endif
 	endif
 
 	if a:out_type == ''
@@ -236,14 +237,8 @@ function! Txt2tagsConversionWrapper(out_type, config)
 	endif
 
 	"Only convert current buffer.
-	call T2TConverter('', out_type, config)
+	call T2TConverter('', out_type, config, '')
 
-endfunction
-" }}}
-
-" Bulk converter (placeholder)  {{{1
-function! s:t2t_convert_bulk()
-	call xelltoolkit#echo_msg('Not support yet.')
 endfunction
 " }}}
 

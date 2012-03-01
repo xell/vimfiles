@@ -35,7 +35,7 @@ endfunction "}}}
 " }}}
 
 " Conversion Wrapper {{{1
-function! RstConversionWrapper(out_type, config)
+function! RstConvertBufferWrapper(out_type, config)
 
 	if a:out_type == ''
 		let out_type = 'html'
@@ -50,7 +50,7 @@ function! RstConversionWrapper(out_type, config)
 	endif
 
 	" Only convert current buffer
-	call RstConverter('', out_type, config)
+	call RstConverter('', out_type, config, '')
 
 endfunction
 " }}}

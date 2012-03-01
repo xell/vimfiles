@@ -576,11 +576,14 @@ endfunction "}}}
 " NoMatchParen
 
 " Conversion Wrapper {{{1
-function! PandocConversionWrapper(out_type, config)
+function! PandocConvertBufferWrapper(out_type, config)
 	if expand('%:p') =~? xelltoolkit#fname2pattern(g:xell_notes_root) 
 				\ && a:out_type == '' && a:config == ''
-		call s:pandoc_convert_bulk()
-		return
+		let answer = input("It's a note. Process convert?(y/N)")
+		if answer !=? 'y'
+			echo "Conversion canceled."
+			return
+		endif
 	endif
 
 	if a:out_type == ''
@@ -590,14 +593,8 @@ function! PandocConversionWrapper(out_type, config)
 	endif
 
 	" Only convert current buffer
-	call PandocConverter('', out_type, a:config)
+	call PandocConverter('', out_type, a:config, '')
 
-endfunction
-" }}}
-
-" Bulk converter (placeholder)  {{{1
-function! s:pandoc_convert_bulk()
-	call xelltoolkit#echo_msg('Not support yet.')
 endfunction
 " }}}
 

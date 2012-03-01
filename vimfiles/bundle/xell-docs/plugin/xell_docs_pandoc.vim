@@ -6,7 +6,7 @@
 let g:pandoc_conf_general = 'A,w,f'
 
 " Pandoc converter {{{1
-function! PandocConverter(input, out_type, config)
+function! PandocConverter(input, out_type, config, out_path)
 
 	" Output targets check {{{2
 	if !has_key(g:pandoc_target_ext, a:out_type)
@@ -18,11 +18,11 @@ function! PandocConverter(input, out_type, config)
 	" let g:pandoc_target_ext = {'plain': 'txt', 'markdown': 'md', 'rst': 'rst', 'html': 'html', 'html5': 'html', 'latex': 'tex', 'mediawiki': 'wiki', 'opendocument': 'fodt', 'odt': 'odt', 'docx': 'docx', 'slidy': 'html', 'dzslides': 'html', 'rtf': 'rtf'}
 
 	if a:out_type =~? 'html\|slidy\|dzslides'
-		call Pandoc_html_conv(a:input, a:out_type, a:config)
+		call Pandoc_html_conv(a:input, a:out_type, a:config, a:out_path)
 	elseif a:out_type =~? 'rst\|latex\|odt\|docx'
-		call Pandoc_{a:out_type}_conv(a:input, a:config)
+		call Pandoc_{a:out_type}_conv(a:input, a:config, a:out_path)
 	else
-		call Pandoc_other_conv(a:input, a:out_type, a:config)
+		call Pandoc_other_conv(a:input, a:out_type, a:config, a:out_path)
 	endif
 
 endfunction
@@ -33,7 +33,7 @@ endfunction
 "     ref_link  : r
 "     language  : l @ xell
 let g:pandoc_conf_other = 'T,R,lzh'
-function! Pandoc_other_conv(input, out_type, config) " {{{1
+function! Pandoc_other_conv(input, out_type, config, out_path) " {{{1
 
 	let conf_g = ',' . g:pandoc_conf_general
 	let conf_s = ',' . g:pandoc_conf_other
@@ -107,7 +107,7 @@ endfunction
 "     rst?      : s
 "     slide_inc : i
 let g:pandoc_conf_html = 'p,T,lzh,cnormal,N,z,f,V,h,s,I'
-function! Pandoc_html_conv(input, out_type, config) " {{{1
+function! Pandoc_html_conv(input, out_type, config, out_path) " {{{1
 
 	let conf_g = ',' . g:pandoc_conf_general
 	let conf_s = ',' . g:pandoc_conf_html
@@ -183,7 +183,14 @@ function! Pandoc_html_conv(input, out_type, config) " {{{1
 	let conf .= s:pandoc_bib_conf(a:input)
 	" }}}
 
-	let o_fname = xelltoolkit#fname_escape(xelltoolkit#fname_ext_mod(input, o_fname_suf . g:pandoc_target_ext[a:out_type]))
+	" Output file {{{2
+	if a:out_path == ''
+		let o_fname_raw = xelltoolkit#fname_ext_mod(input, o_fname_suf . g:pandoc_target_ext[a:out_type])
+	else
+		let o_fname_raw = a:out_path . g:slash . xelltoolkit#fname_name(input) . '.' . o_fname_suf . g:t2t_target_ext[a:out_type]
+	endif
+	let o_fname = xelltoolkit#fname_escape(o_fname_raw)
+	" }}}
 
 	" Markdown pre-process {{{2
 	if GetDocsConf(conf_s, conf_l, 'n') ==# 'N'
@@ -205,11 +212,11 @@ function! Pandoc_html_conv(input, out_type, config) " {{{1
 	endif
 	" }}}
 
-	return o_fname
+	return o_fname_raw
 endfunction
 " }}}
 
-function! Pandoc_rst_conv(input, out_type, config) " {{{1
+function! Pandoc_rst_conv(input, out_type, config, out_path) " {{{1
 	echo 'Placeholder'
 endfunction
 " }}}
@@ -269,7 +276,14 @@ function! Pandoc_docx_conv(input, config) " {{{1
 	let conf .= s:pandoc_bib_conf(a:input)
 	" }}}
 
-	let o_fname = xelltoolkit#fname_escape(xelltoolkit#fname_ext_mod(input, o_fname_suf . g:pandoc_target_ext['docx']))
+	" Output file {{{2
+	if a:out_path == ''
+		let o_fname_raw = xelltoolkit#fname_ext_mod(input, o_fname_suf . g:pandoc_target_ext['docx'])
+	else
+		let o_fname_raw = a:out_path . g:slash . xelltoolkit#fname_name(input) . '.' . o_fname_suf . g:t2t_target_ext[a:out_type]
+	endif
+	let o_fname = xelltoolkit#fname_escape(o_fname_raw)
+	" }}}
 
 	" Markdown pre-process {{{2
 	if GetDocsConf(conf_s, conf_l, 'e') ==# 'E'
@@ -294,7 +308,7 @@ function! Pandoc_docx_conv(input, config) " {{{1
 	endif
 	" }}}
 
-	return o_fname
+	return o_fname_raw
 
 endfunction
 " }}}
@@ -309,7 +323,7 @@ endfunction
 "     num_chap  : h @ xell
 "     rst?      : s
 let g:pandoc_conf_odt = 'pnormal,T,E,lzh,N,V,h,s'
-function! Pandoc_odt_conv(input, config) " {{{1
+function! Pandoc_odt_conv(input, config, out_path) " {{{1
 
 	let conf_g = ',' . g:pandoc_conf_general
 	let conf_s = ',' . g:pandoc_conf_odt
@@ -363,7 +377,14 @@ function! Pandoc_odt_conv(input, config) " {{{1
 	let conf .= s:pandoc_bib_conf(a:input)
 	" }}}
 
-	let o_fname = xelltoolkit#fname_escape(xelltoolkit#fname_ext_mod(input, o_fname_suf . g:pandoc_target_ext['odt']))
+	" Output file {{{2
+	if a:out_path == ''
+		let o_fname_raw = xelltoolkit#fname_ext_mod(input, o_fname_suf . g:pandoc_target_ext['odt'])
+	else
+		let o_fname_raw = a:out_path . g:slash . xelltoolkit#fname_name(input) . '.' . o_fname_suf . g:t2t_target_ext[a:out_type]
+	endif
+	let o_fname = xelltoolkit#fname_escape(o_fname_raw)
+	" }}}
 
 	" Markdown pre-process {{{2
 	if GetDocsConf(conf_s, conf_l, 'e') ==# 'E'
@@ -388,7 +409,7 @@ function! Pandoc_odt_conv(input, config) " {{{1
 	endif
 	" }}}
 
-	return o_fname
+	return o_fname_raw
 
 endfunction
 " }}}
@@ -397,7 +418,8 @@ endfunction
 " Change xell-def cross-refs into texts, etc.
 " 标题 [=] 图 [-] 表 [~]
 
-" For md -> html with n, no numbering, change section links
+" For md -> html, no numbering
+" Change F T links to texts, and S links for hyperlink
 function! s:mkd_preproc_no_numbering_html(in, out_fname, config) " {{{1
 
 	" Set language prefix and suffix {{{2
@@ -483,7 +505,8 @@ function! s:mkd_preproc_no_numbering_html(in, out_fname, config) " {{{1
 endfunction
 " }}}
 
-" For md -> all, no numbering, basic conversion
+" For md -> all, no numbering
+" Change F T S links to texts
 function! s:mkd_preproc_no_numbering(in, out_fname, config_s, config_l) " {{{1 
 
 	" Set language prefix and suffix {{{2
@@ -618,7 +641,7 @@ function! s:mkd_preproc_numbering(in, out_fname, config_s, config_l) " {{{1
 	let end_of_file = len(mkdfile) < 6 ? len(mkdfile) : 6
 	while (line_index < end_of_file)
 		let cur = mkdfile[line_index]
-		if cur =~ '^%\s?%date'
+		if cur =~ '^%\s\?%date'
 			let mkdfile[line_index] = '%' . strftime("%Y-%m-%d")
 			break
 		endif

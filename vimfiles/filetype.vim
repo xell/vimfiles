@@ -10,7 +10,9 @@ au! BufRead,BufNewFile *.pde 		setf processing
 au! BufRead,BufNewFile *.srt 		setf srt
 " markdown, suppressed by pandoc
 " au BufRead,BufNewFile *.{md,mdown,mkd,mkdn,markdown,mdwn}   set filetype=markdown
-au BufNewFile,BufRead *.markdown,*.mdown,*.mkd,*.mkdn,*.pd,*.pdk,*.pandoc,*.md setf pandoc
+au! BufNewFile,BufRead *.markdown,*.mdown,*.mkd,*.mkdn,*.pd,*.pdk,*.pandoc,*.md setf pandoc
+" noteindex c.f. xell_notes
+au! BufNewFile,BufRead *.noteindex  setf noteindex
 
 augroup END
 

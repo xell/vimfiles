@@ -308,11 +308,15 @@ endif
 
 " Docs {{{2
 " Specify use what function to look for the output html of doc file
-let g:browser_open_rules = {'t2t': 'GetOutputHTML', 'md': 'GetOutputHTML', 'mkd': 'GetOutputHTML', 'markdown': 'GetOutputHTML', 'rst': 'GetOutputHTML'}
+let g:browser_open_rules = {'t2t': 'GetOutputHTML', 'md': 'GetOutputHTML', 'mkd': 'GetOutputHTML', 'markdown': 'GetOutputHTML', 'rst': 'GetOutputHTML', 'noteindex': 'GetOutputHTML'}
 
-" These convert rule functions generally only consider current buffer
+" These convert rule functions only consider current buffer
 " Definition : function Wrapper(out_type, config)
-let g:docs_convert_rules = {'txt2tags': 'Txt2tagsConversionWrapper', 'pandoc': 'PandocConversionWrapper', 'rst': 'RstConversionWrapper'}
+let g:docs_convert_buffer_rules = {
+			\ 'txt2tags': 'Txt2tagsConvertBufferWrapper',
+			\ 'pandoc': 'PandocConvertBufferWrapper',
+			\ 'rst': 'RstConvertBufferWrapper',
+			\ 'noteindex': 'NotesConvertWrapper'}
 
 " Text2tags specification {{{3
 if g:isw
@@ -359,16 +363,15 @@ let g:pandoc_csl = g:pandoc_csl_root . g:slash . 'Chinese-GB7714-2005-Numeric-1.
 
 " Notes {{{2
 if g:isw
-	let g:xell_notes_root = 'D:\W\notes\notes'
-	let g:xell_notes_ex_root = 'D:\W\notes\notes_export'
+	let g:xell_notes_root = 'D:\W\notes\xnotes'
+	let g:xell_notes_ex_root = 'D:\W\notes\xnotes_export'
 elseif g:ism
-	let g:xell_notes_root = glob('~/Documents/notes/notes')
-	let g:xell_notes_ex_root = glob('~/Documents/notes/notes_export')
+	let g:xell_notes_root = glob('~/Documents/notes/xnotes')
+	let g:xell_notes_ex_root = glob('~/Documents/notes/xnotes_export')
 endif
 
-let g:xell_notes_ext = 't2t'
-let g:xell_notes_index = 'index'
-let g:xell_notes_temp = 'temp'
+let g:xell_notes_index = 'index.noteindex'
+let g:xell_notes_temp = 'temp.md'
 
 " }}}
 
@@ -716,6 +719,11 @@ function! s:find_general()
 	let option = input('Option (-i): ')
 	if option == ''
 		let option = '-i'
+	endif
+
+	if expand('%:p:h') =~? xelltoolkit#fname2pattern(g:xell_notes_root)
+		call xelltoolkit#grep_in_lcd_r(option, '', '', words)
+		return
 	endif
 
 	let include = input('This filetype (Y/n): ')
