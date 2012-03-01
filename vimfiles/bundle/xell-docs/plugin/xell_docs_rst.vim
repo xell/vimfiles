@@ -8,6 +8,10 @@ function! RstConverter(input, out_type, config, out_path)
 	endif
 endfunction
 
+function! Rst_html_conv(input, config, out_path)
+	echo "Place holder."
+endfunction
+
 " TODO odt configuration
 " {{{1
 function! Rst_odt_conv(input, config, out_path)
