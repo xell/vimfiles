@@ -235,9 +235,8 @@ endfunction
 " }}}
 
 function! xelltoolkit#fname_head(fname) " {{{1
-	return substitute(a:fname, xelltoolkit#slash_p() . '[^' . xelltoolkit#slash() . ']\+$', '', '')
 	if g:isw
-		return substitute(a:fname, '\\[^\]\+$', '', '')
+		return substitute(a:fname, '\\[^\\]\+$', '', '')
 	elseif g:ism
 		return substitute(a:fname, '\/[^/]\+$', '', '')
 	endif

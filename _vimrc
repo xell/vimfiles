@@ -359,6 +359,28 @@ let g:pandoc_csl = g:pandoc_csl_root . g:slash . 'Chinese-GB7714-2005-Numeric-1.
 
 " }}}
 
+" Rst Docutils specification {{{3
+let g:rst_target_ext = {'html': 'html', 'odt': 'odt'}
+
+if g:isw
+	let g:rst2odt_exec = 'd:\p\docutils\tools\rst2odt.py'
+	let g:rst2html_exec = 'd:\p\docutils\tools\rst2html.py'
+	let g:rst_tpl_root = 'd:\W\_special\_tpl\docutils'
+	let g:rst_html_root = g:rst_tpl_root . '\html'
+	let g:rst_html_tpl_root = g:rst_html_root . '\tpl'
+	let g:rst_html_style_root = g:rst_html_root . '\style'
+	let g:rst_odt_style_root = g:rst_tpl_root . '\odt'
+elseif g:ism
+	let g:rst2odt_exec = 'rst2odt.py'
+	let g:rst2html_exec = 'rst2html.py'
+	let g:rst_tpl_root = '/Users/xell/Documents/_special/_tpl/docutils'
+	let g:rst_html_root = g:rst_tpl_root . '/html'
+	let g:rst_html_tpl_root = g:rst_html_root . '/tpl'
+	let g:rst_html_style_root = g:rst_html_root . '/style'
+	let g:rst_odt_style_root = g:rst_tpl_root . '/odt'
+endif
+" }}}
+
 " }}}
 
 " Notes {{{2
