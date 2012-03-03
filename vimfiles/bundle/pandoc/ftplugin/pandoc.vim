@@ -598,6 +598,20 @@ function! PandocConvertBufferWrapper(out_type, config)
 endfunction
 " }}}
 
+" XXX TEMP
+command! -buffer -nargs=1 Run call <SID>open_docs('<args>')
+
+function! s:open_docs(type)
+	if a:type =~? 'docx\?'
+		call xelltoolkit#run('', expand('%:p:r') . '.' . a:type)
+	elseif a:type =~? 'odt'
+		call xelltoolkit#run('D:\P\libreoffice\LibreOfficeWriterPortable.exe', expand('%:p:r') . '.' . a:type)
+	else
+		call xelltoolkit#echo_msg('Target unsupported.')
+	endif
+endfunction
+
+
 " XXX Disabled {{{1
 " # Save folding between sessions
 "

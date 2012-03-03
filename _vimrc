@@ -910,7 +910,7 @@ nnoremap gcl :let g:tcommentOptions = {'col': 1}<CR>:normal gcc<CR>:let g:tcomme
 let g:tcommentOptions = {}
 let g:tcommentBlockXML = "<!--%s-->\n"
 " Defind new pandoc type TODO block comment
-let g:tcomment_types = {'pandoc': "<!-- %s -->", 'pandoc_inline': "<!-- %s -->", 'pandoc_block': "<!-- %s -->\n  ", 'proxylist': '#%s'}
+let g:tcomment_types = {'pandoc': "<!-- %s -->", 'pandoc_inline': "<!-- %s -->", 'pandoc_block': "<!-- %s -->\n  ", 'proxylist': '#%s', 'noteindex': '*%s'}
 "call tcomment#DefineType('pandoc', "<!-- %s -->")
 "call tcomment#DefineType('pandoc_inline', "<!-- %s -->")
 "call tcomment#DefineType('pandoc_block', "<!-- %s -->\n  ")
@@ -1153,7 +1153,7 @@ nnoremap <Leader>gV :Gitv<CR>
 " Git-Vim {{{2
 let g:git_no_map_default = 1
 nnoremap <Leader>ga :Gadd<CR>
-nnoremap <Leader>gd :Gdiff<CR>
+nnoremap <Leader>gd :Gdiff
 nnoremap <Leader>gD :call GitDiff('--cached')<CR>
 nnoremap <Leader>gs :Gstatus<CR>
 nnoremap <Leader>gS :Git status -s -b<CR>

@@ -21,7 +21,7 @@ function! GetOutputHTML(file)
 
 	if file =~? notes_root
 		let file_head_pattern = xelltoolkit#fname2pattern(xelltoolkit#fname_head(file))
-		let html_file = substitute(file, file_head_pattern, g:xell_notes_ex_root, '')
+		let html_file = substitute(file, '\c' . file_head_pattern, xelltoolkit#fname2pattern(g:xell_notes_ex_root), '')
 		let html_file = xelltoolkit#fname_ext_mod(html_file, 'html')
 	else
 		let html_file = xelltoolkit#fname_ext_mod(file, 'html')
