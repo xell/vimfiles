@@ -71,7 +71,14 @@ function! Pandoc_other_conv(input, out_type, config, out_path) " {{{1
 	let conf .= s:pandoc_bib_conf(a:input)
 	" }}}
 
-	let o_fname = xelltoolkit#fname_escape(xelltoolkit#fname_ext_mod(input, o_fname_suf . g:pandoc_target_ext[a:out_type]))
+	" Output file {{{2
+	if a:out_path == ''
+		let o_fname_raw = xelltoolkit#fname_ext_mod(input, o_fname_suf . g:pandoc_target_ext[a:out_type])
+	else
+		let o_fname_raw = a:out_path . g:slash . xelltoolkit#fname_name(input) . '.' . o_fname_suf . g:pandoc_target_ext[a:out_type]
+	endif
+	let o_fname = xelltoolkit#fname_escape(o_fname_raw)
+	" }}}
 
 	" Markdown pre-process {{{2
 	let input = s:mkd_preproc_no_numbering(input, 'tmp.md', g:pandoc_conf_other, a:config)
@@ -89,7 +96,7 @@ function! Pandoc_other_conv(input, out_type, config, out_path) " {{{1
 	endif
 	" }}}
 
-	return o_fname
+	return o_fname_raw
 
 endfunction
 " }}}
@@ -188,7 +195,7 @@ function! Pandoc_html_conv(input, out_type, config, out_path) " {{{1
 	if a:out_path == ''
 		let o_fname_raw = xelltoolkit#fname_ext_mod(input, o_fname_suf . g:pandoc_target_ext[a:out_type])
 	else
-		let o_fname_raw = a:out_path . g:slash . xelltoolkit#fname_name(input) . '.' . o_fname_suf . g:t2t_target_ext[a:out_type]
+		let o_fname_raw = a:out_path . g:slash . xelltoolkit#fname_name(input) . '.' . o_fname_suf . g:pandoc_target_ext[a:out_type]
 	endif
 	let o_fname = xelltoolkit#fname_escape(o_fname_raw)
 	" }}}
@@ -199,6 +206,7 @@ function! Pandoc_html_conv(input, out_type, config, out_path) " {{{1
 	else
 		let input = s:mkd_preproc_no_numbering_html(input, 'tmp.md', a:config)
 	endif
+	let input = s:mkd_preproc_html(input, 'tmp.md')
 	" }}}
 
 	let conf .= ' -o ' . o_fname . ' ' . xelltoolkit#fname_escape(input)
@@ -294,7 +302,7 @@ function! Pandoc_rst_conv(input, config, out_path) " {{{1
 	if a:out_path == ''
 		let o_fname_raw = xelltoolkit#fname_ext_mod(input, o_fname_suf . g:pandoc_target_ext['rst'])
 	else
-		let o_fname_raw = a:out_path . g:slash . xelltoolkit#fname_name(input) . '.' . o_fname_suf . g:t2t_target_ext['rst']
+		let o_fname_raw = a:out_path . g:slash . xelltoolkit#fname_name(input) . '.' . o_fname_suf . g:pandoc_target_ext['rst']
 	endif
 	let o_fname = xelltoolkit#fname_escape(o_fname_raw)
 	" }}}
@@ -694,7 +702,7 @@ endfunction
 "     num_level : v @ xell number by whole artical
 "     num_chap  : h @ xell
 let g:pandoc_conf_docx = 'pnormal,t,E,lzh,N,V,h'
-function! Pandoc_docx_conv(input, config) " {{{1
+function! Pandoc_docx_conv(input, config, out_path) " {{{1
 
 	let conf_g = ',' . g:pandoc_conf_general
 	let conf_s = ',' . g:pandoc_conf_docx
@@ -744,7 +752,7 @@ function! Pandoc_docx_conv(input, config) " {{{1
 	if a:out_path == ''
 		let o_fname_raw = xelltoolkit#fname_ext_mod(input, o_fname_suf . g:pandoc_target_ext['docx'])
 	else
-		let o_fname_raw = a:out_path . g:slash . xelltoolkit#fname_name(input) . '.' . o_fname_suf . g:t2t_target_ext[a:out_type]
+		let o_fname_raw = a:out_path . g:slash . xelltoolkit#fname_name(input) . '.' . o_fname_suf . g:pandoc_target_ext['docx']
 	endif
 	let o_fname = xelltoolkit#fname_escape(o_fname_raw)
 	" }}}
@@ -846,7 +854,7 @@ function! Pandoc_odt_conv(input, config, out_path) " {{{1
 	if a:out_path == ''
 		let o_fname_raw = xelltoolkit#fname_ext_mod(input, o_fname_suf . g:pandoc_target_ext['odt'])
 	else
-		let o_fname_raw = a:out_path . g:slash . xelltoolkit#fname_name(input) . '.' . o_fname_suf . g:t2t_target_ext[a:out_type]
+		let o_fname_raw = a:out_path . g:slash . xelltoolkit#fname_name(input) . '.' . o_fname_suf . g:pandoc_target_ext['odt']
 	endif
 	let o_fname = xelltoolkit#fname_escape(o_fname_raw)
 	" }}}
@@ -962,6 +970,35 @@ function! s:mkd_preproc_no_numbering_html(in, out_fname, config) " {{{1
 		endif
 		" }}}
 		
+		let line_index = line_index + 1
+	endwhile
+
+	call writefile(file, out)
+	return out
+endfunction
+" }}}
+
+function! s:mkd_preproc_html(in, out_fname) " {{{1
+	let out = xelltoolkit#fname_head(a:in) . g:slash . a:out_fname
+	let file = readfile(a:in)
+
+	let line_index = 0
+	let end_of_file = len(file)
+	while (line_index < end_of_file)
+		let cur = file[line_index]
+
+		if cur =~? '\~\~\([^~]\+\)\~\~'
+			while (1)
+				let item = matchlist(cur, '\~\~\([^~]\+\)\~\~', 0)
+				if item != []
+					let cur = substitute(cur, '\~\~\([^~]\+\)\~\~', '<span style="background-color: orange;">' . item[1] . '</span>', '')
+				else
+					break
+				endif
+			endwhile
+			let file[line_index] = cur
+		endif
+
 		let line_index = line_index + 1
 	endwhile
 

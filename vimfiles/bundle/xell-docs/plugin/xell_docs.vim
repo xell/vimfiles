@@ -31,7 +31,7 @@ endfunction
 " }}}
 
 function! ConvertBuffer(in_type, out_type, config) " {{{1
-	if exists('g:docs_convert_buffer_rules')
+	if exists('g:docs_convert_buffer_rules') && has_key(g:docs_convert_buffer_rules, a:in_type)
 		call {g:docs_convert_buffer_rules[a:in_type]}(a:out_type, a:config)
 	else
 		call xelltoolkit#echo_msg('There is no pre-defined rules for conversion.')

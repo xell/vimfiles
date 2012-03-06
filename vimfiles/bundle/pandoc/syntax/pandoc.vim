@@ -76,7 +76,8 @@ syn match pdcSetexHeader /^.\+\n[-]\+$/ contains=@Spell
 
 " Inline {{{1
 " ~~temp~~
-syn match   pdcStrike       '\~\~[^\~ ]\([^\~]\|\~ \)*\~\~' contains=@Spell
+syn match   pdcStrike       '\~\~[^\~ ]\([^\~]\|\~ \)*\~\~' contains=@Spell,pdcStrikeFix
+syn match   pdcStrikeFix    '\~' contained conceal
 " **strong**
 syn match   pdcStrong       '\*\*[^* ].\{-}\*\*' contains=@Spell,pdcStrongFix
 " *emp*

@@ -187,7 +187,8 @@ function! s:convert_notes() "{{{2
 				let index_md_file = NoteindexConverter(note, '')
 				call Pandoc_html_conv(index_md_file, 'html', 'cnote', g:xell_notes_ex_root)
 			endif
-		elseif note !~? '\.html$'
+		" ignore files
+		elseif note !~? '\.\(html\|sw.\)$'
 			let note_ex = g:xell_notes_ex_root . g:slash .
 						\ xelltoolkit#fname_name(note) . '.' .
 						\ xelltoolkit#fname_ext(note)
@@ -279,7 +280,7 @@ function! s:check()
 		let file = files_in_folder[i]
 		let file = substitute(file, xelltoolkit#fname2pattern(g:xell_notes_root) . '.', '', '')
 		let files_in_folder[i] = file
-		if file =~? '\(index\.md\|index\.noteindex\)'
+		if file =~? '\(index\.md\|index\.noteindex\|\.swp\)$'
 			call remove(files_in_folder, i)
 			let end -= 1
 			continue
