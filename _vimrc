@@ -732,39 +732,27 @@ nmap <C-F> :call <SID>find_general()<CR>
 
 " Default -i; include only this filetype; no exclude
 function! s:find_general()
-	let words = input('What to find: ')
-	if words == ''
-		call xelltoolkit#echo_msg('Find pattern cannot be empty!')
+	let pattern = input('What to find: ')
+	if pattern == ''
+		call xelltoolkit#echo_msg('Empty inquery!')
 		return
 	endif
 
-	let option = input('Option (-i): ')
-	if option == ''
-		let option = '-i'
-	endif
+	let option = input('Ignore case? (Y/n)')
+
 
 	if expand('%:p:h') =~? xelltoolkit#fname2pattern(g:xell_notes_root)
-		call xelltoolkit#grep_in_lcd_r(option, '', '', words)
-		return
-	endif
-
-	let include = input('This filetype (Y/n): ')
-	if include == '' || include ==? 'y'
-		" Only find the file ext of current buffer
-		let include = expand('%:e')
-	elseif include ==? 'n'
-		let include = input('All non-bin filetypes (Y/n): ')
-		" All non binary filetypes
-		if include == '' || include ==? 'y'
+		let include = 'note'
+	else
+		let include = input('This filetype? (Y/n)')
+		if include == ''
+			let include = expand('%:e')
+		else
 			let include = ''
-		elseif include ==? 'n'
-			let include = input('Specifiy filetypes: ')
 		endif
 	endif
 
-	let exclude = input('What to exclude: ')
-	
-	call xelltoolkit#grep_in_lcd_r(option, include, exclude, words)
+	call xelltoolkit#grep_in_lcd_r(option, include, pattern)
 endfunction
 " }}}
 

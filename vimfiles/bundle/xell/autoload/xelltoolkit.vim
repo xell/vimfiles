@@ -223,8 +223,8 @@ endfunction
 
 function! xelltoolkit#fname2pattern(fname) " {{{1
 	let fname = a:fname
-	let fname = escape(fname, '/\~&[]{}')
-	let fname = substitute(fname, ' ', '\s', 'g')
+	let fname = escape(fname, '/\~&[]{}.')
+	let fname = substitute(fname, ' ', '\\s', 'g')
 	return fname
 endfunction
 " }}}
@@ -306,41 +306,69 @@ function! xelltoolkit#imap(lhs, rhs, buffer) " {{{1
 endfunction
 " }}}
 
-function! xelltoolkit#grep_in_lcd_r(option, include, exclude, pattern) " {{{
-	if !executable('grep')
-		call xelltoolkit#echo_msg('No grep program!')
-		return 1
-	endif
-	
-	" No search for binary
-	" Vim :grep implies -H (filename) and -n (line number)
-	let grep_exec = 'grep -Ir'
-	if a:option != ''
-		let grep_exec .= ' ' . a:option
+let g:grep_include_dict = {'note': ['t2t', 'md', 'mkd', 'txt'], 'vim': ['vim'], 'all': ['*']}
+function! xelltoolkit#grep_in_lcd_r(option, include, pattern) " {{{
+
+	let is_win = 0
+
+	let pattern = a:pattern
+	if (g:isw && pattern =~? '[^\x00-\xff]') || !executable('grep')
+		let is_win = 1
 	endif
 
-	if a:include != ''
-		if a:include =~? ','
-			let grep_exec .= ' --include=*.{' . a:include . '}'
+	" vimgrep: vimgrep /\cPATTERN/j ./**/*.type1 ./**/*.type2
+	if is_win
+		let cmd = 'vimgrep '
+		" only one option: ignore case
+		if a:option == ''
+			let cmd .= '/\c' . pattern . '/j'
 		else
-			let grep_exec .= ' --include=*.' . a:include
+			let cmd .= '/' . pattern . '/j'
 		endif
+
+		if has_key(g:grep_include_dict, a:include)
+			let filetypes = g:grep_include_dict[a:include]
+		elseif a:include != ''
+			let filetypes = [a:include]
+		else
+			let filetypes = g:grep_include_dict['all']
+		endif
+		for filetype in filetypes
+			let cmd .= ' ./**/*.' . filetype
+		endfor
+	" grep:    grep  -HnIr --include="*.t2t" --include="*.md" "zen" .
 	else
-		let grep_exec .= ' --include=*.*'
+		let cmd = 'grep! -HnIr'
+
+		if has_key(g:grep_include_dict, a:include)
+			let filetypes = g:grep_include_dict[a:include]
+		elseif a:include != ''
+			let filetypes = [a:include]
+		else
+			let filetypes = g:grep_include_dict['all']
+		endif
+		for filetype in filetypes
+			let cmd .= ' --include="*.' . filetype . '"'
+		endfor
+
+		if a:option == ''
+			let cmd .= ' -i'
+		endif
+
+		let cmd .= ' "' . pattern . '" .'
 	endif
 
-	if a:exclude != ''
-		let grep_exec .= ' ' . '--exclude=*.{' . a:exclude . '}'
-	endif
+	exec cmd
 
-	if a:pattern == ''
-		call xelltoolkit#echo_msg('Pattern cannot be empty!.')
-		return
-	else
-		let grep_exec .= ' "' . a:pattern . '" .'
-	endif
-
-	exec 'silent ' . grep_exec
 	cwindow
 
 endfunction
+"}}}
+
+function! xelltoolkit#get_cmd_output(cmd) "{{{1
+	redir @+>
+	exec 'silent! ' . a:cmd
+	redir END
+endfunction
+"}}}
+
