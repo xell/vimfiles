@@ -388,10 +388,16 @@ if has("gui_running") || &t_Co==256
   endwhile
   unlet i
 
-  autocmd CursorMoved * silent call s:PreviewCSSColorInLine('.')
-  autocmd CursorMovedI * silent call s:PreviewCSSColorInLine('.')
+  augroup CSS
+	  au!
+	  autocmd CursorMoved * silent call s:PreviewCSSColorInLine('.')
+	  autocmd CursorMovedI * silent call s:PreviewCSSColorInLine('.')
+  augroup END
+
   if !exists('g:cssColorVimDoNotMessMyUpdatetime')
     set ut=100
   endif
 
 endif
+
+let b:undo_ftplugin = 'set ut=4000 | aug! CSS'

@@ -910,7 +910,7 @@ nnoremap gcl :let g:tcommentOptions = {'col': 1}<CR>:normal gcc<CR>:let g:tcomme
 let g:tcommentOptions = {}
 let g:tcommentBlockXML = "<!--%s-->\n"
 " Defind new pandoc type TODO block comment
-let g:tcomment_types = {'pandoc': "<!-- %s -->", 'pandoc_inline': "<!-- %s -->", 'pandoc_block': "<!-- %s -->\n  ", 'proxylist': '#%s', 'noteindex': '*%s'}
+let g:tcomment_types = {'pandoc': "<!-- %s -->", 'pandoc_inline': "<!-- %s -->", 'pandoc_block': "<!-- %s -->\n  ", 'proxylist': '#%s', 'noteindex': '*%s', 'conf': '#%s'}
 "call tcomment#DefineType('pandoc', "<!-- %s -->")
 "call tcomment#DefineType('pandoc_inline', "<!-- %s -->")
 "call tcomment#DefineType('pandoc_block', "<!-- %s -->\n  ")
@@ -1097,32 +1097,29 @@ let g:fuf_modesDisable = ['aroundmrufile', 'mrucmd', 'dir', 'bookmark', 'taggedf
 let g:fuf_keyPreview = '<C-H>'
 let g:fuf_keyOpenTabpage = '<C-Return>'
 
+" Usage : ,fe n:
+nmap <Leader>fe :FufFile<CR>
 if g:isw
 	let g:fuf_abbrevMap = {
 				\ "^v:" : ['$VIM\**\',],
-				\ "^n:" : ['d:\W\notes\notes\'],
+				\ "^n:" : [g:xell_notes_root . g:slash],
 				\ "^c:" : ['d:\Codes\ahk\'],
 				\ }
 elseif g:ism
 	let g:fuf_abbrevMap = {
 				\ "^v:" : ['$VIM/**/',],
-				\ "^n:" : ['~/Documents/notes/notes/'],
-				\ "^c:" : ['~/Codes/ahk/'],
+				\ "^n:" : [g:xell_notes_root . g:slash],
 				\ }
 endif
+
 nmap <Leader>ff :FufMruFile<CR>
+" All file in current directory recursively
 nmap <Leader>fd :FufCoverageFile<CR>
 nmap <Leader>ft :FufTag<CR>
-nmap <Leader>fe :FufFile<CR>
-nmap <Leader>fg :call <SID>fuf_test()<CR>
-function! s:fuf_test()
-	" exec "call fuf#givenfile#launch('', 0, '>', split(glob('" . g:MyRuntimePath . "/**/*'), \"\\n\"))"
-	exec "call fuf#givenfile#launch('', 0, '>', split(glob('" . g:myvimfiles . "/**/*'), \"\\n\"))"
-endfunction
 nmap <Leader>fh :FufHelp<CR><C-E>
 nmap <Leader>fb :FufBuffer<CR>
-nmap <Leader>fc :call fuf#givencmd#launch('', 0, '>', <SID>getAllCommands())<CR>
 
+nmap <Leader>fc :call fuf#givencmd#launch('', 0, '>', <SID>getAllCommands())<CR>
 function! s:getAllCommands()
   redir => commands
   silent command
@@ -1130,6 +1127,13 @@ function! s:getAllCommands()
   return map((split(commands, "\n")[3:]),
 	  \      '":" . matchstr(v:val, ''^....\zs\S*'')')
 endfunction
+
+" All user vimfiles
+nmap <Leader>fg :call <SID>fuf_test()<CR>
+function! s:fuf_test()
+	exec "call fuf#givenfile#launch('', 0, '>', split(glob('" . g:myvimfiles . "/**/*'), \"\\n\"))"
+endfunction
+
 " }}}
 " Fugitive {{{2
 let g:fugitive_summary_format = '(%ci) %s'
@@ -1245,7 +1249,7 @@ if g:ism
 	call xelltoolkit#imap('<>', '<<++>><++>', 0)
 	call xelltoolkit#imap('""', '"<++>"<++>', 0)
 	call xelltoolkit#imap("''", "'<++>'<++>", 0)
-	call xelltoolkit#imap('%%', '%<++>%<++>', 0)
+	" call xelltoolkit#imap('%%', '%<++>%<++>', 0)
 
 elseif &loadplugins && g:isw
 	augroup MyIMAPs
@@ -1352,6 +1356,9 @@ let g:neocomplcache_omni_patterns.cpp = '\h\w*\%(\.\|->\)\h\w*\|\h\w*::'
 "   set conceallevel=2 concealcursor=i
 " endif
 
+" }}}
+" CSS-after {{{2
+let g:cssColorVimDoNotMessMyUpdatetime = 4000
 " }}}
 " Xell URI {{{2
 command! -bang -nargs=? OpenInBrowser call OpenInBrowser(<bang>1, '<args>')
