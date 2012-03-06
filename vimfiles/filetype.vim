@@ -15,5 +15,10 @@ au! BufNewFile,BufRead *.markdown,*.mdown,*.mkd,*.mkdn,*.pd,*.pdk,*.pandoc,*.md 
 au! BufNewFile,BufRead *.noteindex 		setf noteindex
 " applescript
 au! BufNewFile,BufRead *.applescript 	setf applescript
+" mediawiki
+au BufRead,BufNewFile *.wiki                setf mediawiki
+au BufRead,BufNewFile *.wikipedia.org*      setf mediawiki
+au BufRead,BufNewFile *.wikibooks.org*      setf mediawiki
+au BufRead,BufNewFile *.wikimedia.org*      setf mediawiki
 augroup END
 

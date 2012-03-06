@@ -1020,6 +1020,9 @@ function! BuildTOC()
 		elseif &ft == 'markdown' || &ft == 'pandoc'
 			exec 'Voom markdown'
 			return
+		elseif &ft == 'mediawiki'
+			exec 'Voom wiki'
+			return
 		" Style {\{3}\d [\{3}\d
 		elseif search('\({\{3}\d\)\|\([\{3}\d\)','nw')
 			exec 'Voom'
