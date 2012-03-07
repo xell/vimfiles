@@ -563,6 +563,24 @@ imap <A-4> <End>
 map <C-J> <PageDown>
 map <C-K> <PageUp>
 
+" Fold move
+nnoremap <silent> <Up> :call GoUpFold()<CR>
+nnoremap <silent> <Down> zj
+function! GoUpFold()
+	let cur = line('.')
+	normal gg
+	let jump = line('.')
+	while (1)
+		normal zj
+		if ((line('.') >= cur) && (jump <= cur)) || (line('.') == jump)
+			break
+		else
+			let jump = line('.')
+		endif
+	endwhile
+	call cursor(jump, 1)
+endfunction
+
 " }}}
 
 " Tabs {{{2

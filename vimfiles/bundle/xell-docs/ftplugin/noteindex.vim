@@ -12,6 +12,8 @@ setlocal conceallevel=2
 " }}}
 
 " Folding {{{1
+nnoremap <silent> <buffer> J zj
+nnoremap <silent> <buffer> K :call GoUpFold()<CR>
 setlocal foldexpr=NoteIndexFoldLevel()
 setlocal foldmethod=expr
 setlocal foldcolumn=4
