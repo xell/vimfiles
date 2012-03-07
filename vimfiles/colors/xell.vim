@@ -10,54 +10,46 @@ if exists("syntax_on")
 endif
 let g:colors_name = "xell"
 
-"highlight Normal        guifg=#ffffff     guibg=#000000
-"highlight Normal        guifg=White       guibg=grey10
- highlight Normal        guifg=White       guibg=#262626     ctermfg=White ctermbg=Black
-"highlight clear Normal
- highlight Comment       guifg=#808080     guibg=bg          ctermfg=Darkgray ctermbg=bg
+ highlight Normal        guifg=#f5f5f5     guibg=#262626     ctermfg=15 ctermbg=8
+ highlight Comment       guifg=#808080     guibg=bg          ctermfg=0  ctermbg=8
+ highlight Constant      guifg=#5f85aa     guibg=bg          ctermfg=4  ctermbg=8
+ highlight Identifier    guifg=#00c0c0     guibg=bg          ctermfg=14 ctermbg=8
+ highlight Statement     guifg=#f0e68c     guibg=bg          ctermfg=11 ctermbg=8
+ highlight PreProc       guifg=#00ff00     guibg=bg          ctermfg=10 ctermbg=8
+ highlight Type          guifg=#60ff60     guibg=bg          ctermfg=2  ctermbg=8
+ highlight Special       guifg=#ffa0a0     guibg=bg          ctermfg=1  ctermbg=8
+ highlight Underlined    guifg=#80a0ff     guibg=bg          ctermfg=12 ctermbg=8 gui=Underline cterm=Underline
+ highlight Ignore        guifg=#494949     guibg=bg          ctermfg=0  ctermbg=8
+ highlight Error         guifg=#ff0000     guibg=bg          ctermfg=9  ctermbg=8
+ highlight Todo          guifg=#000000     guibg=#ff9b37     ctermfg=15 ctermbg=1
+
+ highlight Conceal       guifg=fg          guibg=bg          ctermfg=15 ctermbg=8 gui=Undercurl guisp=fg cterm=Underline
+ highlight Cursor        guifg=bg          guibg=LightGray
+ highlight DiffAdd       guifg=#000000     guibg=#7cdede     ctermfg=8  ctermbg=4
+ highlight DiffChange    guifg=#000000     guibg=#e493ff     ctermfg=8  ctermbg=5
+ highlight DiffDelete    guifg=#000000     guibg=#ff9b9b     ctermfg=8  ctermbg=1
+ highlight DiffText      guifg=#ffffff     guibg=#b70000     ctermfg=15 ctermbg=9
+ highlight Directory     guifg=#60ff60     guibg=bg          ctermfg=2  ctermbg=8
+ highlight IncSearch     guifg=#ff0000     guibg=#000000     ctermfg=9  ctermbg=8
+ highlight Folded        guifg=#95cbfe     guibg=bg          ctermfg=4  ctermbg=8
+ highlight FoldColumn    guifg=#ffffff     guibg=bg          ctermfg=15 ctermbg=8
+ highlight LineNr        guifg=#ffff00     guibg=bg          ctermfg=11 ctermbg=8
+ highlight ModeMsg       guifg=#777777     guibg=bg          ctermfg=0  ctermbg=8
+ highlight NonText       guifg=#39546f     guibg=bg          ctermfg=0  ctermbg=8
+ highlight Pmenu         guifg=fg          guibg=#555555     ctermfg=15 ctermbg=0
+ highlight PmenuSel      guifg=#ffffff     guibg=#5f85aa     ctermfg=15 ctermbg=4
+ highlight PmenuSbar     guifg=fg          guibg=#888888     ctermfg=15 ctermbg=0
+ highlight PmenuThumb    guifg=fg          guibg=#000000     ctermfg=15 ctermbg=8
+ highlight Search        guifg=#fa8072     guibg=bg          ctermfg=1  ctermbg=8 gui=Bold,Underline cterm=Bold,Underline
+ highlight SpecialKey    guifg=#ffa0a0     guibg=bg          ctermfg=1  ctermbg=8
+ highlight StatusLine    guifg=#e8e7e6     guibg=#777777     ctermfg=7  ctermbg=0
+ highlight StatusLineNC  guifg=#d3cfcd     guibg=#444444     ctermfg=7  ctermbg=8
+ highlight Title         guifg=#9acd32     guibg=bg          ctermfg=10 ctermbg=8
+ highlight VertSplit     guifg=#d3cfcd     guibg=#444444     ctermfg=7  ctermbg=0
+ highlight Visual        guifg=#000000     guibg=#90ee90     ctermfg=8  ctermbg=2
+
+ highlight Temp          guifg=#ff9b37     guibg=bg          ctermfg=1  ctermbg=8
 
 
-
- highlight Title         guifg=#9acd32
- highlight Constant      guifg=#5f85aa                       gui=none
- highlight Identifier    guifg=#00c0c0               
-"highlight Statement     guifg=#c0c000                       gui=bold
- highlight Statement     guifg=#f0e68c
- highlight PreProc       guifg=#00ff00
- highlight Type          guifg=#60ff60
- highlight Special       guifg=#ffa0a0
- highlight Error         guibg=#ff0000
- highlight Todo          guifg=#000000     guibg=#ff9b37
- highlight Ignore        guifg=#494949
-"#D03800 #73CA00
- highlight Temp          guifg=#ff9b37     guibg=bg
- highlight Directory     guifg=#60ff60
-"highlight StatusLine    guifg=#ffff00     guibg=#5f85aa     gui=none
- highlight StatusLine    guifg=#E8E7E6     guibg=#777777     gui=none ctermfg=11 ctermbg=12 cterm=none 
- highlight StatusLineNC  guifg=#D3CFCD     guibg=#444444     gui=none ctermfg=12 ctermbg=11 cterm=none 
-"highlight Search        guibg=#c0c000
- highlight Visual        guifg=Black       guibg=LightGray
-"highlight Search        guifg=Black       guibg=LightBlue
-"highlight Search        guifg=#000000     guibg=#e17c00
- highlight Search        guifg=#fa8072     guibg=bg          gui=bold,underline
-"highlight IncSearch     guifg=grey10      guibg=red
- highlight IncSearch     guifg=red         guibg=Black   
- highlight link Folded   Statement
- highlight Folded        guifg=#5FA6C8     guibg=bg          gui=NONE
- highlight FoldColumn    guifg=white       guibg=bg          gui=bold
-"highlight FoldColumn    guifg=tan         guibg=grey30 
- highlight Pmenu                           guibg=grey30
- highlight PmenuSel      guifg=White       guibg=#5f85aa
- highlight PmenuSbar                       guibg=DarkGray 
- highlight PmenuThumb                      guibg=Black
- highlight VertSplit     guifg=#444444     guibg=#E8E7E6
- highlight Cursor        guifg=bg          guibg=fg
- highlight NonText       guifg=Blue        guibg=bg          gui=bold ctermfg=9 term=bold
- highlight LineNr        guifg=Yellow      guibg=bg          ctermfg=14 term=underline
- highlight NonText       guifg=#888888     guibg=bg          gui=none
-
-" For showmarks plugin
-"highlight ShowMarksHLl  guifg=Black       guibg=#FFDB72 
-"highlight ShowMarksHLu  guifg=Black       guibg=#FFB3FF 
 
 " vim:cc=26,44,62 tw=0 ts=4 sw=4

@@ -25,7 +25,7 @@ endif
 "let g:zenburn_high_Contrast = 1
 "let g:zenburn_color_also_Ignore = 1
 "colorscheme zenburn
-colorscheme xell_dark
+"colorscheme xell
 " }}}
 
 " Guioptions {{{1

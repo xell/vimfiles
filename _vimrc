@@ -522,6 +522,8 @@ endfunction
 
 " }}}
 
+colorscheme xell
+
 " }}}
 
 " Mappings {{{1
