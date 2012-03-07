@@ -550,14 +550,25 @@ map - $
 " nmap <BS> gk
 
 "Basic motions
-imap <A-h> <Left>
-imap <A-j> <Down>
-imap <A-k> <Up>
-imap <A-l> <Right>
-imap <A--> <PageDown>
-imap <A-=> <PageUp>
-imap <A-6> <Home>
-imap <A-4> <End>
+if &term =~? 'xterm'
+	imap ˙ <Left>
+	imap ∆ <Down>
+	imap ˚ <Up>
+	imap ¬ <Right>
+	imap – <PageDown>
+	imap ≠ <PageUp>
+	imap § <Home>
+	imap ¢ <End>
+else
+	imap <A-h> <Left>
+	imap <A-j> <Down>
+	imap <A-k> <Up>
+	imap <A-l> <Right>
+	imap <A--> <PageDown>
+	imap <A-=> <PageUp>
+	imap <A-6> <Home>
+	imap <A-4> <End>
+endif
 
 " Page down and up
 map <C-J> <PageDown>
@@ -602,6 +613,14 @@ function! s:mapleadernumber()
 	endfor
 endfunction
 call <SID>mapleadernumber()
+if &term =~? 'xterm'
+	" ¡™£¢∞
+	nmap ¡ :1wincmd w<CR>
+	nmap ™ :2wincmd w<CR>
+	nmap £ :3wincmd w<CR>
+	nmap ¢ :4wincmd w<CR>
+	nmap ∞ :5wincmd w<CR>
+endif
 " }}}
 
 " Windows {{{2
@@ -625,21 +644,46 @@ noremap <Backspace> <C-W>p
 noremap ` <C-W>w
 
 " For switch to split windows
-map <M-j> <C-W>j
-map <M-k> <C-W>k
-map <M-h> <C-W>h
-map <M-l> <C-W>l
-map <M-J> <C-W>J
-map <M-K> <C-W>K
-map <M-H> <C-W>H
-map <M-L> <C-W>L
+if &term =~? 'xterm'
+	"∆˚˙¬ jkhl
+	"ÔÓÒ JKHL
+	map ∆ <C-W>j
+	map ˚ <C-W>k
+	map ˙ <C-W>h
+	map ¬ <C-W>l
+	map Ô <C-W>J
+	map  <C-W>K
+	map Ó <C-W>H
+	map Ò <C-W>L
+else
+	map <M-j> <C-W>j
+	map <M-k> <C-W>k
+	map <M-h> <C-W>h
+	map <M-l> <C-W>l
+	map <M-J> <C-W>J
+	map <M-K> <C-W>K
+	map <M-H> <C-W>H
+	map <M-L> <C-W>L
+endif
 
 " For changing the size of split windows
-nmap <M-[> <C-W>-
-nmap <M-]> <C-W>+
-nmap <M-,> <C-W><
-nmap <M-.> <C-W>>
-nmap <M-=> <C-W>=
+if &term =~? 'xterm'
+	" “‘≤≥≠ [],.=
+	nmap “ <C-W>-
+	nmap ‘ <C-W>+
+	" ”’ {}
+	nmap ” <C-W>-
+	nmap ’ <C-W>+
+	nmap ≤ <C-W><
+	nmap ≥ <C-W>>
+	nmap ≠ <C-W>=
+else
+	nmap <M-[> <C-W>-
+	nmap <M-]> <C-W>+
+	nmap <M-,> <C-W><
+	nmap <M-.> <C-W>>
+	nmap <M-=> <C-W>=
+endif
 
 " }}}
 
@@ -838,7 +882,11 @@ if g:isw
 endif
 
 " Jump among windows noremap
-noremap <A-o> <Tab>
+if &term =~? 'xterm'
+	noremap ø <Tab>
+else
+	noremap <A-o> <Tab>
+endif
 " }}}
 
 " }}}
@@ -1216,8 +1264,13 @@ elseif g:ism
 	let g:Tex_ViewRule_pdf = 'Skim'
 endif
 
-imap <A-;> <Plug>Tex_LeftRight
-nmap <A-;> <Plug>Tex_LeftRight
+if &term =~? 'xterm'
+	imap … <Plug>Tex_LeftRight
+	nmap … <Plug>Tex_LeftRight
+else
+	imap <A-;> <Plug>Tex_LeftRight
+	nmap <A-;> <Plug>Tex_LeftRight
+endif
 " Change the default <F7>->FastCommandInsert to <C-F7>
 nmap <C-F7> <Plug>Tex_FastCommandInsert
 
