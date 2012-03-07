@@ -60,7 +60,6 @@ call pathogen#infect()
 "call pathogen#helptags()
 " }}}
 
-
 " }}}
 
 " General {{{1
