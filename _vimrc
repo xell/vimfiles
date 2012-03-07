@@ -867,7 +867,12 @@ inoremap <C-K> <C-x><C-K>
 " Special {{{2
 
 " Edit vimrc
-nmap <Leader>rce :e $MYVIMRC<CR>
+if g:isw
+	nmap <Leader>rce :e $MYVIMRC<CR>
+else
+	nmap <Leader>rce :exec 'e ' . substitute(system('readlink ' . $MYVIMRC), '\(\s\|\n\)\+$', '', '')<CR>
+endif
+
 " Reload vimrc
 nmap <Leader>rcl :so $MYVIMRC<CR>
 
