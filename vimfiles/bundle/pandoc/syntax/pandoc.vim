@@ -193,7 +193,11 @@ hi default link pdcEmphasis VisualNOS
 hi default link pdcSubscript Special
 hi default link pdcSuperscript Special
 
-hi pdcLeadingBlank guifg=#31465B gui=Underline
+if &background == 'dark'
+	hi pdcLeadingBlank guifg=#31465B gui=Underline
+else
+	hi pdcLeadingBlank guifg=#bccfd7 gui=Underline
+endif
 hi default link pdcCode PreProc
 hi default link pdcCodePre String
 hi default link pdcCodeBlock String
