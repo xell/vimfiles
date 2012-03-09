@@ -8,6 +8,9 @@ let b:search_pattern = '\%(^<[^>]\+>\)' . '\|' . '\%(\s*\zs[^ ]\+\ze\s*|\)' . '\
 nmap <buffer> <Tab> :call xelltoolkit#goto_next_word(b:search_pattern)<CR>
 nmap <buffer> <S-Tab> :call xelltoolkit#goto_pre_word(b:search_pattern)<CR>
 
+" Fold
+setlocal foldmethod=expr
+setlocal foldexpr=getline(v:lnum)=~'^##\\s'?'>1':'='
 
 " convert xell.proxylist to proxylist.pac {{{
 function! s:convert_proxy()

@@ -522,7 +522,7 @@ endfunction
 
 " }}}
 
-colorscheme xell_light
+colorscheme xell
 
 " }}}
 
