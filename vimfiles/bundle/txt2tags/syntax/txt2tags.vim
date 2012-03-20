@@ -67,7 +67,8 @@
 " init
 syn clear
 " syn sync minlines=500
-syn sync linebreaks=1
+" syn sync linebreaks=1
+syn sync fromstart
 syn case ignore
 
 "TODO see if user already has foldmethod defined, if so, set foldmethod=syntax
