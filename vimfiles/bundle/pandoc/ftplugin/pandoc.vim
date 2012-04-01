@@ -64,6 +64,7 @@ setlocal comments=s:<!--,m:\ \ \ \ ,e:-->,:*,:1.
 " Temp for surroundind `` to the selected
 nmap <buffer> <M-c> vt>l"zc`<C-R>Z`<Esc>
 vnoremap <buffer> <M-c> "zc`<C-R>Z`<Esc>
+vnoremap <buffer> <M-t> "zc~~<C-R>Z~~<Esc>
 
 nnoremap <buffer> j gj
 nnoremap <buffer> k gk
