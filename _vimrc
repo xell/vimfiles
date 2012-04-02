@@ -953,9 +953,9 @@ endif
 nmap <F7> :LanguageToolCheck<CR>
 " }}}
 " Thesaurus {{{2
-" TODO change the location of mthesaur.txt
+" TODO changeless the location of mthesaur.txt
 if g:isw
-	let g:thesaurus_file='d:\p\thesaurus\th_en_US_v2'
+	let g:thesaurus_file='d:/p/thesaurus/th_en_US_v2'
 	set thesaurus=d:\P\thesaurus\mthesaur.txt
 elseif g:ism
 	" mac or unix must use '/usr/share/myspell/dicts/th_en_US_v2.idx'
