@@ -1376,8 +1376,8 @@ function! s:mkd_preproc_clean(in, out_fname) " {{{1
 	while (line_index < end_of_file)
 		let cur = file[line_index]
 
-		let cur = substitute(cur, '[^\x00-\xff]\zs\s\ze\%(\w\|\[\|\]\)', '', 'g')
-		let cur = substitute(cur, '\%(\w\|\[\|\]\)\zs\s\ze[^\x00-\xff]', '', 'g')
+		let cur = substitute(cur, '[^\x00-\xff]\zs\s\ze\%(\w\|\[\|\]\|\$\|`\|\.\)', '', 'g')
+		let cur = substitute(cur, '\%(\w\|\[\|\]\|\$\|`\|\.\)\zs\s\ze[^\x00-\xff]', '', 'g')
 
 		let file[line_index] = cur
 

@@ -75,12 +75,14 @@ if g:isw
 	call IMAP('[[', '[<++>](<++>)<++>', 'pandoc')
 	call IMAP('["', '[<++>](<++>"<++>")<++>', 'pandoc')
 	call IMAP('~~~~', '~~<++>~~<++>', 'pandoc')
+	call IMAP('$$', '$<++>$<++>', 'pandoc')
 elseif g:ism
 	call xelltoolkit#imap('**', '*<++>*<++>', 1)
 	call xelltoolkit#imap('``', '`<++>`<++>', 1)
 	call xelltoolkit#imap('[[', '[<++>](<++>)<++>', 1)
 	call xelltoolkit#imap('["', '[<++>](<++>"<++>")<++>', 1)
 	call xelltoolkit#imap('~~~~', '~~<++>~~<++>', 1)
+	call xelltoolkit#imap('$$', '$<++>$<++>', 1)
 endif
 
 imap <buffer> <c-w><c-w> <Esc>:call <SID>shift_plus()<CR>
