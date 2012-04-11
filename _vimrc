@@ -1446,6 +1446,9 @@ autocmd VimLeavePre * if has("XellDeleteTempFiles") | call XellDeleteTempFiles()
 
 " Others {{{1
 
+" Test
+set exrc
+
 " Mathematica filetype
 let filetype_m = "mma"
 
