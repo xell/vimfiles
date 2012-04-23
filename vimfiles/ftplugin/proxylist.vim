@@ -35,6 +35,11 @@ function! s:convert_proxy()
 		endif
 	endfor
 
+	" Windows reverse-proxy for zju
+	" c.f. http://telpry.zju.edu.cn/tel.pac
+	" c.f. http://zuits.zju.edu.cn/redir.php?catalog_id=1988&object_id=10455
+	" call extend(pac, ['if (dnsDomainIs(host, ".zju.edu.cn")) { return "PROXY 218.75.70.222:6666"; }', 'if (isInNet(host, "10.0.0.0", "255.0.0.0")) { return "PROXY 218.75.70.222:6666"; } ', 'if (isInNet(host, "210.32.0.0", "255.255.240.0")) { return "PROXY 218.75.70.222:6666"; }', 'if (isInNet(host, "210.32.128.0", "255.255.192.0")) { return "PROXY 218.75.70.222:6666"; }'])
+
 	" write head of proxylist.pac
 	call extend(pac, ["", "var url = url.toLowerCase();", "var host = host.toLowerCase();", "if (isPlainHostName(host)) return 'DIRECT';"])
 
