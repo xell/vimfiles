@@ -1428,6 +1428,10 @@ let g:neocomplcache_omni_patterns.cpp = '\h\w*\%(\.\|->\)\h\w*\|\h\w*::'
 " CSS-after {{{2
 let g:cssColorVimDoNotMessMyUpdatetime = 4000
 " }}}
+" CtrlP {{{2
+let g:ctrlp_match_window_bottom = 0
+let g:ctrlp_reuse_window = 'netrw\|quickfix'
+" }}}
 " Xell URI {{{2
 command! -bang -nargs=? OpenInBrowser call OpenInBrowser(<bang>1, '<args>')
 command! -nargs=0 OpenInDefaultPrg call xelltoolkit#run('', expand("%:p"))
