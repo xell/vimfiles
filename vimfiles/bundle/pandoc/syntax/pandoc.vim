@@ -58,6 +58,8 @@ else
 	" syn match pdcTEXTag '\\\a\+{\a\+}'
 	syn region pdcTEXTag start='\\\a\+{' end='}' oneline display
 	hi link pdcTEXTag PreProc
+	syn match pdcTEXMath '\$[^$]\+\$'
+	hi link pdcTEXMath Special
 endif
 
 " }}}
