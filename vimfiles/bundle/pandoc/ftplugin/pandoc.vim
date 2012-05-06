@@ -65,6 +65,7 @@ setlocal comments=s:<!--,m:\ \ \ \ ,e:-->,:*,:1.
 nmap <buffer> <M-c> vt>l"zc`<C-R>Z`<Esc>
 vnoremap <buffer> <M-c> "zc`<C-R>Z`<Esc>
 vnoremap <buffer> <M-t> "zc~~<C-R>Z~~<Esc>
+inoremap <buffer> <M-8> ****<++><Left><Left><Left><Left><Left><Left>
 
 nnoremap <buffer> j gj
 nnoremap <buffer> k gk

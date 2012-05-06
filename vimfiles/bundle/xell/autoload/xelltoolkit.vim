@@ -145,7 +145,7 @@ function! xelltoolkit#run(prg, file, ...) " {{{1
 		elseif a:prg =~? 'iexplore\.exe'
 			" Hack for ie
 			let file = a:file
-		elseif a:file =~ '\s'
+		elseif a:file =~ '\s\|&'
 			" Just surroud it double-quote
 			let file = shellescape(a:file)
 		else
