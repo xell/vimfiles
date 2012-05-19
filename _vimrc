@@ -1334,6 +1334,7 @@ endif
 
 " }}}
 " Neocomplcache {{{2
+if $SUDO_USER == ''
 " Disable AutoComplPop.
 let g:acp_enableAtStartup = 0
 " Use neocomplcache.
@@ -1423,6 +1424,9 @@ let g:neocomplcache_omni_patterns.cpp = '\h\w*\%(\.\|->\)\h\w*\|\h\w*::'
 " if has('conceal')
 "   set conceallevel=2 concealcursor=i
 " endif
+else
+	let g:loaded_neocomplcache = 1
+endif
 
 " }}}
 " CSS-after {{{2
