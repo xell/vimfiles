@@ -816,8 +816,16 @@ function! s:find_general()
 	endif
 
 	call xelltoolkit#grep_in_lcd_r(option, include, pattern)
+
+	cwindow
+
+	if &ft == 'qf'
+		exec 'match ErrorMsg /' . pattern . '/'
+	endif
 endfunction
 " }}}
+
+
 
 " }}}
 

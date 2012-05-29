@@ -360,8 +360,6 @@ function! xelltoolkit#grep_in_lcd_r(option, include, pattern) " {{{
 
 	exec cmd
 
-	cwindow
-
 endfunction
 "}}}
 
@@ -372,3 +370,30 @@ function! xelltoolkit#get_cmd_output(cmd) "{{{1
 endfunction
 "}}}
 
+function! xelltoolkit#get_buflist_cur_tab(include_cur_win) "{{{1
+	" tabpagebuflist(NO_OF_TABPAGE) -> [1,3,1]
+	" winnr('$') number of windows of current tabpage
+	" winnr()  the no. of current window
+	" bufname('%')
+	let buflist_dup = tabpagebuflist()
+	let d = {}
+	let buflist = []
+
+	" Remove duplicates in tabpagebuflist
+	for item in buflist_dup
+		if has_key(d, item)
+			continue
+		else
+			" Use new list to maintain the order
+			let d[item] = 1
+			if item == winbufnr(0) && !a:include_cur_win
+				continue
+			else
+				call add(buflist, bufname(item))
+			endif
+		endif
+	endfor
+
+	return buflist
+endfunction
+"}}}
