@@ -820,7 +820,7 @@ function! s:find_general()
 	cwindow
 
 	if &ft == 'qf'
-		exec 'match ErrorMsg /' . pattern . '/'
+		exec 'match ErrorMsg /\c' . pattern . '/'
 	endif
 endfunction
 " }}}
