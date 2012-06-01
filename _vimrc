@@ -825,8 +825,6 @@ function! s:find_general()
 endfunction
 " }}}
 
-
-
 " }}}
 
 " Modify texts {{{2
