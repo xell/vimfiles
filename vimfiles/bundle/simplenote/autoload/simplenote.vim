@@ -38,6 +38,14 @@ else
   let s:password = ""
 endif
 
+" vertical buffer
+if exists("g:SimplenoteVertical")
+  let s:vbuff = g:SimplenoteVertical
+else
+  let s:vbuff = 0
+endif
+
+
 if (s:user == "") || (s:password == "")
   let errmsg = "Simplenote credentials missing. Set g:SimplenoteUsername and "
   let errmsg = errmsg . "g:SimplenotePassword. If you don't have an account you can "
@@ -55,10 +63,18 @@ let g:simplenote_scratch_buffer = 'Simplenote'
 
 " Function that opens or navigates to the scratch buffer.
 function! s:ScratchBufferOpen(name)
+	let exe_new = "new "
+	let exe_split = "split "
+
+	if s:vbuff > 0
+		let exe_new = "vert " . exe_new
+		let exe_split = "vert " . exe_split
+	endif
+
 
     let scr_bufnum = bufnr(a:name)
     if scr_bufnum == -1
-        exe "new " . a:name
+        exe exe_new . a:name
     else
         let scr_winnum = bufwinnr(scr_bufnum)
         if scr_winnum != -1
@@ -66,7 +82,7 @@ function! s:ScratchBufferOpen(name)
                 exe scr_winnum . "wincmd w"
             endif
         else
-            exe "split +buffer" . scr_bufnum
+            exe  exe_split . "+buffer" . scr_bufnum
         endif
     endif
     call s:ScratchBuffer()
@@ -99,11 +115,16 @@ python << ENDPYTHON
 
 import urllib
 import urllib2
+from urllib2 import HTTPError
 import base64
 try:
-    import simplejson as json
-except ImportError:
     import json
+except ImportError:
+    try:
+        import simplejson as json
+    except ImportError:
+        # For Google AppEngine
+        from django.utils import simplejson as json
 
 AUTH_URL = 'https://simple-note.appspot.com/api/login'
 DATA_URL = 'https://simple-note.appspot.com/api2/data'
@@ -174,6 +195,8 @@ class Simplenote(object):
         request = Request(DATA_URL+params)
         try:
             response = urllib2.urlopen(request)
+        except HTTPError, e:
+            return e, -1
         except IOError, e:
             return e, -1
         note = json.loads(response.read())
@@ -240,8 +263,15 @@ class Simplenote(object):
         else:
             return "No string or valid note.", -1
 
-    def get_note_list(self):
+    def get_note_list(self, qty=float("inf")):
         """ function to get the note list
+
+        The function can be passed an optional argument to limit the
+        size of the list returned. If omitted a list of all notes is
+        returned.
+
+        Arguments:
+            - quantity (integer number): of notes to list
 
         Returns:
             An array of note objects with all properties set except
@@ -254,8 +284,12 @@ class Simplenote(object):
         response = {}
         notes = { "data" : [] }
 
-        # get the full note index
-        params = 'auth=%s&email=%s&length=%s' % (self.get_token(), self.username,
+        # get the note index
+        if qty < NOTE_FETCH_LENGTH:
+            params = 'auth=%s&email=%s&length=%s' % (self.get_token(), self.username,
+                                                 qty)
+        else:
+            params = 'auth=%s&email=%s&length=%s' % (self.get_token(), self.username,
                                                  NOTE_FETCH_LENGTH)
         # perform initial HTTP request
         try:
@@ -266,8 +300,11 @@ class Simplenote(object):
             status = -1
 
         # get additional notes if bookmark was set in response
-        while response.has_key("mark"):
-            vals = (self.get_token(), self.username, response["mark"], NOTE_FETCH_LENGTH)
+        while response.has_key("mark") and len(notes["data"]) < qty:
+            if (qty - len(notes["data"])) < NOTE_FETCH_LENGTH:
+                vals = (self.get_token(), self.username, response["mark"], qty - len(notes["data"]))
+            else:
+                vals = (self.get_token(), self.username, response["mark"], NOTE_FETCH_LENGTH)
             params = 'auth=%s&email=%s&mark=%s&length=%s' % vals
 
             # perform the actual HTTP request
@@ -298,6 +335,8 @@ class Simplenote(object):
         """
         # get note
         note, status = self.get_note(note_id)
+        if (status == -1):
+            return note, status
         # set deleted property
         note["deleted"] = 1
         # update note
@@ -317,7 +356,9 @@ class Simplenote(object):
 
         """
         # notes have to be trashed before deletion
-        self.trash_note(note_id)
+        note, status = self.trash_note(note_id)
+        if (status == -1):
+            return note, status
 
         params = '/%s?auth=%s&email=%s' % (str(note_id), self.get_token(),
                                            self.username)
@@ -347,9 +388,9 @@ class Request(urllib2.Request):
 
 
 
-
 import vim
 import time
+import math as m
 from threading import Thread
 from Queue import Queue
 
@@ -393,15 +434,33 @@ class SimplenoteVimInterface(object):
         """
         # fetch first line and display as title
         note_lines = note["content"].split("\n")
+
+        # get window width for proper formatting
+        width = vim.current.window.width
+
+        # Make room for the numbers regardless of their presence
+        # min num width is 5
+        width -= max(m.floor(m.log(len(vim.current.buffer))) + 2, 5)
+        width = int(width)
+
+
         # format date
         mt = time.localtime(float(note["modifydate"]))
-        mod_time = time.strftime("%a, %d %b %Y %H:%M:%S", mt)
-        if len(note_lines) > 0:
-            title = "%s [%s]" % (note_lines[0], mod_time)
-        else:
-            title = "%s [%s]" % (note["key"], mod_time)
+        mod_time = time.strftime("[%a, %d %b %Y %H:%M:%S]", mt)
 
-        return (str(title)[0:80])
+        if len(note_lines) > 0:
+            title = str(note_lines[0])
+        else:
+            title = str(note["key"])
+
+        # Compress everything into the appropriate number of columns
+        title_width = width - len(mod_time) - 1
+        if len(title) > title_width:
+            title = title[:title_width]
+        elif len(title) < title_width:
+            title = title.ljust(title_width)
+
+        return "%s %s" % (title, mod_time)
 
 
     def get_notes_from_keys(self, key_list):
@@ -512,14 +571,14 @@ class SimplenoteVimInterface(object):
         else:
             print "Update failed.: %s" % note["key"]
 
-    def list_note_index_in_scratch_buffer(self):
+    def list_note_index_in_scratch_buffer(self, qty=float("inf")):
         """ get all available notes and display them in a scratchbuffer """
         # Initialize the scratch buffer
         self.scratch_buffer()
         vim.command("setlocal modifiable")
         # clear global note id storage
         buffer = vim.current.buffer
-        note_list, status = self.simplenote.get_note_list()
+        note_list, status = self.simplenote.get_note_list(qty)
         # set global notes index object to notes
         if status == 0:
             note_titles = []
@@ -535,7 +594,8 @@ class SimplenoteVimInterface(object):
 
         # map <CR> to call get_note()
         vim.command("setl nomodifiable")
-        vim.command("map <buffer><silent> <CR> <Esc>:call <SID>GetNoteToCurrentBuffer()<CR>")
+        vim.command("setlocal nowrap")
+        vim.command("nnoremap <buffer><silent> <CR> <Esc>:call <SID>GetNoteToCurrentBuffer()<CR>")
 
 
 class NoteFetcher(Thread):
@@ -554,7 +614,9 @@ class NoteFetcher(Thread):
     def run(self):
         key = self.queue.get()
         note, status = self.simplenote.get_note(key)
-        self.note_list.append(note)
+        if status != -1:
+          self.note_list.append(note)
+
         self.queue.task_done()
 
 interface = SimplenoteVimInterface(SN_USER, SN_PASSWORD)
@@ -581,11 +643,18 @@ interface.update_note_from_current_buffer()
 EOF
 endfunction
 
-function! simplenote#SimpleNote(param)
+function! simplenote#SimpleNote(param, ...)
 python << EOF
 param = vim.eval("a:param")
+optionsexist = True if (float(vim.eval("a:0"))>=1) else False
 if param == "-l":
-    interface.list_note_index_in_scratch_buffer()
+    if optionsexist:
+        try:
+            interface.list_note_index_in_scratch_buffer(int(float(vim.eval("a:1"))))
+        except:
+            interface.list_note_index_in_scratch_buffer()
+    else:
+        interface.list_note_index_in_scratch_buffer()
 
 elif param == "-d":
     interface.trash_current_note()
