@@ -41,6 +41,7 @@ let g:colors_name = "xell"
  highlight PmenuSbar     guifg=fg          guibg=#888888     ctermfg=15 ctermbg=0
  highlight PmenuThumb    guifg=fg          guibg=#000000     ctermfg=15 ctermbg=8
  highlight Search        guifg=#000000     guibg=#ffff00     ctermfg=1  ctermbg=8 gui=Bold cterm=Bold
+ highlight SignColumn                      guibg=bg
  highlight SpecialKey    guifg=#ffa0a0     guibg=bg          ctermfg=1  ctermbg=8
  highlight StatusLine    guifg=#e8e7e6     guibg=#777777     ctermfg=7  ctermbg=0
  highlight StatusLineNC  guifg=#d3cfcd     guibg=#444444     ctermfg=7  ctermbg=8

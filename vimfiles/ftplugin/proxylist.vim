@@ -52,11 +52,11 @@ function! s:convert_proxy()
 
 	" write rules of proxylist.pac
 	for proxylist in conv_lists
-		call add(pac, "if (shExpMatch(url, '" . proxylist[0] . "')) return " . proxylist[1])
+		call add(pac, "if (shExpMatch(url, '" . proxylist[0] . "')) return " . proxylist[1] . ';')
 	endfor
 
 	" write footer of proxylist.pac
-	call extend(pac,['', 'return ''DIRECT''', '}'])
+	call extend(pac,['', 'return ''DIRECT'';', '}'])
 
 	call writefile(pac, pac_file)
 
