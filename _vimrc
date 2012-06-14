@@ -976,7 +976,7 @@ nnoremap gcl :let g:tcommentOptions = {'col': 1}<CR>:normal gcc<CR>:let g:tcomme
 let g:tcommentOptions = {}
 let g:tcommentBlockXML = "<!--%s-->\n"
 " Defind new pandoc type TODO block comment
-let g:tcomment_types = {'pandoc': "<!-- %s -->", 'pandoc_inline': "<!-- %s -->", 'pandoc_block': "<!-- %s -->\n  ", 'proxylist': '#%s', 'noteindex': '*%s', 'conf': '#%s'}
+let g:tcomment_types = {'pandoc': "<!-- %s -->", 'pandoc_inline': "<!-- %s -->", 'pandoc_block': "<!-- %s -->\n  ", 'proxylist': '#%s', 'noteindex': '*%s', 'conf': '#%s', 'todotxt': 'x %s'}
 "call tcomment#DefineType('pandoc', "<!-- %s -->")
 "call tcomment#DefineType('pandoc_inline', "<!-- %s -->")
 "call tcomment#DefineType('pandoc_block', "<!-- %s -->\n  ")
@@ -1465,6 +1465,12 @@ autocmd VimLeavePre * if has("XellDeleteTempFiles") | call XellDeleteTempFiles()
 
 " Test
 set exrc
+if g:isw
+	let g:todo_file = 'd:\Codes\web\xell.github.com\todo.txt'
+elseif g:ism
+	let g:todo_file = glob('~/Sites/xell.github.com/todo.txt')
+endif
+nmap <Leader>p :exec 'e ' . g:todo_file<CR>
 
 " Mathematica filetype
 let filetype_m = "mma"
