@@ -303,6 +303,11 @@ elseif g:ism
 	let g:proxy_list = '/Users/xell/Codes/pac/xell.proxylist'
 	let g:proxy_pac = '/Users/xell/.xellproxy/proxylist.pac'
 endif
+if g:isw
+	let g:hosts_list = 'd:\Codes\pac\xell.hostslist'
+elseif g:ism
+	let g:hosts_list = '/Users/xell/Codes/pac/xell.hostslist'
+endif
 " }}}
 
 " Docs {{{2
@@ -976,7 +981,7 @@ nnoremap gcl :let g:tcommentOptions = {'col': 1}<CR>:normal gcc<CR>:let g:tcomme
 let g:tcommentOptions = {}
 let g:tcommentBlockXML = "<!--%s-->\n"
 " Defind new pandoc type TODO block comment
-let g:tcomment_types = {'pandoc': "<!-- %s -->", 'pandoc_inline': "<!-- %s -->", 'pandoc_block': "<!-- %s -->\n  ", 'proxylist': '#%s', 'noteindex': '*%s', 'conf': '#%s', 'todotxt': 'x %s'}
+let g:tcomment_types = {'pandoc': "<!-- %s -->", 'pandoc_inline': "<!-- %s -->", 'pandoc_block': "<!-- %s -->\n  ", 'proxylist': '#%s', 'noteindex': '*%s', 'conf': '#%s', 'todotxt': 'x %s', 'hostslist': '#%s'}
 "call tcomment#DefineType('pandoc', "<!-- %s -->")
 "call tcomment#DefineType('pandoc_inline', "<!-- %s -->")
 "call tcomment#DefineType('pandoc_block', "<!-- %s -->\n  ")
