@@ -923,7 +923,7 @@ elseif g:ism
 	cab xhost e /etc/hosts<CR>
 	cab xbp e ~/.bash_profile
 	" Must in /etc/sudoers set username ALL=(ALL) NOPASSWD:ALL
-	cab xw w !sudo tee % > /dev/null
+	cab sudow silent w !sudo tee %
 endif
 
 cab xfn echo expand("%:p")
