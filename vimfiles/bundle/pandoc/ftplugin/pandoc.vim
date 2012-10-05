@@ -127,9 +127,17 @@ endfunction
 " http://stackoverflow.com/questions/3828606/vim-markdown-folding/4677454#4677454
 "
 command! -buffer -nargs=0 ToggleFoldMethod call <SID>toggle_fold_method()
-let b:folder_complex = 1
-setlocal foldexpr=MarkdownLevel()
-setlocal foldmethod=expr
+function! s:toggle_fold_method() " {{{2
+	if !b:folder_complex
+		setlocal foldmethod=manual
+		setlocal foldexpr=
+	else
+		setlocal foldmethod=expr
+		setlocal foldexpr=MarkdownLevel()
+	endif
+	let b:folder_complex = !b:folder_complex
+endfunction
+" }}}
 function! MarkdownLevel() " {{{2
     if getline(v:lnum) =~ '^# .*$'
         return ">1"
@@ -184,16 +192,8 @@ function! MarkdownLevel() " {{{2
 	endif
     return "="
 endfunction "}}}
-function! s:toggle_fold_method() " {{{2
-	let b:folder_complex = !b:folder_complex
-	if !b:folder_complex
-		setlocal foldmethod=manual
-	else
-		setlocal foldmethod=expr
-		setlocal foldexpr=MarkdownLevel()
-	endif
-endfunction
-" }}}
+let b:folder_complex = 1
+call s:toggle_fold_method()
 
 setlocal foldcolumn=5
 setlocal foldtext=Mkdfoldtext()

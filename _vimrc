@@ -1469,6 +1469,10 @@ autocmd VimLeavePre * if has("XellDeleteTempFiles") | call XellDeleteTempFiles()
 " Others {{{1
 
 " Test
+
+autocmd BufRead *.md ToggleFoldMethod
+cab mmm match Temp /\~\~../
+
 set exrc
 if g:isw
 	let g:todo_file = 'd:\Codes\web\xell.github.com\todo.txt'

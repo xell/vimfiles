@@ -232,4 +232,8 @@ hi default link pdcTableMultiCaption Label
 hi default link pdcTableCaptionCont Label
 " }}}
 
+syn match pdcTempPPP '{[^}]\{-}}' containedin=ALL
+hi default link pdcTempPPP MoreMsg
+
+
 let b:current_syntax = "pandoc"
