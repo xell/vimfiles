@@ -266,5 +266,68 @@ command! -nargs=0 WRSNew call WriteRoomStart('new')
 command! -nargs=0 WRE call WriteRoomEnd()
 " }}}
 
+" Other {{{1
+
+" XellWriteFiles {{{2
+" As for :macm, must use in has("gui_macvim")
+if g:isw
+	nmap <C-s> :call XellWriteFiles()<CR>
+	imap <C-s> <Esc><C-s>a
+elseif g:ism
+	macm File.Save<Tab>:w				key=<Nop>
+	nmap <D-s> :call XellWriteFiles()<CR>
+	imap <D-s> <Esc><D-s>a
+
+	macm Edit.Paste<Tab>"+gP			key=<Nop>
+	" imap <D-v> <C-r>+
+	" nmap <D-v> a<C-r>+<Esc>
+	imap <D-v> <Esc>"+gpa
+	nmap <D-v> "+gp
+
+endif
+" }}}
+
+" Find General {{{2
+if g:isw
+	nmap <C-f> :call <SID>find_general()<CR>
+elseif g:ism
+    macm Edit.Find.Find\.\.\.			key=<Nop>
+	nmap <D-f> :call <SID>find_general()<CR>
+endif
+
+" Default -i; include only this filetype; no exclude
+function! s:find_general()
+	let pattern = input('What to find: ')
+	if pattern == ''
+		call xelltoolkit#echo_msg('Empty inquery!')
+		return
+	endif
+
+	let option = input('Ignore case? (Y/n)')
+
+
+	if expand('%:p:h') =~? xelltoolkit#fname2pattern(g:xell_notes_root)
+		let include = 'note'
+	else
+		let include = input('This filetype? (Y/n)')
+		if include == ''
+			let include = expand('%:e')
+		else
+			let include = ''
+		endif
+	endif
+
+	call xelltoolkit#grep_in_lcd_r(option, include, pattern)
+
+	cwindow
+
+	if &ft == 'qf'
+		exec 'match ErrorMsg /\c' . pattern . '/'
+	endif
+endfunction
+" }}}
+
+" }}}
+
 " Modelines {{{1
 " vim:fmr={{{,}}}:fdm=marker:foldcolumn=3:lbr:fileencoding=utf-8:ff=unix

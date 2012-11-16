@@ -603,7 +603,9 @@ endfunction
 
 " Tabs {{{2
 " For tab creating
-nmap <C-t> :tabnew<CR>
+if g:isw
+	nmap <C-t> :tabnew<CR>
+endif
 
 " Tab close
 nmap <Leader>q :tabclose
@@ -795,41 +797,6 @@ vmap <Leader>l "zy:lv /<C-R>z/ %<CR>:lw<CR>
 nmap <Tab> :call xelltoolkit#goto_next_word(g:urlpattern)<CR>
 nmap <S-Tab> :call xelltoolkit#goto_pre_word(g:urlpattern)<CR>
 
-" Find General {{{3
-nmap <C-F> :call <SID>find_general()<CR>
-
-" Default -i; include only this filetype; no exclude
-function! s:find_general()
-	let pattern = input('What to find: ')
-	if pattern == ''
-		call xelltoolkit#echo_msg('Empty inquery!')
-		return
-	endif
-
-	let option = input('Ignore case? (Y/n)')
-
-
-	if expand('%:p:h') =~? xelltoolkit#fname2pattern(g:xell_notes_root)
-		let include = 'note'
-	else
-		let include = input('This filetype? (Y/n)')
-		if include == ''
-			let include = expand('%:e')
-		else
-			let include = ''
-		endif
-	endif
-
-	call xelltoolkit#grep_in_lcd_r(option, include, pattern)
-
-	cwindow
-
-	if &ft == 'qf'
-		exec 'match ErrorMsg /\c' . pattern . '/'
-	endif
-endfunction
-" }}}
-
 " }}}
 
 " Modify texts {{{2
@@ -996,7 +963,11 @@ let g:tcomment_types = {'pandoc': "<!-- %s -->", 'pandoc_inline': "<!-- %s -->",
 nnoremap <C-Enter> :WinFullScreen<CR>
 " }}}
 " ZenCoding {{{2
-let g:user_zen_leader_key = '<c-e>'
+if g:isw
+	let g:user_zen_leader_key = '<c-e>'
+elseif g:ism
+	let g:user_zen_leader_key = '<D-e>'
+endif
 "let g:user_zen_expandabbr_key = '<c-h>'
 
 " If you want to complete tags using |omnifunc| then add this.
@@ -1459,10 +1430,12 @@ command! -nargs=1 Es call xelltoolkit#edit_samename_file('<args>')
 nmap <silent> <S-F6> :call ShowLiveWordCount()<CR>
 " }}}
 " Xell TempFile {{{2
-nmap <C-s> :call XellWriteFiles()<CR>
-imap <C-s> <Esc><C-s>a
+" As for :macm, must use in has("gui_macvim")
 " Delete all tmp files
 autocmd VimLeavePre * if has("XellDeleteTempFiles") | call XellDeleteTempFiles() | endif
+" }}}
+" Evervim {{{2
+exec 'so ' . expand("<sfile>:p:h") . g:slash . '.evervimconf'
 " }}}
 " }}}
 
