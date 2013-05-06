@@ -150,13 +150,13 @@ function! s:sizeAndPositionOfWindow()
 		else
 			set lines=45
 		endif
-		set columns=101
+		set columns=169
 		"winpos 50 60
 		let s:sizeandpositionofwindow = !s:sizeandpositionofwindow
 	else
 		if g:ism
-			set lines=40
-			set columns=169
+			set lines=68
+			set columns=259
 		else
 			set lines=45
 			set columns=220

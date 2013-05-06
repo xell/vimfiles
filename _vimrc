@@ -262,6 +262,8 @@ if g:ism
 	
 	" set imd
 	set noimd
+
+	" http://www.v2ex.com/t/40375
 	" }}}
 
 	" Use vim internal help when press K
@@ -515,7 +517,7 @@ function! s:XellBufferStatuslineHighlight()
 	if empty(buffername)
 		highlight StatusLine guifg=White guibg=Green
 		"highlight StatusLineNC guifg=LightGreen guibg=White
-	elseif buffername =~ '\%(\.tmp\|0\)$'
+	elseif buffername =~ '\%(\.tmp\|0\)$' || expand("%:p") =~ '^\/private\/var'
 		highlight StatusLine guifg=White guibg=Red
 		"highlight StatusLineNC guifg=White guibg=LightRed
 	else
@@ -617,8 +619,8 @@ noremap <C-L> gt
 " Switch tabs and windows by numbers
 function! s:mapleadernumber()
 	for i in range(1, 9)
-		exec 'nmap <Leader>' . i . ' ' . i . 'gt'
-		exec 'nmap <M-' . i . '> :' . i . 'wincmd w<CR>'
+		exec 'nmap <Leader>' . i . ' :' . i . 'wincmd w<CR>'
+		exec 'nmap <M-' . i . '> ' . i . 'gt'
 	endfor
 endfunction
 call <SID>mapleadernumber()
@@ -1233,10 +1235,21 @@ let g:tex_comment_nospell = 1
 " See syntax.txt *tex-folding*, vim built-in vim fold support
 " It's based on fdm=syntax and is very inaccurate
 " When using latex-suite, it's deprecated de facto
-let g:tex_fold_enabled = 1
+let g:tex_fold_enabled = 0
 
 " Display the spell highlight beyond the syntax highlights
 autocmd BufReadPost,FileReadPost *.tex syntax spell toplevel
+" autocmd BufReadPost,FileReadPost,BufWinEnter *.tex normal ,rf
+
+" g:Imap_UsePlaceHolders=0
+" g:Tex_IgnoredWarnings
+" g:Tex_IgnoreLevel
+
+let g:Tex_SmartKeyBS=0
+let g:Tex_SmartKeyQuote=0
+let g:Tex_SmartKeyDot=1
+
+let g:Tex_CatchVisMapErrors = 1
 
 " Set customized folding, see folding.vim
 let g:Tex_FoldedSections = 'part,chapter,chapterp,section,%%fakesection,'
@@ -1291,7 +1304,7 @@ if g:ism
 	endfunction
 	
 
-	inoremap <C-j> <C-O>:call <SID>imap_jump()<CR>
+	inoremap <D-j> <C-O>:call <SID>imap_jump()<CR>
 
 	call xelltoolkit#imap('()', '(<++>)<++>', 0)
 	call xelltoolkit#imap('[]', '[<++>]<++>', 0)
@@ -1436,6 +1449,14 @@ autocmd VimLeavePre * if has("XellDeleteTempFiles") | call XellDeleteTempFiles()
 " }}}
 " Evervim {{{2
 exec 'so ' . expand("<sfile>:p:h") . g:slash . '.evervimconf'
+" Vimim {{{2
+let g:vimim_map = 'c-bslash'
+" let g:vimim_mode='static'
+let g:vimim_shuangpin = 'nature'
+" let g:vimim_cloud = 'qq.shuangpin.nature'
+let g:vimim_cloud = -1
+" let g:vimim_mycloud = 'dll:' . g:myvimfiles . 'bundle/vimim/plugin/libvimim.so'
+" let g:vimim_mycloud = 'dll:' . g:myvimfiles . '/bundle/vimim/plugin/libvimim.so:arg:func'
 " }}}
 " }}}
 
@@ -1443,7 +1464,7 @@ exec 'so ' . expand("<sfile>:p:h") . g:slash . '.evervimconf'
 
 " Test
 
-autocmd BufRead *.md ToggleFoldMethod
+" autocmd BufRead *.md ToggleFoldMethod
 cab mmm match Temp /\~\~../
 
 set exrc
