@@ -188,7 +188,7 @@ function! xelltoolkit#run(prg, file, ...) " {{{1
 		if file == ''
 			let cmd = prg
 		else
-			let cmd = prg . ' ' . file
+			let cmd = prg . ' "' . file . '"'
 		endif
 
 		if a:0 == 0

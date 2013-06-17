@@ -285,13 +285,15 @@ elseif g:ism
 endif
 
 " URL {{{2
-let g:urlpattern = '\%(\(https\?\|ftp\):\/\{2}[^ ">\])]\+\)'
 if g:isw
+	let g:urlpattern = '\%(\(https\?\|ftp\):\/\{2}[^ ">\])]\+\)'
 	let g:webbrowser = ''
 	let g:webserver_host = 'http://127.0.0.1:8800'
 	let g:webserver_dir = 'd:\Codes\web'
 elseif g:ism
-	let g:webbrowser = 'Google Chrome.app'
+	let g:urlpattern = '\%(\([^ ]\+\):\/\{2}[^ ">\])]\+\)'
+	" let g:webbrowser = 'Google Chrome.app'
+	let g:webbrowser = ''
 	let g:webserver_host = 'http://localhost:80/~xell'
 	let g:webserver_dir = glob('~/Sites')
 endif
@@ -303,7 +305,8 @@ if g:isw
 	let g:proxy_pac = 'd:\Codes\pac\proxylist.pac'
 elseif g:ism
 	let g:proxy_list = '/Users/xell/Codes/pac/xell.proxylist'
-	let g:proxy_pac = '/Users/xell/.xellproxy/proxylist.pac'
+	" let g:proxy_pac = '/Users/xell/.xellproxy/proxylist.pac'
+	let g:proxy_pac = '/Users/xell/Sites/proxylist.pac'
 endif
 if g:isw
 	let g:hosts_list = 'd:\Codes\pac\xell.hostslist'
@@ -874,6 +877,12 @@ if &term =~? 'xterm'
 else
 	noremap <A-o> <Tab>
 endif
+
+" marked support
+if g:ism
+	noremap <Leader>mp :silent !open -a Marked.app '%:p'<CR>
+endif
+
 " }}}
 
 " }}}
