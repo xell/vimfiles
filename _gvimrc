@@ -232,9 +232,9 @@ elseif g:ism
 	" TODO
 	set linespace=4
 	set guifont=Consolas:h14
-	" set guifont=M+\ 1mn\ light:h14
 	set guifontwide=Microsoft\ YaHei:h14
 	" useless {{{2
+	" set guifontwide=STHeiti:h14
 	"set guifont=Megatops_ProCoder_1.0:h12
 	"set guifontwide=Megatops_ProCoder_1.0:h12 
 	"set guifont=Andale_Mono:h12
