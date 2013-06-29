@@ -6,6 +6,16 @@ let g:loaded_xell_livewordcount = 1
 "[^\\x00-\\xff]
 " from http://stackoverflow.com/questions/114431/fast-word-count-function-in-vim/120386#120386 
 
+command! Wc :echo system("wc_py " . expand("%:p"))
+command! WC :call <SID>counts_all_ft()
+
+function! s:counts_all_ft()
+	let files = substitute(glob(expand("%:p:h") . '/**/*.' . expand("%:e")), ' ', '\\ ', 'g')
+	let files = substitute(files, '\n', ' ', 'g')
+	echo system("wc_py " . files)
+endfunction
+
+
 command! -range=% Num :call NumberOfChars()
 function! NumberOfChars() range "{{{
 	" let chineseNum = 
