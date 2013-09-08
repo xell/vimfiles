@@ -233,6 +233,12 @@ elseif g:ism
 	set linespace=4
 	set guifont=Consolas:h14
 	set guifontwide=Microsoft\ YaHei:h14
+	" set guifont=Consolas:h14
+	" set guifontwide=TextMate
+	" set guifontwide=Arial\ Unicode MS
+	" set guifontwide=Heiti\ SC
+	" set guifont=WenQuanYi\ Micro\ Hei\ Mono
+	
 	" useless {{{2
 	" set guifontwide=STHeiti:h14
 	"set guifont=Megatops_ProCoder_1.0:h12
