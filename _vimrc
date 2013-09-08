@@ -988,16 +988,14 @@ let g:tcomment_types = {'pandoc': "<!-- %s -->", 'pandoc_inline': "<!-- %s -->",
 " WinFullScreen {{{2
 nnoremap <C-Enter> :WinFullScreen<CR>
 " }}}
-" ZenCoding {{{2
+" Emmet {{{2
 if g:isw
-	let g:user_zen_leader_key = '<c-e>'
+    let g:user_emmet_leader_key = '<c-e>'
 elseif g:ism
-	let g:user_zen_leader_key = '<D-e>'
+    let g:user_emmet_leader_key = '<D-e>'
 endif
-"let g:user_zen_expandabbr_key = '<c-h>'
-
 " If you want to complete tags using |omnifunc| then add this.
-let g:use_zen_complete_tag = 1
+" let g:use_emmet_complete_tag = 1
 " }}}
 " BufExplorer {{{2
 let g:bufExplorerShowUnlisted=1
