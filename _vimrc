@@ -149,7 +149,7 @@ set fileencodings=utf-8,cp936
 
 " Options in sessions
 " set sessionoptions=buffers,folds,globals,localoptions,options,resize,slash,tabpages,winpos,winsize
-set sessionoptions=buffers,curdir,folds,resize,slash,tabpages,winpos,winsize
+set sessionoptions=buffers,curdir,folds,globals,help,resize,slash,tabpages,winpos,winsize
 
 " Set local current directory
 set autochdir
@@ -180,6 +180,9 @@ set foldmethod=marker
 
 " Set ignore files when completion
 set wildignore=*.o,*.ojb,*.pyc,*.DS_Store,*.db,*.dll,*.exe,*.a
+
+" Expand tab to spaces
+set expandtab
 
 " Deal with large file
 "autocmd BufWinEnter * if line2byte(line("$") + 1) > 200000 | syntax clear | echomsg "Large File" | endif
@@ -291,7 +294,7 @@ if g:isw
 	let g:webserver_host = 'http://127.0.0.1:8800'
 	let g:webserver_dir = 'd:\Codes\web'
 elseif g:ism
-	let g:urlpattern = '\%(\([^ ]\+\):\/\{2}[^ ">\])]\+\)'
+	let g:urlpattern = '\%(\([a-z-]\+\):\/\{2}[^ ">\])]\+\)'
 	" let g:webbrowser = 'Google Chrome.app'
 	let g:webbrowser = ''
 	let g:webserver_host = 'http://localhost:80/~xell'
@@ -326,6 +329,14 @@ let g:docs_convert_buffer_rules = {
 			\ 'pandoc': 'PandocConvertBufferWrapper',
 			\ 'rst': 'RstConvertBufferWrapper',
 			\ 'noteindex': 'NotesConvertWrapper'}
+
+" session {{{3
+if g:isw
+	let g:session_path = 'D:\w\_vimsession'
+elseif g:ism
+	let g:session_path = glob('~/.vimsession')
+endif
+
 
 " Text2tags specification {{{3
 if g:isw
@@ -403,6 +414,7 @@ endif
 
 let g:xell_notes_index = 'index.noteindex'
 let g:xell_notes_temp = 'temp.md'
+let g:xell_notes_default_ext = 'md'
 
 " }}}
 
@@ -465,6 +477,9 @@ set scrolloff=8
 
 " Set mouse in normal window
 set mouse=a
+
+" No hide mouse
+set nomousehide
 
 " Foldtext  {{{2
 " http://www.gregsexton.org/2011/03/improving-the-text-displayed-in-a-fold/
@@ -906,7 +921,7 @@ endif
 
 cab xfn echo expand("%:p")
 "Insert date and time
-iab xdate <C-r>=strftime("%y-%m-%d %H:%M:%S")<CR>
+iab xdate <C-r>=strftime("%Y-%m-%d %H:%M:%S")<CR>
 
 " XXX temp
 cab xe e ftp://xell@ftp.gowall1.veeserve.com:21/public_html/
@@ -1475,6 +1490,7 @@ let g:vimim_cloud = -1
 
 " autocmd BufRead *.md ToggleFoldMethod
 cab mmm match Temp /\~\~../
+cab xxc bd book.log <bar> ccl
 
 set exrc
 if g:isw
