@@ -113,10 +113,10 @@ syn match pdcDelimitedCodeBlockLanguage /{.\+}/ contained containedin=pdcDelimit
 " Lists {{{1
 " Normal lists
 syn match pdcListItem '^\s*[-+*]\s\+\S'me=e-1 contained
-syn match pdcListItem '^\s*[#1-9a-zA-Z]\(\.\|)\)\s\+\S'me=e-1 contained
+syn match pdcListItem '^\s*[#0-9a-zA-Z]\+\(\.\|)\)\s\+\S'me=e-1 contained
 syn match pdcListItem '^\s*(@\a*)\s\+\S'me=e-1 contained
 syn match pdcListItem '^\s*[-+*]\s\+\S'me=e-1
-syn match pdcListItem '^\s*[#1-9a-zA-Z]\(\.\|)\)\s\+\S'me=e-1
+syn match pdcListItem '^\s*[#0-9a-zA-Z]\+\(\.\|)\)\s\+\S'me=e-1
 syn match pdcListItem '^\s*(@\a*)\s\+\S'me=e-1
 
 " Definitions
