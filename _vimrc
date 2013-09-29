@@ -1494,7 +1494,7 @@ set exrc
 if g:isw
 	let g:todo_file = 'd:\Codes\web\xell.github.com\todo.txt'
 elseif g:ism
-	let g:todo_file = glob('~/Sites/xell.github.com/todo.txt')
+	let g:todo_file = glob('~/Documents/notes/todo.txt')
 endif
 nmap <Leader>p :exec 'e ' . g:todo_file<CR>
 
