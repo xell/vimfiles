@@ -307,14 +307,14 @@ if g:isw
 	let g:proxy_list = 'd:\Codes\pac\xell.proxylist'
 	let g:proxy_pac = 'd:\Codes\pac\proxylist.pac'
 elseif g:ism
-	let g:proxy_list = '/Users/xell/Codes/pac/xell.proxylist'
+	let g:proxy_list = '/Users/xell/Code/pac/xell.proxylist'
 	" let g:proxy_pac = '/Users/xell/.xellproxy/proxylist.pac'
 	let g:proxy_pac = '/Users/xell/Sites/proxylist.pac'
 endif
 if g:isw
 	let g:hosts_list = 'd:\Codes\pac\xell.hostslist'
 elseif g:ism
-	let g:hosts_list = '/Users/xell/Codes/pac/xell.hostslist'
+	let g:hosts_list = '/Users/xell/Code/pac/xell.hostslist'
 endif
 " }}}
 
@@ -952,7 +952,7 @@ command! -nargs=0 IncHelp echo "<,>Inc [s]tart_0 [i]ncre_1 [r]epeat_1 [w]idth_4 
 if g:isw
 	let g:languagetool_jar = 'd:\P\languagetool\LanguageTool.jar'
 elseif g:ism
-	let g:languagetool_jar = '/usr/local/Cellar/languagetool/1.3.1/libexec/LanguageTool.jar'
+	let g:languagetool_jar = '/usr/local/Cellar/languagetool/2.3/libexec/languagetool-commandline.jar'
 endif
 nmap <F7> :LanguageToolCheck<CR>
 " }}}
