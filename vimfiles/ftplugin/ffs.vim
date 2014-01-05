@@ -21,8 +21,12 @@ function! ListsFakeMatches(findstart, base)
 	else
 		" let t:keyword = getline(1)
 		let res = []
-		let res += split(system("ack --text --nobinary -g '" . t:keyword . "' " . t:ffs_start_path), '\n')
-		let res += split(system("ack --text --nobinary -l -m1 '" . t:keyword . "' " . t:ffs_start_path), '\n')
+        " ack 1.x
+		" let res += split(system("ack --text --nobinary -g '" . t:keyword . "' " . t:ffs_start_path), '\n')
+		" let res += split(system("ack --text --nobinary -l -m1 '" . t:keyword . "' " . t:ffs_start_path), '\n')
+        " ack 2.x
+		let res += split(system("ack --text -g '" . t:keyword . "' " . t:ffs_start_path), '\n')
+		let res += split(system("ack --text -l '" . t:keyword . "' " . t:ffs_start_path), '\n')
 
 		" call complete_add(a:base)
 		return res
