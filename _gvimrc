@@ -274,14 +274,14 @@ command! -nargs=0 WRE call WriteRoomEnd()
 
 " Other {{{1
 
-" XellWriteFiles {{{2
+" Temp Note(file) Saving {{{2
 " As for :macm, must use in has("gui_macvim")
 if g:isw
-	nmap <C-s> :call XellWriteFiles()<CR>
+	nmap <C-s> :call TempNote()<CR>
 	imap <C-s> <Esc><C-s>a
 elseif g:ism
 	macm File.Save<Tab>:w				key=<Nop>
-	nmap <D-s> :call XellWriteFiles()<CR>
+	nmap <D-s> :call TempNote()<CR>
 	imap <D-s> <Esc><D-s>a
 
 	macm Edit.Paste<Tab>"+gP			key=<Nop>

@@ -328,7 +328,7 @@ let g:docs_convert_buffer_rules = {
 			\ 'txt2tags': 'Txt2tagsConvertBufferWrapper',
 			\ 'pandoc': 'PandocConvertBufferWrapper',
 			\ 'rst': 'RstConvertBufferWrapper',
-			\ 'noteindex': 'NotesConvertWrapper'}
+			\ 'filelist': 'NotesConvertWrapper'}
 
 " session {{{3
 if g:isw
@@ -336,14 +336,14 @@ if g:isw
 elseif g:ism
 	let g:session_path = glob('~/.vimsession')
 endif
-
+" }}}
 
 " Text2tags specification {{{3
 if g:isw
 	let g:t2t_cmd = 'd:\p\txt2tags\txt2tags.py'
 	let g:t2t_cf_path = 'd:\w\_special\_tpl\t2t'
 elseif g:ism
-	let g:t2t_cmd = '/P/apps/txt2tags/txt2tags'
+	let g:t2t_cmd = '/usr/local/bin/txt2tags'
 	let g:t2t_cf_path = glob('~/Documents/_special/_tpl/t2t')
 endif
 
@@ -408,10 +408,11 @@ if g:isw
 	let g:xell_notes_root = 'D:\W\notes\xnotes'
 	let g:xell_notes_ex_root = 'D:\W\notes\xnotes_export'
 elseif g:ism
-	let g:xell_notes_root = glob('~/Documents/notes/xnotes')
+	let g:xell_notes_root = glob('~/Documents/notes/notes')
 	let g:xell_notes_ex_root = glob('~/Documents/notes/xnotes_export')
 endif
 
+" XXX notes_index is useless
 let g:xell_notes_index = 'index.noteindex'
 let g:xell_notes_temp = 'temp.md'
 let g:xell_notes_default_ext = 'md'
@@ -1464,11 +1465,6 @@ command! -nargs=1 Es call xelltoolkit#edit_samename_file('<args>')
 " Xell WordCount {{{2
 nmap <silent> <S-F6> :call ShowLiveWordCount()<CR>
 " }}}
-" Xell TempFile {{{2
-" As for :macm, must use in has("gui_macvim")
-" Delete all tmp files
-autocmd VimLeavePre * if has("XellDeleteTempFiles") | call XellDeleteTempFiles() | endif
-" }}}
 " Evervim {{{2
 exec 'so ' . expand("<sfile>:p:h") . g:slash . '.evervimconf'
 " Vimim {{{2
@@ -1479,6 +1475,12 @@ let g:vimim_shuangpin = 'nature'
 let g:vimim_cloud = -1
 " let g:vimim_mycloud = 'dll:' . g:myvimfiles . 'bundle/vimim/plugin/libvimim.so'
 " let g:vimim_mycloud = 'dll:' . g:myvimfiles . '/bundle/vimim/plugin/libvimim.so:arg:func'
+" }}}
+" Xell Other {{{2
+"delete the current file
+com! Rm call DeleteFile()
+"delete the file and quit the buffer (quits vim if this was the last file)
+com! RM call DeleteFile() <Bar> bd!
 " }}}
 " }}}
 

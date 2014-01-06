@@ -1,12 +1,20 @@
+" Only do this when not done yet for this buffer
+if (exists("b:did_ftplugin"))
+  finish
+endif
+let b:did_ftplugin = 1
+
 setlocal hidden
 setlocal bufhidden=delete
 setlocal buftype=nofile
 setlocal omnifunc=ListsFakeMatches
+" setlocal omnifunc=TestLFM
 
 let t:keyword = ''
 let t:bufnr = bufnr('%')
 
 nnoremap <buffer> <Esc> :bd!<CR>
+inoremap <buffer> <D-Return> <Esc>:call <SID>generate_filelist()<CR>
 inoremap <buffer> <Return> <Return><Esc>:call <SID>openfile()<CR>
 
 augroup ffs
@@ -14,26 +22,39 @@ augroup ffs
 	autocmd CursorMovedI <buffer> let t:keyword = getline('.') | call feedkeys("\<C-x>\<C-o>\<C-p>", 'n')
 augroup END
 
-function! ListsFakeMatches(findstart, base)
-	if a:findstart
-		" return col('.')
-		return 0
-	else
-		" let t:keyword = getline(1)
-		let res = []
-        " ack 1.x
-		" let res += split(system("ack --text --nobinary -g '" . t:keyword . "' " . t:ffs_start_path), '\n')
-		" let res += split(system("ack --text --nobinary -l -m1 '" . t:keyword . "' " . t:ffs_start_path), '\n')
-        " ack 2.x
-		let res += split(system("ack --text -g '" . t:keyword . "' " . t:ffs_start_path), '\n')
-		let res += split(system("ack --text -l '" . t:keyword . "' " . t:ffs_start_path), '\n')
-
-		" call complete_add(a:base)
-		return res
-	endif
+function! TestLFM(findstart, base)
+    let pathlen = len(getcwd()) + 1
+    call map(ListsFakeMatches(a:findstart, a:base), 'strpart(v:val, pathlen)')
 endfunction
 
-function! s:openfile()
+function! ListsFakeMatches(findstart, base) " {{{1
+	if a:findstart
+		return 0
+	else
+        let res = []
+        if t:keyword =~ '^`'
+            let tagword = substitute(t:keyword, '`', '\\`', 'g')
+            let res += split(system('mdfind -onlyin ' . t:ffs_start_path . ' "kMDItemOMUserTags == ' . "'" . tagword . "'" . '"'), '\n')
+        else
+            " ack 2.x
+            " let res += split(system("ack --text -g '" . t:keyword . "' " . t:ffs_start_path), '\n')
+            " let res += split(system("ack --text -l '" . t:keyword . "' " . t:ffs_start_path), '\n')
+            let res += split(system("ack -g '" . t:keyword . "' " . t:ffs_start_path), '\n')
+            let res += split(system("ack -l '" . t:keyword . "' " . t:ffs_start_path), '\n')
+
+            " it will cause the file with the name equal to t:keyword is empty
+            " file name.
+            " let res += split(system("ack --text -g '" . t:keyword . "'"), '\n')
+            " let res += split(system("ack --text -l '" . t:keyword . "'"), '\n')
+
+            " call complete_add(a:base)
+        endif
+        return res
+	endif
+endfunction
+" }}}
+
+function! s:openfile() " {{{1
 	let filename = substitute(getline(1), '^' . t:keyword, '', '')
 	" if no existed file was choosen
 	if filename == ''
@@ -62,6 +83,31 @@ function! s:openfile()
 
 	" normal n
 endfunction
+" }}}
+
+function! s:generate_filelist()
+    let res = []
+    if t:keyword =~ '^`'
+        let tagword = substitute(t:keyword, '`', '\\`', 'g')
+        let res += split(system('mdfind -onlyin ' . t:ffs_start_path . ' "kMDItemOMUserTags == ' . "'" . tagword . "'" . '"'), '\n')
+    else
+        " ack 2.x
+        let res += split(system("ack --text -g '" . t:keyword . "' " . t:ffs_start_path), '\n')
+        let res += split(system("ack --text -l '" . t:keyword . "' " . t:ffs_start_path), '\n')
+    endif
+
+    let pathlen = len(getcwd()) + 1
+    call map(res, 'strpart(v:val, pathlen)')
+
+    unlet b:did_ftplugin
+    set ft=filelist
+    exec 'resize ' . (len(res) + 3)
+    call setline(1, ':' . getcwd())
+    call append(1, '')
+    call append(2, res)
+
+endfunction
+
 
 " ack --help-types {{{1
 "    --[no]actionscript .as .mxml

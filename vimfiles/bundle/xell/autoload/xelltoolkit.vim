@@ -398,3 +398,28 @@ function! xelltoolkit#get_buflist_cur_tab(include_cur_win) "{{{1
 	return buflist
 endfunction
 "}}}
+
+" Delete file from disk
+" c.f. http://vim.wikia.com/wiki/Delete_files_with_a_Vim_command
+function xelltoolkit#delete_file(...) "{{{1
+  if(exists('a:1'))
+    let theFile=a:1
+  elseif ( &ft == 'help' )
+    echohl Error
+    echo "Cannot delete a help buffer!"
+    echohl None
+    return -1
+  else
+    let theFile=expand('%:p')
+  endif
+  let delStatus=delete(theFile)
+  if(delStatus == 0)
+    echo "Deleted " . theFile
+  else
+    echohl WarningMsg
+    echo "Failed to delete " . theFile . ' ' . delStatus
+    echohl None
+  endif
+  return delStatus
+endfunction
+"}}}
