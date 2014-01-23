@@ -39,8 +39,13 @@ function! ListsFakeMatches(findstart, base) " {{{1
             " ack 2.x
             " let res += split(system("ack --text -g '" . t:keyword . "' " . t:ffs_start_path), '\n')
             " let res += split(system("ack --text -l '" . t:keyword . "' " . t:ffs_start_path), '\n')
-            let res += split(system("ack -g '" . t:keyword . "' " . t:ffs_start_path), '\n')
-            let res += split(system("ack -l '" . t:keyword . "' " . t:ffs_start_path), '\n')
+
+            " let res += split(system("ack -g '" . t:keyword . "' " . t:ffs_start_path), '\n')
+            " let res += split(system("ack -l '" . t:keyword . "' " . t:ffs_start_path), '\n')
+            " https://github.com/ggreer/the_silver_searcher
+            " http://betterthanack.com/
+            let res += split(system("ag -S -g '" . t:keyword . "' " . t:ffs_start_path), '\n')
+            let res += split(system("ag -S -l '" . t:keyword . "' " . t:ffs_start_path), '\n')
 
             " it will cause the file with the name equal to t:keyword is empty
             " file name.
@@ -85,7 +90,7 @@ function! s:openfile() " {{{1
 endfunction
 " }}}
 
-function! s:generate_filelist()
+function! s:generate_filelist() " {{{1
     let res = []
     if t:keyword =~ '^`'
         let tagword = substitute(t:keyword, '`', '\\`', 'g')
@@ -107,6 +112,7 @@ function! s:generate_filelist()
     call append(2, res)
 
 endfunction
+" }}}
 
 
 " ack --help-types {{{1

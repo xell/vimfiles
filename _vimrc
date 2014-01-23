@@ -534,10 +534,10 @@ augroup END
 function! s:XellBufferStatuslineHighlight()
 	let buffername = bufname("%")
 	if empty(buffername)
-		highlight StatusLine guifg=White guibg=Green
+		highlight StatusLine guifg=White guibg=#047BC1
 		"highlight StatusLineNC guifg=LightGreen guibg=White
-	elseif buffername =~ '\%(\.tmp\|0\)$' || expand("%:p") =~ '^\/private\/var'
-		highlight StatusLine guifg=White guibg=Red
+	elseif buffername =~ '\%(\.tmp\|0\)$' || expand("%:p") =~ '^\/private\/var' || expand("%:e") =~ 'tempnote'
+		highlight StatusLine guifg=White guibg=#DA4C4D
 		"highlight StatusLineNC guifg=White guibg=LightRed
 	else
 		highlight StatusLine ctermfg=11 ctermbg=12 cterm=none guifg=#E8E7E6 guibg=#777777 gui=none
@@ -1478,9 +1478,9 @@ let g:vimim_cloud = -1
 " }}}
 " Xell Other {{{2
 "delete the current file
-com! Rm call DeleteFile()
+com! Rm call xelltoolkit#delete_file()
 "delete the file and quit the buffer (quits vim if this was the last file)
-com! RM call DeleteFile() <Bar> bd!
+com! RM call xelltoolkit#delete_file() <Bar> bd!
 " }}}
 " }}}
 
