@@ -24,6 +24,11 @@ function! xelltoolkit#get_word_at_cursor(pattern) "{{{1
 	endif
 endf "}}}1
 
+function! xelltoolkit#get_file_url() "{{{1
+" Apostrophes ( ’ ) %27 Colon ( : ) %3A Exclamation Mark ( ! ) %21 Spaces: (  ) %20
+    return 'mvim://open?url=file://' . substitute(expand("%:p"), ' ', '%20', 'g') . '&line=' . line('.')
+endfunction "}}}
+
 function! xelltoolkit#get_copy(str) "{{{1
 	if a:str != ''
 		let @+ = a:str

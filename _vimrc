@@ -1481,6 +1481,7 @@ let g:vimim_cloud = -1
 com! Rm call xelltoolkit#delete_file()
 "delete the file and quit the buffer (quits vim if this was the last file)
 com! RM call xelltoolkit#delete_file() <Bar> bd!
+com! URL call xelltoolkit#get_copy(xelltoolkit#get_file_url())
 " }}}
 " }}}
 
