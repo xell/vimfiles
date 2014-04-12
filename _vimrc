@@ -838,14 +838,25 @@ nmap <C-Down> ddp
 " Dispaly {{{2
 nmap <Leader><Leader>n :call <SID>changenumberdisplay()<CR>
 function! s:changenumberdisplay()
-	if &number
-		set relativenumber
+	if &relativenumber
+		set norelativenumber
 	else
-		set number
+		set relativenumber
 	endif
 endfunction
 
 nnoremap <Space> @=((foldclosed(line('.')) < 0)?'zc':'zo')<CR>
+
+map ,hc :call SetColorColumn()<CR>
+function! SetColorColumn()
+    let col_num = virtcol(".")
+    let cc_list = split(&cc, ',')
+    if count(cc_list, string(col_num)) <= 0
+        execute "set cc+=".col_num
+    else
+        execute "set cc-=".col_num
+    endif
+endfunction
 
 " }}}
 
