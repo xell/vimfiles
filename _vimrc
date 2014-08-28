@@ -905,9 +905,9 @@ else
 	noremap <A-o> <Tab>
 endif
 
-" marked support
+" Marked 2 support
 if g:ism
-	noremap <Leader>mp :silent !open -a Marked.app '%:p'<CR>
+    noremap <Leader>mp :silent !open -a Marked\ 2.app '%:p'<CR>
 endif
 
 " }}}
