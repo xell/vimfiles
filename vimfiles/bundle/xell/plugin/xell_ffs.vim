@@ -16,7 +16,7 @@ function! FFS()
 	let t:ffs_start_path = expand("%:p:h")
 	for forbiden_path in g:ffs_forbiden_path
 		if t:ffs_start_path ==? forbiden_path
-			call xelltoolkit#echo_msg("You cannot perform recursive, non-restrict ack in " . forbiden_path)
+			call xelltoolkit#echo_msg("You cannot perform recursive, non-restrict search in " . forbiden_path)
 			return
 		endif
 	endfor
