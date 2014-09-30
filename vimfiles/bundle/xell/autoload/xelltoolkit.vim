@@ -296,7 +296,7 @@ endfunction "}}}
 function! xelltoolkit#imap(lhs, rhs, buffer) " {{{1
 	let lhs = a:lhs
 	let rhs = a:rhs
-	let num_of_left = strlen(rhs) - match(rhs, '<++>', 0) - 5
+	let num_of_left = strdisplaywidth(rhs) - match(rhs, '<++>', 0) - 5
 	let rhs = substitute(a:rhs, '<++>', '', '')
 	let str_left = ''
 	while (num_of_left >= 0)
