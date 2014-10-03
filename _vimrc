@@ -868,7 +868,7 @@ inoremap <C-D> <C-x><C-D>
 " Complete file names
 inoremap <C-F> <C-x><C-F>
 " Complete dictionary
-inoremap <C-K> <C-x><C-K>
+" inoremap <C-K> <C-x><C-K>
 " Complete whole lines
 " inoremap <C-L> <C-x><C-L>
 
