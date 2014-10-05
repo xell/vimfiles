@@ -163,7 +163,7 @@ set autoindent
 "set smartindent
 
 " In utf-8 files, use twice the width of ASCII characters
-set ambiwidth=double
+" set ambiwidth=double
 
 " Set tab page max
 set tabpagemax=100
@@ -747,15 +747,12 @@ if g:isw
 	exe 'inoremap <script> <C-v> <C-g>u'.paste#paste_cmd['i']
 	vnoremap <C-x> "+x
 else
-	" Redefine <D-v> in macmap.vim FIXME fail...
-	"execute 'inoremap <script> <special> <D-v>' paste#paste_cmd['i']
-	execute 'inoremap <script> <special> <D-v> <C-g>u'.paste#paste_cmd['i']
-
 	vnoremap <D-c> "+y
+
+    " nvo
 	noremap  <D-v> "+gP
 	cnoremap <D-v> <C-R>+
-	inoremap <D-v> <C-R>+
-	inoremap <D-V> <C-R>+
+	inoremap <D-v> <C-R><C-O>+
 endif
 
 " Open or yank web url

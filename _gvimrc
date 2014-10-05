@@ -233,6 +233,7 @@ elseif g:ism
 	set linespace=4
 	set guifont=Consolas:h14
 	set guifontwide=Microsoft\ YaHei:h14
+
     " set guifontwide=Source\ Han\ Sans\ CN\ ExtraLight:h14
 	" set guifont=Consolas:h14
 	" set guifontwide=TextMate
@@ -286,10 +287,8 @@ elseif g:ism
 	imap <D-s> <Esc><D-s>a
 
 	macm Edit.Paste<Tab>"+gP			key=<Nop>
-	" imap <D-v> <C-r>+
-	" nmap <D-v> a<C-r>+<Esc>
-	imap <D-v> <Esc>"+gpa
-	nmap <D-v> "+gp
+	" imap <D-v> <Esc>"+gpa
+	" nmap <D-v> "+gp
 
 endif
 macm Edit.Find.Use\ Selection\ for\ Find  key=<Nop>
