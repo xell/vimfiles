@@ -961,7 +961,7 @@ command! -nargs=0 IncHelp echo "<,>Inc [s]tart_0 [i]ncre_1 [r]epeat_1 [w]idth_4 
 if g:isw
 	let g:languagetool_jar = 'd:\P\languagetool\LanguageTool.jar'
 elseif g:ism
-	let g:languagetool_jar = '/usr/local/Cellar/languagetool/2.4.1/libexec/languagetool-commandline.jar'
+	let g:languagetool_jar = '/usr/local/Cellar/languagetool/2.6/libexec/languagetool-commandline.jar'
 endif
 nmap <F7> :LanguageToolCheck<CR>
 " }}}

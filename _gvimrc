@@ -231,24 +231,23 @@ if g:isw
 elseif g:ism
 	" TODO
 	set linespace=4
-	set guifont=Consolas:h14
-	set guifontwide=Microsoft\ YaHei:h14
-
-    " set guifontwide=Source\ Han\ Sans\ CN\ ExtraLight:h14
-	" set guifont=Consolas:h14
-	" set guifontwide=TextMate
-	" set guifontwide=Arial\ Unicode MS
-	" set guifontwide=Heiti\ SC
-	" set guifont=WenQuanYi\ Micro\ Hei\ Mono
-	
+	set guifont=Consolas:h15
 	" useless {{{2
-	" set guifontwide=STHeiti:h14
 	"set guifont=Megatops_ProCoder_1.0:h12
-	"set guifontwide=Megatops_ProCoder_1.0:h12 
 	"set guifont=Andale_Mono:h12
 	"set guifont=Courier\ New:h14
 	"set guifont=DejaVu_LGC_Sans_Mono:h13
 	"set guifont=Monaco:h13
+	"set guifont=WenQuanYi\ Micro\ Hei\ Mono
+    "
+    " guifontwide will disable the function of changing font size in Edit
+	"set guifontwide=Microsoft\ YaHei:h14
+    "set guifontwide=Source\ Han\ Sans\ CN\ ExtraLight:h14
+	"set guifontwide=TextMate
+	"set guifontwide=Arial\ Unicode MS
+	"set guifontwide=Heiti\ SC
+	"set guifontwide=STHeiti:h14
+	"set guifontwide=Megatops_ProCoder_1.0:h12 
 	"}}}
 endif
 

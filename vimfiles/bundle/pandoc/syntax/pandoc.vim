@@ -77,7 +77,12 @@ syn match pdcSetexHeader /^.\+\n[-]\+$/ contains=@Spell
 " }}}
 
 " Inline {{{1
-" ~~temp~~
+" CriticMarkup
+syn match pdcTempPPP '{[^}]\{-}}' containedin=ALLBUT,cmHighlight,cmHighlightLeft,cmHighlightRight
+syn match   cmHighlight     '{==[^=].\{-}==}' contains=@Spell,cmHighlightLeft,cmHighlightRight
+syn match   cmHighlightLeft '{==' contained conceal
+syn match   cmHighlightRight '==}' contained conceal
+" ~~strike~~
 syn match   pdcStrike       '\~\~[^\~ ]\([^\~]\|\~ \)*\~\~' contains=@Spell,pdcStrikeFix
 syn match   pdcStrikeFix    '\~' contained conceal
 " **strong**
@@ -189,6 +194,8 @@ hi default link pdcTitleBlock String
 hi default link pdcAtxHeader Title
 hi default link pdcSetexHeader Title
 
+
+hi default link cmHighlight Temp
 hi default link pdcStrike Temp
 hi default link pdcStrong Special
 hi default link pdcEmphasis VisualNOS
@@ -232,7 +239,9 @@ hi default link pdcTableMultiCaption Label
 hi default link pdcTableCaptionCont Label
 " }}}
 
-syn match pdcTempPPP '{[^}]\{-}}' containedin=ALL
+" syn match pdcTempPPP '{[^}]\{-}}' containedin=ALLBUT,cmHighlight,cmHighlightLeft,cmHighlightRight
+" syn match pdcTempPPP '{[^=][^=][^}]\{-}[^=][^=]}' containedin=ALL
+" syn match pdcTempPPP '{[^=][^=][^}]\{-}[^=][^=]}' containedin=ALLBUT,cmHighlight
 hi default link pdcTempPPP MoreMsg
 
 
