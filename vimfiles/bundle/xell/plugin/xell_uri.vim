@@ -48,7 +48,7 @@ function! OpenInBrowser(strict, ...)
 		let uri = cur_file_path
 	" If it's file
 	elseif cur_file_path =~? '^\(\/\|\a:\\\)'
-		let webserver_dir = xelltoolkit#fname2pattern(g:webserver_dir) . g:slash
+		let webserver_dir = xelltoolkit#fname2pattern(g:webserver_dir) . '/'
 
 		" Determine if the filetype is supported by browser
 		if a:strict
@@ -84,17 +84,7 @@ endfunction
 command! -nargs=0 OpenInFolder call OpenInFolder()
 
 function! OpenInFolder()
-	if g:isw
-		let totalcmd_exec = 'd:\p\totalcmd\totalcmd.exe'
-		if executable(totalcmd_exec)
-			call xelltoolkit#system(totalcmd_exec . ' /O /T /L="' . expand("%:p:h") . g:slash . '"')
-			" exec 'silent !start d:\p\totalcmd\totalcmd.exe  /O /T /L="' . expand("%:p:h") . '\"'
-		else
-			call xelltoolkit#run('', expand("%:p:h") . g:slash)
-		endif
-	elseif g:ism
-		call xelltoolkit#system('open .')
-	endif
+    call xelltoolkit#system('open .')
 endfunction
 " }}}
 

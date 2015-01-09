@@ -4,14 +4,10 @@ dictionary.txt
 tags
 tags-*
 *.pyc
-descript.ion
 .DS_Store
 .com.apple.*
-*.sw[po]
+*.sw[ponm]
 xell_test.vim
-vim73/*
-vim73\*
-vimfiles/bundle/easycolour/easycolour_cache.txt
-vimfiles\bundle\easycolour\easycolour_cache.txt
+easycolour_cache.txt
 .simplenoteconf
 .evervimconf

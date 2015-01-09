@@ -65,25 +65,14 @@ vmap <buffer> <M-_> "zc__<C-R>Z__<Esc>
 " `d<BS> part is used to avoid auto ``<++>
 vmap <buffer> <M-c> "zc`d<BS>`<C-R>Z`d<BS>`<Esc>
 
-if g:isw
-	call IMAP('****', '**<++>**<++>', 'txt2tags')
-	call IMAP('////', '//<++>//<++>', 'txt2tags')
-	call IMAP('````', '``<++>``<++>', 'txt2tags')
-	call IMAP("''''", "''<++>''<++>", "txt2tags")
-	imap <A-c> ((!))
-	call IMAP('((!))', '((!<++>))<++>', 'txt2tags')
-	imap <A-d> ((_))
-	call IMAP('((_))', '((_<++>))<++>', 'txt2tags')
-elseif g:ism
-	call xelltoolkit#imap('****', '**<++>**<++>', 1)
-	call xelltoolkit#imap('////', '//<++>//<++>', 1)
-	call xelltoolkit#imap('````', '``<++>``<++>', 1)
-	call xelltoolkit#imap("''''", "''<++>''<++>", 1)
-	imap <A-c> ((!))
-	call xelltoolkit#imap('((!))', '((!<++>))<++>', 1)
-	imap <A-d> ((_))
-	call xelltoolkit#imap('((_))', '((_<++>))<++>', 1)
-endif
+call xelltoolkit#imap('****', '**<++>**<++>', 1)
+call xelltoolkit#imap('////', '//<++>//<++>', 1)
+call xelltoolkit#imap('````', '``<++>``<++>', 1)
+call xelltoolkit#imap("''''", "''<++>''<++>", 1)
+imap <A-c> ((!))
+call xelltoolkit#imap('((!))', '((!<++>))<++>', 1)
+imap <A-d> ((_))
+call xelltoolkit#imap('((_))', '((_<++>))<++>', 1)
 
 let b:search_pattern = g:urlpattern . '\|\%([a-zA-Z_]\+\.t2t[#]\?\)'
 nmap <buffer> <Tab> :call xelltoolkit#goto_next_word(b:search_pattern)<CR>

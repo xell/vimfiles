@@ -12,52 +12,18 @@
 """"""""""""""""""""""""""""""""""""""""""""""""""""" 
 
 " Use third-part macro to track the startup time {{{2
-"let g:startup_profile_csv = 'd:/p/vim-new/vim73/vim_startup_log.csv'
-"runtime macros/startup_profile.vim
+" let g:startup_profile_csv = '/Users/xell/Code/vim/vim_startup_log.csv'
+" runtime macros/startup_profile.vim
 " }}}
 
 set nocompatible
 
-" System specified g:isw g:ism {{{2
-" TODO i don't know how to detect vim terminal in mac
-let g:isw = 0
-let g:ism = 0
-if has("win32") || has("win64")
-	let g:isw = 1
-else
-	let g:ism = 1
-endif
-
-if g:isw
-	let g:myvimfiles = expand("<sfile>:p:h") . '/vimfiles'
-elseif g:ism
-	let g:myvimfiles = glob('~/.vim')
-endif
-
-" }}}
-
-" Temp {{{2
-" XXX need to be deleted after re-constructed
-" g:myvimfiles
-" $VIM win: d:\p\vim
-"      mac: /Applications/MacVim.app/Contents/Resources/vim
-" $VRT win: d:\p\vim\vim73
-"      mac: /Applications/MacVim.app/Contents/Resources/vim/runtime
-" BIN  win: d:\p\vim\vim73\gvim.exe vim.exe
-"      mac: /Applications/MacVim.app/Contents/MacOS/MacVim Vim
-
-" let g:myvim_dir = expand("<sfile>:p:h")
-" let g:myvimfiles = g:myvim_dir . '/vimfiles'
-" let g:myvimfiles_after = g:myvimfiles . '/after'
-" exec 'set runtimepath=' . g:myvimfiles . ',$VIMRUNTIME,' . g:myvimfiles_after
-" let $MYVIMRC = g:myvim_dir . '/vimrc'
-" let $MYGVIMRC = g:myvim_dir . '/gvimrc'
-" }}}
+" TODO delete this?
+let g:myvimfiles = glob('~/.vim')
 
 " Pathogen {{{2
 " call :Helptags after install/copy plugins into bundle
-call pathogen#infect()
-"call pathogen#helptags()
+execute pathogen#infect()
 " }}}
 
 " }}}
@@ -203,122 +169,66 @@ autocmd BufReadPost *
 
 " Special settings {{{2
 
-if g:isw
-behave mswin
-	" Set 'selection', 'selectmode', 'mousemodel' and 'keymodel' 
-	" for MS-Windows
-	behave mswin
-
-	" More settings, <c-c> <c-v> <c-s> <c-z> <c-y> <c-a>
-	" I'd like to set them by myself selectively
-	"so $VIMRUNTIME/mswin.vim
-	
-	" In case temp is no c:\tmp and/or c:\temp
-	set directory=.,$TEMP,$TMP
-
-endif
-
-" After set on, \ will be converted to / automatically in windows
-" Ex in win, typing d:\ and hit <Tab>, it will be d:/ automatically
-" It effects expand("%:p")
-" IMPORTANT: win32 users will need to have 'shellslash' set so that latex
-" can be called correctly.
-" if g:isw
-" 	set shellslash
-" endif
-
 " IMPORTANT: grep will sometimes skip displaying the file name if you
 " search in a singe file. This will confuse Latex-Suite. Set your grep
 " program to always generate a file-name.
 set grepprg=grep\ -nH\ $*
 
 " TODO Dictionary file
-if exists("g:myvimfiles")
-	exec 'set dictionary=' . g:myvimfiles . '/dictionary.txt'
-else
-	if g:isw
-		exec 'set dictionary=' . $VIM . '\vimfiles\dictionary.txt'
-	else
-		exec 'set dictionary=' . glob('~/.vim') . '/dictionary.txt'
-	endif
-endif
+exec 'set dictionary=' . g:myvimfiles . '/dictionary.txt'
 
 " }}}
 
 " Special settings for Mac {{{2
-if g:ism
-	" IME setting {{{3
-	
-	" function! s:setim()
-	" 	if &imd
-	" 		set imd
-	" 		set noimd
-	" 		echo "Chinese enable."
-	" 	else
-	" 		set imd
-	" 		echo "English only."
-	" 	endif
-	" endfunction
 
-	" nmap <D-i> :call <SID>setim()<CR>
-	" imap <D-i> <Esc>:call <SID>setim()<CR>i
-	
-	" set imd
-	set noimd
+" IME setting {{{3
 
-	" http://www.v2ex.com/t/40375
-	" }}}
+" function! s:setim()
+" 	if &imd
+" 		set imd
+" 		set noimd
+" 		echo "Chinese enable."
+" 	else
+" 		set imd
+" 		echo "English only."
+" 	endif
+" endfunction
 
-	" Use vim internal help when press K
-	set keywordprg=
+" nmap <D-i> :call <SID>setim()<CR>
+" imap <D-i> <Esc>:call <SID>setim()<CR>i
 
-	set visualbell
+" set imd
+set noimd
 
-endif
+" http://www.v2ex.com/t/40375
+" }}}
+
+" Use vim internal help when press K
+set keywordprg=
+
+set visualbell
+
 " }}}
 
 " }}}
 
 " Xell Global Variables {{{1
 
-let g:slash = xelltoolkit#slash()
-
-if g:isw
-elseif g:ism
-endif
-
 " URL {{{2
-if g:isw
-	let g:urlpattern = '\%(\(https\?\|ftp\):\/\{2}[^ ">\])]\+\)'
-	let g:webbrowser = ''
-	let g:webserver_host = 'http://127.0.0.1:8800'
-	let g:webserver_dir = 'd:\Codes\web'
-elseif g:ism
-	let g:urlpattern = '\%(\([a-z-]\+\):\/\{2}[^ ">\])]\+\)'
-	" let g:webbrowser = 'Google Chrome.app'
-	let g:webbrowser = ''
-	let g:webserver_host = 'http://localhost:80/~xell'
-	let g:webserver_dir = glob('~/Sites')
-endif
+let g:urlpattern = '\%(\([a-z-]\+\):\/\{2}[^ ">\])]\+\)'
+" let g:webbrowser = 'Google Chrome.app'
+let g:webbrowser = ''
+let g:webserver_host = 'http://localhost:80/~xell'
+let g:webserver_dir = glob('~/Sites')
 " }}}
 
-" Proxy {{{2
-if g:isw
-	let g:proxy_list = 'd:\Codes\pac\xell.proxylist'
-	let g:proxy_pac = 'd:\Codes\pac\proxylist.pac'
-elseif g:ism
-	let g:proxy_list = '/Users/xell/Code/pac/xell.proxylist'
-	" let g:proxy_pac = '/Users/xell/.xellproxy/proxylist.pac'
-	let g:proxy_pac = '/Users/xell/Sites/proxylist.pac'
-endif
-if g:isw
-	let g:hosts_list = 'd:\Codes\pac\xell.hostslist'
-elseif g:ism
-	let g:hosts_list = '/Users/xell/Code/pac/xell.hostslist'
-endif
+" Proxy TODO should not be here {{{2
+let g:proxy_list = '/Users/xell/Code/pac/xell.proxylist'
+let g:proxy_pac = '/Users/xell/Sites/proxylist.pac'
+let g:hosts_list = '/Users/xell/Code/pac/xell.hostslist'
 " }}}
 
-" Docs {{{2
+" Docs TODO should not be here {{{2
 " Specify use what function to look for the output html of doc file
 let g:browser_open_rules = {'t2t': 'GetOutputHTML', 'md': 'GetOutputHTML', 'mkd': 'GetOutputHTML', 'markdown': 'GetOutputHTML', 'rst': 'GetOutputHTML', 'noteindex': 'GetOutputHTML'}
 
@@ -331,21 +241,12 @@ let g:docs_convert_buffer_rules = {
 			\ 'filelist': 'NotesConvertWrapper'}
 
 " session {{{3
-if g:isw
-	let g:session_path = 'D:\w\_vimsession'
-elseif g:ism
-	let g:session_path = glob('~/.vimsession')
-endif
+let g:session_path = glob('~/.vimsession')
 " }}}
 
 " Text2tags specification {{{3
-if g:isw
-	let g:t2t_cmd = 'd:\p\txt2tags\txt2tags.py'
-	let g:t2t_cf_path = 'd:\w\_special\_tpl\t2t'
-elseif g:ism
-	let g:t2t_cmd = '/usr/local/bin/txt2tags'
-	let g:t2t_cf_path = glob('~/Documents/_special/_tpl/t2t')
-endif
+let g:t2t_cmd = '/usr/local/bin/txt2tags'
+let g:t2t_cf_path = glob('~/Documents/_special/_tpl/t2t')
 
 let g:t2t_target_ext = {'html': 'html', 'md': 'md', 'rst': 'rst', 'txt': 'txt', 'html5': 'html', 'rtf': 'rtf', 'tex': 'tex'}
 " }}}
@@ -357,80 +258,43 @@ let g:pandoc_syntax_table = 0
 
 let g:pandoc_target_ext = {'plain': 'txt', 'markdown': 'md', 'rst': 'rst', 'html': 'html', 'html5': 'html', 'latex': 'tex', 'mediawiki': 'wiki', 'opendocument': 'fodt', 'odt': 'odt', 'docx': 'docx', 'slidy': 'html', 'dzslides': 'html', 'rtf': 'rtf'}
 
-if g:isw
-	let g:pandoc_exec = 'd:\p\pandoc\bin\pandoc.exe'
-	let g:pandoc_tpl_root = 'd:\W\_special\_tpl\pandoc'
-	let g:pandoc_csl_root = g:pandoc_tpl_root . '\csl'
-	let g:pandoc_css_root = g:pandoc_tpl_root . '\css'
-	let g:pandoc_htmltpl_root = g:pandoc_tpl_root . '\html'
-	let g:pandoc_docx_root = g:pandoc_tpl_root . '\docx'
-	let g:pandoc_odt_root = g:pandoc_tpl_root . '\odt'
-elseif g:ism
-	let g:pandoc_exec = 'pandoc'
-	let g:pandoc_tpl_root = '/Users/xell/Documents/_special/_tpl/pandoc'
-	let g:pandoc_csl_root = g:pandoc_tpl_root . '/csl'
-	let g:pandoc_css_root = g:pandoc_tpl_root . '/css'
-	let g:pandoc_htmltpl_root = g:pandoc_tpl_root . '/html'
-	let g:pandoc_docx_root = g:pandoc_tpl_root . '/docx'
-	let g:pandoc_odt_root = g:pandoc_tpl_root . '/odt'
-endif
+let g:pandoc_exec = 'pandoc'
+let g:pandoc_tpl_root = '/Users/xell/Documents/_special/_tpl/pandoc'
+let g:pandoc_csl_root = g:pandoc_tpl_root . '/csl'
+let g:pandoc_css_root = g:pandoc_tpl_root . '/css'
+let g:pandoc_htmltpl_root = g:pandoc_tpl_root . '/html'
+let g:pandoc_docx_root = g:pandoc_tpl_root . '/docx'
+let g:pandoc_odt_root = g:pandoc_tpl_root . '/odt'
 let g:pandoc_bib = 'biblio.bib'
-let g:pandoc_csl = g:pandoc_csl_root . g:slash . 'Chinese-GB7714-2005-Numeric-1.0.csl'
+let g:pandoc_csl = g:pandoc_csl_root . '/Chinese-GB7714-2005-Numeric-1.0.csl'
 
 " }}}
 
 " Rst Docutils specification {{{3
 let g:rst_target_ext = {'html': 'html', 'odt': 'odt'}
 
-if g:isw
-	let g:rst2odt_exec = 'd:\p\docutils\tools\rst2odt.py'
-	let g:rst2html_exec = 'd:\p\docutils\tools\rst2html.py'
-	let g:rst_tpl_root = 'd:\W\_special\_tpl\docutils'
-	let g:rst_html_root = g:rst_tpl_root . '\html'
-	let g:rst_html_tpl_root = g:rst_html_root . '\tpl'
-	let g:rst_html_style_root = g:rst_html_root . '\style'
-	let g:rst_odt_style_root = g:rst_tpl_root . '\odt'
-elseif g:ism
-	let g:rst2odt_exec = 'rst2odt.py'
-	let g:rst2html_exec = 'rst2html.py'
-	let g:rst_tpl_root = '/Users/xell/Documents/_special/_tpl/docutils'
-	let g:rst_html_root = g:rst_tpl_root . '/html'
-	let g:rst_html_tpl_root = g:rst_html_root . '/tpl'
-	let g:rst_html_style_root = g:rst_html_root . '/style'
-	let g:rst_odt_style_root = g:rst_tpl_root . '/odt'
-endif
+let g:rst2odt_exec = 'rst2odt.py'
+let g:rst2html_exec = 'rst2html.py'
+let g:rst_tpl_root = '/Users/xell/Documents/_special/_tpl/docutils'
+let g:rst_html_root = g:rst_tpl_root . '/html'
+let g:rst_html_tpl_root = g:rst_html_root . '/tpl'
+let g:rst_html_style_root = g:rst_html_root . '/style'
+let g:rst_odt_style_root = g:rst_tpl_root . '/odt'
 " }}}
 
 " }}}
 
 " Notes {{{2
-if g:isw
-	let g:xell_notes_root = 'D:\W\notes\xnotes'
-	let g:xell_notes_ex_root = 'D:\W\notes\xnotes_export'
-elseif g:ism
-	let g:xell_notes_root = glob('~/Documents/notes/notes')
-	let g:xell_notes_ex_root = glob('~/Documents/notes/xnotes_export')
-endif
+let g:xell_notes_root = glob('~/Documents/notes/notes')
+" TODO non-exists
+let g:xell_notes_ex_root = glob('~/Documents/notes/xnotes_export')
 
-" XXX notes_index is useless
+" TODO XXX notes_index is useless
 let g:xell_notes_index = 'index.noteindex'
 let g:xell_notes_temp = 'temp.md'
 let g:xell_notes_default_ext = 'md'
 
 " }}}
-
-" Other {{{2
-if g:isw
-	" Setting codepage used for iconv etc.
-	" Ex cp936 for Simply Chinese Windows OS
-	"let g:codepage = 'cp' . matchstr(system("chcp"), '\zs\d\+\ze[^[:graph:]]*$')
-	let g:codepage = 'cp936'
-
-	let g:ahk_exec = 'd:\P\autohotkey\AutoHotkey.exe'
-	let g:ahk_help = 'd:\P\autohotkey\AutoHotkey.chm'
-endif
-" }}}
-
 
 " }}}
 
@@ -511,9 +375,7 @@ endf
 "}}}
 
 " Use symbols to fill the blank of tab and eol
-if g:ism
-	set listchars=tab:▸\ ,eol:¬
-endif
+set listchars=tab:▸\ ,eol:¬
 
 " Statusline customization {{{2
 set laststatus=2
@@ -559,13 +421,7 @@ colorscheme xell
 
 " Set map leader  b de gHiIJK   pq  tu wxy 
 let mapleader=","
-
-" To allow overriding the Alt key
-if g:isw
-	set winaltkeys=no
-elseif g:ism && has("mac")
-	set macmeta
-endif
+set macmeta
 
 " }}}
 
@@ -623,11 +479,6 @@ endfunction
 " }}}
 
 " Tabs {{{2
-" For tab creating
-if g:isw
-	nmap <C-t> :tabnew<CR>
-endif
-
 " Tab close
 nmap <Leader>q :tabclose
 
@@ -731,29 +582,12 @@ vnoremap y ygv<Esc>
 nnoremap P gP
 
 " Copy and paste according to OS conventions
-if g:isw
-	" Copy, use <c-q> to operate original <c-c>
-	vnoremap <C-c> "+y
-	noremap <C-q>		<C-V>
-	map <C-v>		"+gP
-	cmap <C-v>		<C-R>+
-	" from http://vim.wikia.com/wiki/Recover_from_accidental_Ctrl-U
-	" Pasting blockwise and linewise selections is not possible in Insert and
-	" Visual mode without the +virtualedit feature.  They are pasted as if they
-	" were characterwise instead.
-	" Uses the paste.vim autoload script.
-	"exe 'inoremap <script> <C-V>' paste#paste_cmd['i']
-	exe 'vnoremap <script> <C-v>' paste#paste_cmd['v']
-	exe 'inoremap <script> <C-v> <C-g>u'.paste#paste_cmd['i']
-	vnoremap <C-x> "+x
-else
-	vnoremap <D-c> "+y
+vnoremap <D-c> "+y
 
-    " nvo
-	noremap  <D-v> "+gP
-	cnoremap <D-v> <C-R>+
-	inoremap <D-v> <C-R><C-O>+
-endif
+" nvo
+noremap  <D-v> "+gP
+cnoremap <D-v> <C-R>+
+inoremap <D-v> <C-R><C-O>+
 
 " Open or yank web url
 nmap <expr> <Leader>Y OpenInBrowser(1, xelltoolkit#get_word_at_cursor(g:urlpattern))
@@ -874,11 +708,7 @@ inoremap <C-F> <C-x><C-F>
 " Special {{{2
 
 " Edit vimrc
-if g:isw
-	nmap <Leader>rce :e $MYVIMRC<CR>
-else
-	nmap <Leader>rce :exec 'e ' . substitute(system('readlink ' . $MYVIMRC), '\(\s\|\n\)\+$', '', '')<CR>
-endif
+nmap <Leader>rce :exec 'e ' . substitute(system('readlink ' . $MYVIMRC), '\(\s\|\n\)\+$', '', '')<CR>
 
 " Reload vimrc
 nmap <Leader>rcl :so $MYVIMRC<CR>
@@ -888,13 +718,6 @@ nmap <Leader>rcge :e $MYGVIMRC<CR>
 " Reload gvimrc
 nmap <Leader>rcgl :so $MYGVIMRC<CR>
 
-" In windows, Alt+Space to act on icon menu
-if g:isw
-	noremap <M-Space> :simalt ~<CR>
-	inoremap <M-Space> <C-O>:simalt ~<CR>
-	cnoremap <M-Space> <C-C>:simalt ~<CR>
-endif
-
 " Jump among windows noremap
 if &term =~? 'xterm'
 	noremap ø <Tab>
@@ -902,10 +725,8 @@ else
 	noremap <A-o> <Tab>
 endif
 
-" Marked 2 support
-if g:ism
-    noremap <Leader>mp :silent !open -a Marked\ 2.app '%:p'<CR>
-endif
+" Marked 2 support TODO
+noremap <Leader>mp :silent !open -a Marked\ 2.app '%:p'<CR>
 
 " }}}
 
@@ -913,20 +734,13 @@ endif
 
 " Abbrevs {{{1
 """"""""""""""""""""""""""""""""""""""""""""""""""""" 
-if g:isw
-	ca xs mks! d:\w\xs1.vim
-	ca xl so d:\w\xs1.vim
-	cab xrj e d:\W\notes\rj.t2t
-	cab xhost e c:\windows\system32\drivers\etc\hosts<CR>
-elseif g:ism
-	ca xs mks! ~/Documents/xs1.vim
-	ca xl so ~/Documents/xs1.vim
-	cab xrj e ~/Documents/notes/rj.t2t
-	cab xhost e /etc/hosts<CR>
-	cab xbp e ~/.bash_profile
-	" Must in /etc/sudoers set username ALL=(ALL) NOPASSWD:ALL
-	cab sudow silent w !sudo tee %
-endif
+ca xs mks! ~/Documents/xs1.vim
+ca xl so ~/Documents/xs1.vim
+cab xrj e ~/Documents/notes/rj.t2t
+cab xhost e /etc/hosts<CR>
+cab xbp e ~/.bash_profile
+" Must in /etc/sudoers set username ALL=(ALL) NOPASSWD:ALL
+cab sudow silent w !sudo tee %
 
 cab xfn echo expand("%:p")
 "Insert date and time
@@ -958,22 +772,13 @@ command! -nargs=0 IncHelp echo "<,>Inc [s]tart_0 [i]ncre_1 [r]epeat_1 [w]idth_4 
 
 " }}}
 " LanguageTool {{{2
-if g:isw
-	let g:languagetool_jar = 'd:\P\languagetool\LanguageTool.jar'
-elseif g:ism
-	let g:languagetool_jar = '/usr/local/Cellar/languagetool/2.6/libexec/languagetool-commandline.jar'
-endif
+let g:languagetool_jar = '/usr/local/Cellar/languagetool/2.6/libexec/languagetool-commandline.jar'
 nmap <F7> :LanguageToolCheck<CR>
 " }}}
 " Thesaurus {{{2
 " TODO changeless the location of mthesaur.txt
-if g:isw
-	let g:thesaurus_file='d:/p/thesaurus/th_en_US_v2'
-	set thesaurus=d:\P\thesaurus\mthesaur.txt
-elseif g:ism
-	" mac or unix must use '/usr/share/myspell/dicts/th_en_US_v2.idx'
-	set thesaurus=~/Library/Thesaurus/mthesaur.txt
-endif
+" mac or unix must use '/usr/share/myspell/dicts/th_en_US_v2.idx'
+set thesaurus=~/Library/Thesaurus/mthesaur.txt
 imap <c-t> <Esc>bl:Thesaurus<CR>
 " }}}
 " tComment {{{2
@@ -998,11 +803,7 @@ let g:tcomment_types = {'pandoc': "<!-- %s -->", 'pandoc_inline': "<!-- %s -->",
 nnoremap <C-Enter> :WinFullScreen<CR>
 " }}}
 " Emmet {{{2
-if g:isw
-    let g:user_emmet_leader_key = '<c-e>'
-elseif g:ism
-    let g:user_emmet_leader_key = '<D-e>'
-endif
+let g:user_emmet_leader_key = '<D-e>'
 " If you want to complete tags using |omnifunc| then add this.
 " let g:use_emmet_complete_tag = 1
 " }}}
@@ -1141,29 +942,12 @@ endfunction
 " Taglist {{{2
 let g:Tlist_Show_One_File=1
 let Tlist_Sort_Type = "name"
-if g:isw
-	let Tlist_Ctags_Cmd = 'd:\p\ctags\ctags.exe'
-endif
 highlight link MyTagListFileName Identifier
 highlight link MyTagListTagName Type
 
 " For toggle the Tlist windows
 nmap <F10> :TlistToggle<CR>
 imap <F10> <ESC><F10>i
-" }}}
-" ConqueTerm {{{2
-let g:ConqueTerm_FastMode = 0
-let g:ConqueTerm_Color = 1
-let g:ConqueTerm_Syntax = ''
-"let g:ConqueTerm_ReadUnfocused = 1
-if g:isw
-	let g:ConqueTerm_PyExe = 'd:\P\python26\python.exe'
-	let g:ConqueTerm_CodePage = 0
-	" 0709 conque has some problem in dealing with color on multi-byte
-	" cf. http://code.google.com/p/conque/issues/detail?id=56&can=1&q=conceal
-	" or 'conceal'
-	let g:ConqueTerm_ColorMode = ''
-endif
 " }}}
 " NERDTree {{{2
 let NERDTreeShowBookmarks = 1
@@ -1177,18 +961,10 @@ let g:fuf_keyOpenTabpage = '<C-Return>'
 
 " Usage : ,fe n:
 nmap <Leader>fe :FufFile<CR>
-if g:isw
-	let g:fuf_abbrevMap = {
-				\ "^v:" : ['$VIM\**\',],
-				\ "^n:" : [g:xell_notes_root . g:slash],
-				\ "^c:" : ['d:\Codes\ahk\'],
-				\ }
-elseif g:ism
-	let g:fuf_abbrevMap = {
-				\ "^v:" : ['$VIM/**/',],
-				\ "^n:" : [g:xell_notes_root . g:slash],
-				\ }
-endif
+let g:fuf_abbrevMap = {
+            \ "^v:" : ['$VIM/**/',],
+            \ "^n:" : [g:xell_notes_root . '/'],
+            \ }
 
 nmap <Leader>ff :FufMruFile<CR>
 " All file in current directory recursively
@@ -1245,13 +1021,8 @@ nnoremap <Leader>gc :Gcommit<CR>
 nnoremap <Leader>gC :Gcommit -a<CR>
 nnoremap <Leader>gp :GitPullRebase<CR>
 nnoremap <Leader>ge :Gedit<CR>
-if g:isw
-	nnoremap <Leader>gk :silent !start gitk.cmd<CR>
-	nnoremap <Leader>gK :silent !start gitk.cmd --all<CR>
-else
-	nnoremap <Leader>gk :silent !gitx<CR>
-	nnoremap <Leader>gK :silent !gitx --all<CR>
-endif
+nnoremap <Leader>gk :silent !gitx<CR>
+nnoremap <Leader>gK :silent !gitx --all<CR>
 " }}}
 " LaTeX {{{2
 " OPTIONAL: Starting with Vim 7, the filetype of empty .tex files defaults to
@@ -1291,11 +1062,7 @@ let g:Tex_DefaultTargetFormat = 'pdf'
 "let g:Tex_CompileRule_dvi = 'latex --src-specials -interaction=nonstopmode $*'
 let g:Tex_CompileRule_pdf = 'xelatex --synctex=1 -src-specials -interaction=nonstopmode $*'
 " Set viewrule
-if g:isw
-	let g:Tex_ViewRule_pdf = 'sumatrapdf.exe -esc-to-exit -reuse-instance -inverse-search "' . $VIMRUNTIME . '\gvim.exe -c \":RemoteOpen +\%l \%f\""'
-elseif g:ism
-	let g:Tex_ViewRule_pdf = 'Skim'
-endif
+let g:Tex_ViewRule_pdf = 'Skim'
 
 if &term =~? 'xterm'
 	imap … <Plug>Tex_LeftRight
@@ -1308,55 +1075,44 @@ endif
 nmap <C-F7> <Plug>Tex_FastCommandInsert
 
 " }}}
-" IMAP {{{2
-if g:ism
-	let g:Imap_FreezeImap = 1
-	" Remap the jumpforward, originally <C-j>
-	imap <D-C-J> <Plug>IMAP_JumpForward
-	nmap <D-C-Y> <Plug>IMAP_JumpForward
-elseif g:isw
-	" Remap the jumpforward, originally <C-j>
-	imap <C-J> <Plug>IMAP_JumpForward
-	nmap <C-Y> <Plug>IMAP_JumpForward
-endif
+" IMAP from latex-suite TODO {{{2
+let g:Imap_FreezeImap = 1
+" Remap the jumpforward to other, originally <C-j>
+imap <D-C-J> <Plug>IMAP_JumpForward
+nmap <D-C-Y> <Plug>IMAP_JumpForward
+function! s:imap_jump()
+    let isfound = search('<++>', 'cW')
+    if isfound
+        if col('.') == col('$') - 4
+            normal 4x
+            startinsert!
+        else
+            normal 4x
+            startinsert
+        endif
+    endif
+endfunction
+inoremap <D-j> <C-O>:call <SID>imap_jump()<CR>
 
-if g:ism
-	function! s:imap_jump()
-		let isfound = search('<++>', 'cW')
-		if isfound
-			if col('.') == col('$') - 4
-				normal 4x
-				startinsert!
-			else
-				normal 4x
-				startinsert
-			endif
-		endif
-	endfunction
-	
+call xelltoolkit#imap('()', '(<++>)<++>', 0)
+call xelltoolkit#imap('[]', '[<++>]<++>', 0)
+call xelltoolkit#imap('{}', '{<++>}<++>', 0)
+call xelltoolkit#imap('<>', '<<++>><++>', 0)
+call xelltoolkit#imap('""', '"<++>"<++>', 0)
+call xelltoolkit#imap("''", "'<++>'<++>", 0)
+" call xelltoolkit#imap('%%', '%<++>%<++>', 0)
 
-	inoremap <D-j> <C-O>:call <SID>imap_jump()<CR>
-
-	call xelltoolkit#imap('()', '(<++>)<++>', 0)
-	call xelltoolkit#imap('[]', '[<++>]<++>', 0)
-	call xelltoolkit#imap('{}', '{<++>}<++>', 0)
-	call xelltoolkit#imap('<>', '<<++>><++>', 0)
-	call xelltoolkit#imap('""', '"<++>"<++>', 0)
-	call xelltoolkit#imap("''", "'<++>'<++>", 0)
-	" call xelltoolkit#imap('%%', '%<++>%<++>', 0)
-
-elseif &loadplugins && g:isw
-	augroup MyIMAPs
-		autocmd!
-		autocmd VimEnter * call IMAP('()', '(<++>)<++>', '')
-		autocmd VimEnter * call IMAP('[]', '[<++>]<++>', '')
-		autocmd VimEnter * call IMAP('{}', '{<++>}<++>', '')
-		autocmd VimEnter * call IMAP('<>', '<<++>><++>', '')
-		autocmd VimEnter * call IMAP('""', '"<++>"<++>', '')
-		autocmd VimEnter * call IMAP("''", "'<++>'<++>", '')
-		autocmd VimEnter * call IMAP('%%', '%<++>%<++>', '')
-	augroup END
-endif
+" for reference in windows TODO
+" augroup MyIMAPs
+" 	autocmd!
+" 	autocmd VimEnter * call IMAP('()', '(<++>)<++>', '')
+" 	autocmd VimEnter * call IMAP('[]', '[<++>]<++>', '')
+" 	autocmd VimEnter * call IMAP('{}', '{<++>}<++>', '')
+" 	autocmd VimEnter * call IMAP('<>', '<<++>><++>', '')
+" 	autocmd VimEnter * call IMAP('""', '"<++>"<++>', '')
+" 	autocmd VimEnter * call IMAP("''", "'<++>'<++>", '')
+" 	autocmd VimEnter * call IMAP('%%', '%<++>%<++>', '')
+" augroup END
 
 " }}}
 " Neocomplete {{{2
@@ -1479,7 +1235,7 @@ let g:ctrlp_match_window_bottom = 0
 let g:ctrlp_reuse_window = 'netrw\|quickfix'
 " }}}
 " SimpleNote {{{2
-exec 'so ' . expand("<sfile>:p:h") . g:slash . '.simplenoteconf'
+exec 'so ' . expand("<sfile>:p:h") . '/.simplenoteconf'
 " }}}
 " Xell URI {{{2
 command! -bang -nargs=? OpenInBrowser call OpenInBrowser(<bang>1, '<args>')
@@ -1490,7 +1246,7 @@ command! -nargs=1 Es call xelltoolkit#edit_samename_file('<args>')
 nmap <silent> <S-F6> :call ShowLiveWordCount()<CR>
 " }}}
 " Evervim {{{2
-exec 'so ' . expand("<sfile>:p:h") . g:slash . '.evervimconf'
+exec 'so ' . expand("<sfile>:p:h") . '/.evervimconf'
 " Vimim {{{2
 let g:vimim_map = 'c-bslash'
 " let g:vimim_mode='static'
@@ -1518,11 +1274,8 @@ cab mmm match Temp /\~\~../
 cab xxc bd book.log <bar> ccl
 
 set exrc
-if g:isw
-	let g:todo_file = 'd:\Codes\web\xell.github.com\todo.txt'
-elseif g:ism
-	let g:todo_file = glob('~/Documents/notes/todo.txt')
-endif
+" TODO
+let g:todo_file = glob('~/Documents/notes/todo.txt')
 nmap <Leader>p :exec 'e ' . g:todo_file<CR>
 
 " Mathematica filetype

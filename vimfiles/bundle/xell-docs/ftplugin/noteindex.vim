@@ -81,7 +81,7 @@ function! s:edit_note(openinnewtab)
 		normal j
 		return
 	endif
-	let note = g:xell_notes_root . g:slash . note
+	let note = g:xell_notes_root . '/' . note
 
 	if !filereadable(note)
 		let answer = input("Note doesn't exist. Create it?(Y/n) ")
@@ -113,7 +113,7 @@ function! s:delete_note(forced)
 		return
 	endif
 
-	if !filereadable(g:xell_notes_root . g:slash . note)
+	if !filereadable(g:xell_notes_root . '/' . note)
 		call xelltoolkit#echo_msg("The note doesn't exist!")
 		return
 	endif
@@ -127,12 +127,12 @@ function! s:delete_note(forced)
 	endif
 
 	" Delete note and the export html
-	call delete(g:xell_notes_root . g:slash . note)
+	call delete(g:xell_notes_root . '/' . note)
 	let note_ext = xelltoolkit#fname_ext(note)
 	if note_ext =~? 'md\|mkd\|markdown\|pandoc\|rst\|t2t'
-		call delete(g:xell_notes_ex_root . g:slash . xelltoolkit#fname_name(note) . '.html')
+		call delete(g:xell_notes_ex_root . '/' . xelltoolkit#fname_name(note) . '.html')
 	else
-		call delete(g:xell_notes_ex_root . g:slash . note)
+		call delete(g:xell_notes_ex_root . '/' . note)
 	endif
 	call xelltoolkit#echo_msg('Delete note and its export: ' . note)
 	return
@@ -163,7 +163,7 @@ function! s:check()
 	" }}}
 
 	" Generate notes of folder dict {{{2
-	let files_in_folder = split(glob(g:xell_notes_root . g:slash . '*.*'), '\n')
+	let files_in_folder = split(glob(g:xell_notes_root . '/*.*'), '\n')
 	let files_in_folder_dict = {}
 	let i = 0
 	let end = len(files_in_folder)

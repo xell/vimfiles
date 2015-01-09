@@ -153,21 +153,12 @@ function! s:convert() "{{{
 	let result = s:process(g:hosts_list)
 	let result = extend(result, ['127.0.0.1 localhost', '255.255.255.255 broadcasthost', '::1 localhost ', 'fe80::1%lo0 localhost', ''], 0)
 
-	if g:isw
-		if writefile(result, 'C:\WINDOWS\system32\drivers\etc\hosts') == -1
-			call xelltoolkit#echo_msg('Wrong writing file.')
-		endif
-		return
-	endif
-
 	split +enew!
 	setlocal hid
 	" put! =result
 	call setline(1, result)
 
-
 	" echo s:process(g:hosts_list)
-
 endfunction
 "}}}
 

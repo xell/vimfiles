@@ -68,7 +68,7 @@ endfunction
 " }}}
 
 function! s:convert_notes() "{{{2
-	let files = split(glob(g:xell_notes_root . g:slash . '*.*'), '\n')
+	let files = split(glob(g:xell_notes_root . '/*.*'), '\n')
 	let index = -1
 	" Remove all html files
 	for file in files
@@ -83,26 +83,26 @@ function! s:convert_notes() "{{{2
 		let note_time = getftime(note)
 
 		if note =~? '\.t2t$'
-			let note_ex_time = getftime(g:xell_notes_ex_root . g:slash .
+			let note_ex_time = getftime(g:xell_notes_ex_root . '/' .
 						\ xelltoolkit#fname_name(note) . '.html')
 			if note_time > note_ex_time
 				call T2TConverter(note, 'html', 'note', g:xell_notes_ex_root)
 			endif
 		elseif note =~? '\.\(md\|mkd\|markdown\|pandoc\)$'
-			let note_ex_time = getftime(g:xell_notes_ex_root . g:slash .
+			let note_ex_time = getftime(g:xell_notes_ex_root . '/' .
 						\ xelltoolkit#fname_name(note) . '.html')
 			if note_time > note_ex_time
 				" XXX c means --self-contained and all the images?
 				call Pandoc_html_conv(note, 'html', 'cnote', g:xell_notes_ex_root)
 			endif
 		elseif note =~? '\.rst$'
-			let note_ex_time = getftime(g:xell_notes_ex_root . g:slash .
+			let note_ex_time = getftime(g:xell_notes_ex_root . '/' .
 						\ xelltoolkit#fname_name(note) . '.html')
 			if note_time > note_ex_time
 				call RstConverter(note, 'html', '', g:xell_notes_ex_root)
 			endif
 		elseif note =~ 'index\.noteindex$'
-			let note_ex = g:xell_notes_root . g:slash . 'index.md'
+			let note_ex = g:xell_notes_root . '/index.md'
 			let note_ex_time = getftime(note_ex)
 			if note_time > note_ex_time
 				let index_md_file = NoteindexConverter(note, '')
@@ -110,7 +110,7 @@ function! s:convert_notes() "{{{2
 			endif
 		" ignore files
 		elseif note !~? '\.\(html\|sw.\)$'
-			let note_ex = g:xell_notes_ex_root . g:slash .
+			let note_ex = g:xell_notes_ex_root . '/' .
 						\ xelltoolkit#fname_name(note) . '.' .
 						\ xelltoolkit#fname_ext(note)
 			let note_ex_time = getftime(note_ex)
@@ -126,7 +126,7 @@ endfunction
 " }}}
 
 function! NoteindexConverter(note, config) "{{{2
-	let index_out = g:xell_notes_root . g:slash . 'index.md'
+	let index_out = g:xell_notes_root . '/index.md'
 	let index_file = readfile(a:note)
 	let i = 0
 	let end_of_file = len(index_file)

@@ -73,25 +73,14 @@ vnoremap <buffer> <M-[> "zc{==<C-R>Z==}<Esc>
 nnoremap <buffer> j gj
 nnoremap <buffer> k gk
 
-if g:isw
-	call IMAP('**', '*<++>*<++>', 'pandoc')
-	call IMAP('``', '`<++>`<++>', 'pandoc')
-	call IMAP('[[', '[<++>](<++>)<++>', 'pandoc')
-	call IMAP('["', '[<++>](<++>"<++>")<++>', 'pandoc')
-	call IMAP('~~~~', '~~<++>~~<++>', 'pandoc')
-	call IMAP('$$', '$<++>$<++>', 'pandoc')
-    call IMAP('{{', '{==<++>==}<++>', 'pandoc')
-    call IMAP(']]', '［<++>］<++>', 'pandoc')
-elseif g:ism
-	call xelltoolkit#imap('**', '*<++>*<++>', 1)
-	call xelltoolkit#imap('``', '`<++>`<++>', 1)
-	call xelltoolkit#imap('[[', '[<++>](<++>)<++>', 1)
-	call xelltoolkit#imap('["', '[<++>](<++>"<++>")<++>', 1)
-	call xelltoolkit#imap('~~~~', '~~<++>~~<++>', 1)
-	call xelltoolkit#imap('$$', '$<++>$<++>', 1)
-    call xelltoolkit#imap('{{', '{==<++>==}<++>', 1)
-    call xelltoolkit#imap(']]', '［<++>］<++>', 1)
-endif
+call xelltoolkit#imap('**', '*<++>*<++>', 1)
+call xelltoolkit#imap('``', '`<++>`<++>', 1)
+call xelltoolkit#imap('[[', '[<++>](<++>)<++>', 1)
+call xelltoolkit#imap('["', '[<++>](<++>"<++>")<++>', 1)
+call xelltoolkit#imap('~~~~', '~~<++>~~<++>', 1)
+call xelltoolkit#imap('$$', '$<++>$<++>', 1)
+call xelltoolkit#imap('{{', '{==<++>==}<++>', 1)
+call xelltoolkit#imap(']]', '［<++>］<++>', 1)
 
 imap <buffer> <c-w><c-w> <Esc>:call <SID>shift_plus()<CR>
 imap <buffer> <c-w><c-q> <Esc>:call <SID>shift_minus()<CR>

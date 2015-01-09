@@ -13,7 +13,7 @@ function! s:makesession()
 			\ input(v:this_session . "\nAre you sure overriding? (Y/n)") =~? '^n')
 		let session_name = input("Session name: ")
 		if session_name != ''
-			let v:this_session = g:session_path . g:slash . session_name . '.vim'
+			let v:this_session = g:session_path . '/' . session_name . '.vim'
 		else
 			call xelltoolkit#echo_msg("Empty session name. No session created!")
 			return
@@ -25,7 +25,7 @@ endfunction
 
 function! s:loadsession(...)
 	if a:1 != ''
-		let session_name = g:session_path . g:slash . a:1 . '.vim'
+		let session_name = g:session_path . '/' . a:1 . '.vim'
 		if filereadable(session_name)
 			exec 'so ' . session_name
 		else
@@ -35,8 +35,8 @@ function! s:loadsession(...)
 	endif
 
 	let session_files = split(substitute(
-			\ glob(g:session_path . g:slash . '*.vim'),
-			\ escape(g:session_path . g:slash, '/'), '', 'g'), '\n')
+			\ glob(g:session_path . '/*.vim'),
+			\ escape(g:session_path . '/', '/'), '', 'g'), '\n')
 
 	topleft new
 	setlocal hidden
@@ -47,5 +47,5 @@ function! s:loadsession(...)
 
 	call append(line(0), session_files)
 	exec 'resize ' . (len(session_files) + 1)
-	nmap <buffer> <Return> :exec 'so ' . g:session_path . g:slash . getline('.')<CR>
+	nmap <buffer> <Return> :exec 'so ' . g:session_path . '/' . getline('.')<CR>
 endfunction

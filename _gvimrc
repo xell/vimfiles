@@ -17,7 +17,7 @@ set confirm
 "set nomousehide
 
 " Transparency only for MacVim GUI
-if g:ism && &term == 'builtin_gui'
+if &term == 'builtin_gui'
 	set transparency=4
 endif
 
@@ -34,58 +34,14 @@ endif
 " t include tearoff menu items
 " a auto yank visuals into regester *
 " T toolbar
-if g:isw
-	set guioptions=egt
-elseif g:ism
-	set guioptions=egtm
-endif
+set guioptions=egtm
 "}}}
 
 " Screen size settings {{{1
 " Initial sizes {{{2
 " those size responding to font h:9
-if g:ism
-	set lines=40
-	set columns=101
-else
-	set lines=45
-	set columns=100
-endif
-
-" those size responding to font h:12 (win)
-"set lines=25
-"set columns=80
-" }}}
-
-" Move the windows {{{2
-if g:isw
-	function! MoveWindows(incre, direction)
-		let x = getwinposx()
-		let y = getwinposy()
-		if a:direction =~ "up"
-			let y = y - a:incre
-		endif
-		if a:direction =~ "down"
-			let y = y + a:incre
-		endif
-		if a:direction =~ "left"
-			let x = x - a:incre
-		endif
-		if a:direction =~ "right"
-			let x = x + a:incre
-		endif
-		execute "winpos" . x . " " . y
-	endfunction
-	let g:incrementw = 15
-	nmap <silent> <M-Left> :call MoveWindows(g:incrementw,"left")<CR>
-	nmap <silent> <M-Right> :call MoveWindows(g:incrementw,"right")<CR>
-	nmap <silent> <M-Up> :call MoveWindows(g:incrementw,"up")<CR>
-	nmap <silent> <M-Down> :call MoveWindows(g:incrementw,"down")<CR>
-	imap <silent> <M-Left> <Esc>:call MoveWindows(g:incrementw,"left")<CR>
-	imap <silent> <M-Right> <Esc>:call MoveWindows(g:incrementw,"right")<CR>
-	imap <silent> <M-Up> <Esc>:call MoveWindows(g:incrementw,"up")<CR>
-	imap <silent> <M-Down> <Esc>:call MoveWindows(g:incrementw,"down")<CR>
-endif
+set lines=40
+set columns=101
 " }}}
 
 " Change the window size incrementally {{{2
@@ -128,11 +84,7 @@ function! s:sizeAndPositionOfWindowSmall()
 		"winpos 50 60
 		let s:sizeandpositionofwindowsmall = !s:sizeandpositionofwindowsmall
 	else
-		if g:ism
-			set lines=40
-		else
-			set lines=45
-		endif
+        set lines=40
 		set columns=101
 		"winpos 66 103
 		let s:sizeandpositionofwindowsmall = !s:sizeandpositionofwindowsmall
@@ -145,22 +97,13 @@ if !exists("s:sizeandpositionofwindow")
 endif
 function! s:sizeAndPositionOfWindow()
 	if s:sizeandpositionofwindow
-		if g:ism
-			set lines=40
-		else
-			set lines=45
-		endif
+        set lines=40
 		set columns=169
 		"winpos 50 60
 		let s:sizeandpositionofwindow = !s:sizeandpositionofwindow
 	else
-		if g:ism
-			set lines=68
-			set columns=259
-		else
-			set lines=45
-			set columns=220
-		endif 
+        set lines=68
+        set columns=259
 		"winpos 66 103
 		let s:sizeandpositionofwindow = !s:sizeandpositionofwindow
 	endif
@@ -201,55 +144,26 @@ endfunction
 
 " Font setup {{{1
 "---------------------------------------
-if g:isw
-" set the space between lines
-	set linespace=4
-	set guifont=Megatops_ProCoder_1.0:h9
-	" useless {{{2
-	"---------------------------------------
-	"set guifont=Courier_new:h12:w6
-
-	"---------------------------------------
-	"set guifont=Yahei_Mono:h10
-
-
-	"---------------------------------------
-	"set guifont=Megatops_Procoder_1.0:h12
-	"set guifontwide=新宋体:h12:cGB2312
-
-	"---------------------------------------
-	"set guifont=Megatops_Procoder_1.0:h12
-	"set guifontwide=新宋体:h12:cGB2312
-
-	"---------------------------------------
-	"set guifont=Yahei_Mono:h10
-
-	"---------------------------------------
-	"set guifont=MS_Gothic:h11
-	"set guifontwide=Megatops_ProCoder_1.0:h9
-	"}}}
-elseif g:ism
 	" TODO
-	set linespace=4
-	set guifont=Consolas:h15
-	" useless {{{2
-	"set guifont=Megatops_ProCoder_1.0:h12
-	"set guifont=Andale_Mono:h12
-	"set guifont=Courier\ New:h14
-	"set guifont=DejaVu_LGC_Sans_Mono:h13
-	"set guifont=Monaco:h13
-	"set guifont=WenQuanYi\ Micro\ Hei\ Mono
-    "
-    " guifontwide will disable the function of changing font size in Edit
-	"set guifontwide=Microsoft\ YaHei:h14
-    "set guifontwide=Source\ Han\ Sans\ CN\ ExtraLight:h14
-	"set guifontwide=TextMate
-	"set guifontwide=Arial\ Unicode MS
-	"set guifontwide=Heiti\ SC
-	"set guifontwide=STHeiti:h14
-	"set guifontwide=Megatops_ProCoder_1.0:h12 
-	"}}}
-endif
+set linespace=4
+set guifont=Consolas:h15
+" useless {{{2
+"set guifont=Megatops_ProCoder_1.0:h12
+"set guifont=Andale_Mono:h12
+"set guifont=Courier\ New:h14
+"set guifont=DejaVu_LGC_Sans_Mono:h13
+"set guifont=Monaco:h13
+"set guifont=WenQuanYi\ Micro\ Hei\ Mono
+"
+" guifontwide will disable the function of changing font size in Edit
+"set guifontwide=Microsoft\ YaHei:h14
+"set guifontwide=Source\ Han\ Sans\ CN\ ExtraLight:h14
+"set guifontwide=TextMate
+"set guifontwide=Arial\ Unicode MS
+"set guifontwide=Heiti\ SC
+"set guifontwide=STHeiti:h14
+"set guifontwide=Megatops_ProCoder_1.0:h12 
+"}}}
 
 " for encoding see http://www.gracecode.com/archives/2989/
 " if has("gui_win32")
@@ -264,9 +178,6 @@ endif
 let g:Fullscreen_Enabled = 0
 let g:writeroomstarted = 0
 
-if g:isw
-	let g:shell_fullscreen_items = 'mTe'
-endif
 nmap <silent> <F11> <Esc>:if !g:writeroomstarted \| call FullScreenToggle() \| else \| echo "WriteRoom mode. Please end it." \| endif<CR>
 command! -nargs=0 WRS call WriteRoomStart()
 command! -nargs=0 WRSNew call WriteRoomStart('new')
@@ -277,31 +188,22 @@ command! -nargs=0 WRE call WriteRoomEnd()
 
 " Temp Note(file) Saving {{{2
 " As for :macm, must use in has("gui_macvim")
-if g:isw
-	nmap <C-s> :call TempNote()<CR>
-	imap <C-s> <Esc><C-s>a
-elseif g:ism
-	macm File.Save<Tab>:w				key=<Nop>
-	nmap <D-s> :call TempNote()<CR>
-	imap <D-s> <Esc><D-s>a
+macm File.Save<Tab>:w				key=<Nop>
+nmap <D-s> :call TempNote()<CR>
+imap <D-s> <Esc><D-s>a
 
-	macm Edit.Paste<Tab>"+gP			key=<Nop>
-	" imap <D-v> <Esc>"+gpa
-	" nmap <D-v> "+gp
+macm Edit.Paste<Tab>"+gP			key=<Nop>
+" imap <D-v> <Esc>"+gpa
+" nmap <D-v> "+gp
 
-endif
 macm Edit.Find.Use\ Selection\ for\ Find  key=<Nop>
 " }}}
 
 " Find General {{{2
-if g:isw
-	nmap <C-f> :call <SID>find_general()<CR>
-elseif g:ism
-    macm Edit.Find.Find\.\.\.			key=<Nop>
-	nmap <D-f> :call <SID>find_general()<CR>
-endif
+macm Edit.Find.Find\.\.\.			key=<Nop>
+nmap <D-f> :call <SID>find_general()<CR>
 
-" Default -i; include only this filetype; no exclude
+" Default -i; include only this filetype; no exclude TODO
 function! s:find_general()
 	let pattern = input('What to find: ')
 	if pattern == ''

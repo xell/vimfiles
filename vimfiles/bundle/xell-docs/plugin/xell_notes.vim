@@ -84,7 +84,7 @@ endfunction "}}}
 
 nmap <silent> <Leader>/ :call <SID>note_taking_temp()<CR>
 function! s:note_taking_temp() "{{{2
-	let temp_file = g:xell_notes_root . g:slash . g:xell_notes_temp
+	let temp_file = g:xell_notes_root . '/' . g:xell_notes_temp
 	if filereadable(glob(temp_file))
 		execute 'e ' . temp_file
 		normal G
@@ -94,7 +94,7 @@ function! s:note_taking_temp() "{{{2
 	endif
 endfunction "}}}
 
-" nmap <silent> <Leader>p :execute 'e ' . g:xell_notes_root . g:slash . 'plan.t2t'<CR>
+" nmap <silent> <Leader>p :execute 'e ' . g:xell_notes_root . '/' . 'plan.t2t'<CR>
 " }}}
 
 " Delete note {{{1
@@ -144,7 +144,7 @@ endfunction
 
 " Generate temp note file name
 function s:temp_note_filename()
-    return g:xell_notes_root . g:slash . 'temp_' . strftime("%Y%m%d-%H%M%S") . '.tempnote'
+    return g:xell_notes_root . '/temp_' . strftime("%Y%m%d-%H%M%S") . '.tempnote'
 endfunction
 
 " }}}
@@ -165,10 +165,10 @@ function! AddNote()
         if newfileext == ''
             let newfileext = 'md'
         endif
-        call writefile(getline(1, '$'), g:xell_notes_root . g:slash . newfilename . '.' . newfileext)
+        call writefile(getline(1, '$'), g:xell_notes_root . '/' . newfilename . '.' . newfileext)
 
         bwipeout!
-        exec 'edit ' . xelltoolkit#fname_escape(g:xell_notes_root . g:slash . newfilename . '.' . newfileext)
+        exec 'edit ' . xelltoolkit#fname_escape(g:xell_notes_root . '/' . newfilename . '.' . newfileext)
         call xelltoolkit#echo_msg('New note "' . newfilename . '.' . newfileext . '" was created!')
 
         return
@@ -186,10 +186,10 @@ function! AddNote()
         if newfileext == ''
             let newfileext = 'md'
         endif
-        call rename(filefullname, g:xell_notes_root . g:slash . newfilename . '.' . newfileext)
+        call rename(filefullname, g:xell_notes_root . '/' . newfilename . '.' . newfileext)
 
         bwipeout!
-        exec 'edit ' . xelltoolkit#fname_escape(g:xell_notes_root . g:slash . newfilename . '.' . newfileext)
+        exec 'edit ' . xelltoolkit#fname_escape(g:xell_notes_root . '/' . newfilename . '.' . newfileext)
         call xelltoolkit#echo_msg('New note "' . newfilename . '.' . newfileext . '" was created!')
 
         return
@@ -216,7 +216,7 @@ function! AddNote()
             let newfileext = fileext
         endif
 
-        let newfile = g:xell_notes_root . g:slash . newfilename . '.' . newfileext
+        let newfile = g:xell_notes_root . '/' . newfilename . '.' . newfileext
         let is_keep_ori = input("Keep original file? (y/N)")
         if is_keep_ori =~ '^y'
             call system('cp ' . xelltoolkit#fname_escape(filefullname) . ' ' . xelltoolkit#fname_escape(newfile))
@@ -258,7 +258,7 @@ function! RenameNote()
         let newfileext = fileext
     endif
 
-    let newfile = g:xell_notes_root . g:slash . newfilename . '.' . newfileext
+    let newfile = g:xell_notes_root . '/' . newfilename . '.' . newfileext
     call rename(filefullname, newfile)
     bwipeout!
     exec 'edit ' . xelltoolkit#fname_escape(newfile)

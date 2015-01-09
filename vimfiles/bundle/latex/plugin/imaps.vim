@@ -1,9 +1,3 @@
-if g:ism
-	function! IMAP(lhs, rhs, ft, ...)
-		" blank
-	endfunction
-	finish
-endif
 "        File: imaps.vim
 "     Authors: Srinath Avadhanula <srinath AT fastmail.fm>
 "              Benji Fisher <benji AT member.AMS.org>

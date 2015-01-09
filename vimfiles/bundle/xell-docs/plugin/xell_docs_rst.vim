@@ -30,16 +30,16 @@ function! Rst_odt_conv(input, config, out_path)
 	" Output file {{{2
 	let input_head = xelltoolkit#fname_head(input)
 	if a:out_path == ''
-		let o_fname_raw = input_head . g:slash . input_name . '.odt'
+		let o_fname_raw = input_head . '/' . input_name . '.odt'
 	else
-		let o_fname_raw = a:out_path . g:slash . input_name . '.odt'
+		let o_fname_raw = a:out_path . '/' . input_name . '.odt'
 	endif
 	let o_fname = xelltoolkit#fname_escape(o_fname_raw)
 	" }}}
 
 	" Additional pre-process {{{2
 
-	let temp_rst_name = input_head . g:slash . input_name . '.tmp.rst'
+	let temp_rst_name = input_head . '/' . input_name . '.tmp.rst'
 	call add(middle_files, temp_rst_name)
 	let temp_rst = readfile(input)
 
@@ -72,7 +72,7 @@ function! Rst_odt_conv(input, config, out_path)
 
 	" }}}
 	
-	let conf = ' --language=zh_CN --create-links --no-sections --stylesheet=' . g:rst_odt_style_root . g:slash . 'normal.odt' . ' --custom-odt-footer="%p%"'
+	let conf = ' --language=zh_CN --create-links --no-sections --stylesheet=' . g:rst_odt_style_root . '/normal.odt' . ' --custom-odt-footer="%p%"'
 	let cmd = g:rst2odt_exec . conf . ' ' . xelltoolkit#fname_escape(temp_rst_name) . ' ' . o_fname
 
 	call xelltoolkit#system(cmd)

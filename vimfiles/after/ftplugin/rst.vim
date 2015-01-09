@@ -3,13 +3,8 @@
 nnoremap <buffer> j gj
 nnoremap <buffer> k gk
 
-if g:isw
-	call IMAP('**', '*<++>*<++>', 'rst')
-	call IMAP('````', '``<++>``<++>', 'rst')
-elseif g:ism
-	call xelltoolkit#imap('**', '*<++>*<++>', 1)
-	call xelltoolkit#imap('````', '``<++>``<++>', 1)
-endif
+call xelltoolkit#imap('**', '*<++>*<++>', 1)
+call xelltoolkit#imap('````', '``<++>``<++>', 1)
 " }}}
 
 " Folding {{{1

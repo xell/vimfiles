@@ -75,7 +75,7 @@ function! Pandoc_other_conv(input, out_type, config, out_path) " {{{1
 	if a:out_path == ''
 		let o_fname_raw = xelltoolkit#fname_ext_mod(input, o_fname_suf . g:pandoc_target_ext[a:out_type])
 	else
-		let o_fname_raw = a:out_path . g:slash . xelltoolkit#fname_name(input) . '.' . o_fname_suf . g:pandoc_target_ext[a:out_type]
+		let o_fname_raw = a:out_path . '/' . xelltoolkit#fname_name(input) . '.' . o_fname_suf . g:pandoc_target_ext[a:out_type]
 	endif
 	let o_fname = xelltoolkit#fname_escape(o_fname_raw)
 	" }}}
@@ -152,7 +152,7 @@ function! Pandoc_html_conv(input, out_type, config, out_path) " {{{1
 	" template p
 	let conf_v_tpl = strpart(GetDocsConf(conf_s, conf_l, 'p'), 1) 
 	if conf_v_tpl != ''
-		let conf_v_tpl = xelltoolkit#fname_escape(g:pandoc_htmltpl_root . g:slash . conf_v_tpl . '.html')
+		let conf_v_tpl = xelltoolkit#fname_escape(g:pandoc_htmltpl_root . '/' . conf_v_tpl . '.html')
 		let conf .= ' --template=' . conf_v_tpl
 	endif
 
@@ -165,7 +165,7 @@ function! Pandoc_html_conv(input, out_type, config, out_path) " {{{1
 	" Note : --css only link file but not embed it
 	let conf_v_css = strpart(GetDocsConf(conf_s, conf_l, 'c'), 1) 
 	if conf_v_css != ''
-		let conf_v_css = xelltoolkit#fname_escape(g:pandoc_css_root . g:slash . conf_v_css . '.html')
+		let conf_v_css = xelltoolkit#fname_escape(g:pandoc_css_root . '/' . conf_v_css . '.html')
 		let conf .= ' -H ' . conf_v_css
 	endif
 
@@ -195,7 +195,7 @@ function! Pandoc_html_conv(input, out_type, config, out_path) " {{{1
 	if a:out_path == ''
 		let o_fname_raw = xelltoolkit#fname_ext_mod(input, o_fname_suf . g:pandoc_target_ext[a:out_type])
 	else
-		let o_fname_raw = a:out_path . g:slash . xelltoolkit#fname_name(input) . '.' . o_fname_suf . g:pandoc_target_ext[a:out_type]
+		let o_fname_raw = a:out_path . '/' . xelltoolkit#fname_name(input) . '.' . o_fname_suf . g:pandoc_target_ext[a:out_type]
 	endif
 	let o_fname = xelltoolkit#fname_escape(o_fname_raw)
 	" }}}
@@ -263,7 +263,7 @@ function! Pandoc_rst_conv(input, config, out_path) " {{{1
 	" template p
 	let conf_v_tpl = strpart(GetDocsConf(conf_s, conf_l, 'p'), 1) 
 	if conf_v_tpl != ''
-		let conf_v_tpl = xelltoolkit#fname_escape(g:pandoc_htmltpl_root . g:slash . conf_v_tpl . '.rst')
+		let conf_v_tpl = xelltoolkit#fname_escape(g:pandoc_htmltpl_root . '/' . conf_v_tpl . '.rst')
 		let conf .= ' --template=' . conf_v_tpl
 	endif
 
@@ -302,7 +302,7 @@ function! Pandoc_rst_conv(input, config, out_path) " {{{1
 	if a:out_path == ''
 		let o_fname_raw = xelltoolkit#fname_ext_mod(input, o_fname_suf . g:pandoc_target_ext['rst'])
 	else
-		let o_fname_raw = a:out_path . g:slash . xelltoolkit#fname_name(input) . '.' . o_fname_suf . g:pandoc_target_ext['rst']
+		let o_fname_raw = a:out_path . '/' . xelltoolkit#fname_name(input) . '.' . o_fname_suf . g:pandoc_target_ext['rst']
 	endif
 	let o_fname = xelltoolkit#fname_escape(o_fname_raw)
 	" }}}
@@ -729,7 +729,7 @@ function! Pandoc_docx_conv(input, config, out_path) " {{{1
 	" template p
 	let conf_v_tpl = strpart(GetDocsConf(conf_s, conf_l, 'p'), 1) 
 	if conf_v_tpl != ''
-		let conf_v_tpl = xelltoolkit#fname_escape(g:pandoc_docx_root . g:slash . conf_v_tpl . '.docx')
+		let conf_v_tpl = xelltoolkit#fname_escape(g:pandoc_docx_root . '/' . conf_v_tpl . '.docx')
 		let conf .= ' --reference-docx=' . conf_v_tpl
 	endif
 
@@ -752,7 +752,7 @@ function! Pandoc_docx_conv(input, config, out_path) " {{{1
 	if a:out_path == ''
 		let o_fname_raw = xelltoolkit#fname_ext_mod(input, o_fname_suf . g:pandoc_target_ext['docx'])
 	else
-		let o_fname_raw = a:out_path . g:slash . xelltoolkit#fname_name(input) . '.' . o_fname_suf . g:pandoc_target_ext['docx']
+		let o_fname_raw = a:out_path . '/' . xelltoolkit#fname_name(input) . '.' . o_fname_suf . g:pandoc_target_ext['docx']
 	endif
 	let o_fname = xelltoolkit#fname_escape(o_fname_raw)
 	" }}}
@@ -831,7 +831,7 @@ function! Pandoc_odt_conv(input, config, out_path) " {{{1
 	" template p
 	let conf_v_tpl = strpart(GetDocsConf(conf_s, conf_l, 'p'), 1) 
 	if conf_v_tpl != ''
-		let conf_v_tpl = xelltoolkit#fname_escape(g:pandoc_odt_root . g:slash . conf_v_tpl . '.odt')
+		let conf_v_tpl = xelltoolkit#fname_escape(g:pandoc_odt_root . '/' . conf_v_tpl . '.odt')
 		let conf .= ' --reference-odt=' . conf_v_tpl
 	endif
 
@@ -854,7 +854,7 @@ function! Pandoc_odt_conv(input, config, out_path) " {{{1
 	if a:out_path == ''
 		let o_fname_raw = xelltoolkit#fname_ext_mod(input, o_fname_suf . g:pandoc_target_ext['odt'])
 	else
-		let o_fname_raw = a:out_path . g:slash . xelltoolkit#fname_name(input) . '.' . o_fname_suf . g:pandoc_target_ext['odt']
+		let o_fname_raw = a:out_path . '/' . xelltoolkit#fname_name(input) . '.' . o_fname_suf . g:pandoc_target_ext['odt']
 	endif
 	let o_fname = xelltoolkit#fname_escape(o_fname_raw)
 	" }}}
@@ -918,7 +918,7 @@ function! s:mkd_preproc_no_numbering_html(in, out_fname, config) " {{{1
 	endif
 	" }}}
 
-	let out = xelltoolkit#fname_head(a:in) . g:slash . a:out_fname
+	let out = xelltoolkit#fname_head(a:in) . '/' . a:out_fname
 	let file = readfile(a:in)
 
 	let line_index = 0
@@ -979,7 +979,7 @@ endfunction
 " }}}
 
 function! s:mkd_preproc_html(in, out_fname) " {{{1
-	let out = xelltoolkit#fname_head(a:in) . g:slash . a:out_fname
+	let out = xelltoolkit#fname_head(a:in) . '/' . a:out_fname
 	let file = readfile(a:in)
 
 	let line_index = 0
@@ -1034,7 +1034,7 @@ function! s:mkd_preproc_no_numbering(in, out_fname, config_s, config_l) " {{{1
 	endif
 	" }}}
 
-	let out = xelltoolkit#fname_head(a:in) . g:slash . a:out_fname
+	let out = xelltoolkit#fname_head(a:in) . '/' . a:out_fname
 	let file = readfile(a:in)
 
 	let line_index = 0
@@ -1132,7 +1132,7 @@ function! s:mkd_preproc_numbering(in, out_fname, config_s, config_l) " {{{1
 	endif
 	" }}}
 
-	let out = xelltoolkit#fname_head(a:in) . g:slash . a:out_fname
+	let out = xelltoolkit#fname_head(a:in) . '/' . a:out_fname
 	let mkdfile = readfile(a:in)
 
 	let level_list = []
@@ -1368,7 +1368,7 @@ endfunction
 
 " For md -> docx, odt, etc. cleaning the blank between zh and en
 function! s:mkd_preproc_clean(in, out_fname) " {{{1
-	let out = xelltoolkit#fname_head(a:in) . g:slash . a:out_fname
+	let out = xelltoolkit#fname_head(a:in) . '/' . a:out_fname
 	let file = readfile(a:in)
 
 	let line_index = 0
@@ -1399,7 +1399,7 @@ function! s:pandoc_bib_conf(input) " {{{2
 		let input_head = xelltoolkit#fname_head(a:input)
 	endif
 
-	let bib_file = input_head . g:slash . g:pandoc_bib
+	let bib_file = input_head . '/' . g:pandoc_bib
 	if filereadable(bib_file)
 		return ' --bibliography=' . xelltoolkit#fname_escape(bib_file) . ' --csl=' . xelltoolkit#fname_escape(g:pandoc_csl)
 	else
