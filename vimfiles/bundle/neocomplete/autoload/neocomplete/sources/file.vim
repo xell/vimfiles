@@ -57,10 +57,6 @@ function! s:source.get_complete_position(context) "{{{
     return -1
   endif
 
-  if neocomplete#is_sources_complete() && complete_pos < 0
-    let complete_pos = len(a:context.input)
-  endif
-
   if complete_str =~ '/'
     let complete_pos += strridx(complete_str, '/') + 1
   endif
@@ -89,6 +85,9 @@ function! s:get_glob_files(complete_str, path) "{{{
   let complete_str = neocomplete#util#substitute_path_separator(
         \ substitute(a:complete_str, '\\\(.\)', '\1', 'g'))
   let complete_str = substitute(complete_str, '[^/.]\+$', '', '')
+
+  " Note: Support ${env}
+  let complete_str = substitute(complete_str, '\${\(\w\+\)}', '$\1', 'g')
 
   let glob = (complete_str !~ '\*$')?
         \ complete_str . '*' : complete_str

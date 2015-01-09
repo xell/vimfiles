@@ -1,0 +1,70 @@
+This is a mirror of http://www.vim.org/scripts/script.php?script_id=842
+
+This is a handy plugin that makes easy replacing your favorite pattern ("@" by default) with a sequence of incremented values using the "Inc" command.
+
+Examples:
+
+If you have a file that only contains the following lines:
+
+   This is line @
+   This is line @
+   This is line @
+   This is line @
+
+By typing ":1,4Inc", you obtain:
+
+   This is line 0
+   This is line 1
+   This is line 2
+   This is line 3
+
+Better yet...  With ":Inc i11 s4 pblah",
+
+   This is a list: [blah, blah, blah, blah, blah, blah, blah]
+
+becomes
+
+   This is a list: [4, 15, 26, 37, 48, 59, 70]
+
+You can also repeat the same value several times.  Consider:
+
+   case
+      addr@: begin value@ = offset@+incr@; end
+      addr@: begin value@ = offset@+incr@; end
+      addr@: begin value@ = offset@+incr@; end
+   end
+
+After ":%Inc r4", you obtain:
+
+   case
+      addr0: begin value0 = offset0+incr0; end
+      addr1: begin value1 = offset1+incr1; end
+      addr2: begin value2 = offset2+incr2; end
+   end
+
+I have just added support for bases and right alignment.  You just have to specify the width of your alignment:
+
+   `define MEM_ADD0 @
+   `define MEM_ADD1 @
+   `define MEM_ADD2 @
+   `define MEM_ADD3 @
+
+becomes, after running ":%Inc w3 i128 f0":
+
+   `define MEM_ADD0 000
+   `define MEM_ADD1 128
+   `define MEM_ADD2 256
+   `define MEM_ADD3 384
+
+or, after running ":%Inc w3 i128 f0 h":
+
+   `define MEM_ADD0 000
+   `define MEM_ADD1 080
+   `define MEM_ADD2 100
+   `define MEM_ADD3 180
+
+Many thanks to Stanislas Sitar (vimscript #145), Ely Schoenfeld (vimscript #1199), Charles E Campbell's (vimtip #150, vimscript #670) and Neil Bird (vimscript #189).
+
+Note: I need to merge with Ely's version, and to update the documentation.  Sorry if this causes any inconvenience in the meantime.
+
+Happy Vimming!

@@ -301,4 +301,4 @@ endfunction
 
 " Command definition
 command! -n=* -range Inc :<line1>,<line2>call Increment(<f-args>)
-
+command! -nargs=0 IncHelp echo "<,>Inc [s]tart_0 [i]ncre_1 [r]epeat_1 [w]idth_4 [f]ill [h]ex [o]ct [p]at_@ [c]onfirm"

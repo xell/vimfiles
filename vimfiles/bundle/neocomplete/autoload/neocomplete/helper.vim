@@ -138,11 +138,11 @@ function! neocomplete#helper#complete_check() "{{{
   if g:neocomplete#enable_debug
     echomsg split(reltimestr(reltime(neocomplete.start_time)))[0]
   endif
-  let ret = (!neocomplete#is_prefetch() && complete_check())
-        \ || (neocomplete#is_auto_complete()
+  let ret =
+        \ neocomplete#is_auto_complete()
         \     && g:neocomplete#skip_auto_completion_time != ''
         \     && split(reltimestr(reltime(neocomplete.start_time)))[0] >
-        \          g:neocomplete#skip_auto_completion_time)
+        \          g:neocomplete#skip_auto_completion_time
   if ret
     let neocomplete = neocomplete#get_current_neocomplete()
     let neocomplete.skipped = 1
@@ -309,7 +309,7 @@ function! neocomplete#helper#call_hook(sources, hook_name, context) "{{{
       call neocomplete#print_error(v:throwpoint)
       call neocomplete#print_error(v:exception)
       call neocomplete#print_error(
-            \ '[unite.vim] Error occured in calling hook "' . a:hook_name . '"!')
+            \ '[unite.vim] Error occurred in calling hook "' . a:hook_name . '"!')
       call neocomplete#print_error(
             \ '[unite.vim] Source name is ' . source.name)
     endtry
@@ -325,7 +325,7 @@ function! neocomplete#helper#call_filters(filters, source, context) "{{{
       call neocomplete#print_error(v:throwpoint)
       call neocomplete#print_error(v:exception)
       call neocomplete#print_error(
-            \ '[unite.vim] Error occured in calling filter '
+            \ '[unite.vim] Error occurred in calling filter '
             \   . filter.name . '!')
       call neocomplete#print_error(
             \ '[unite.vim] Source name is ' . a:source.name)
@@ -355,6 +355,61 @@ endfunction"}}}
 
 function! neocomplete#helper#check_invalid_omnifunc(omnifunc) "{{{
   return a:omnifunc == '' || (a:omnifunc !~ '#' && !exists('*' . a:omnifunc))
+endfunction"}}}
+
+function! neocomplete#helper#indent_current_line() "{{{
+  let pos = getpos('.')
+  let len = len(getline('.'))
+  let equalprg = &l:equalprg
+  try
+    setlocal equalprg=
+    silent normal! ==
+  finally
+    let &l:equalprg = equalprg
+    let pos[2] += len(getline('.')) - len
+    call setpos('.', pos)
+  endtry
+endfunction"}}}
+
+function! neocomplete#helper#complete_configure() "{{{
+  call s:save_foldinfo()
+
+  set completeopt-=menu
+  set completeopt-=longest
+  set completeopt+=menuone
+
+  " Set options.
+  let neocomplete = neocomplete#get_current_neocomplete()
+  let neocomplete.completeopt = &completeopt
+
+  if neocomplete#util#is_complete_select()
+    if g:neocomplete#enable_auto_select
+      set completeopt-=noselect
+      set completeopt+=noinsert
+    else
+      set completeopt+=noinsert,noselect
+    endif
+  endif
+endfunction"}}}
+
+function! s:save_foldinfo() "{{{
+  " Save foldinfo.
+  let winnrs = filter(range(1, winnr('$')),
+        \ "winbufnr(v:val) == bufnr('%')")
+
+  " Note: for foldmethod=expr or syntax.
+  call filter(winnrs, "
+        \  (getwinvar(v:val, '&foldmethod') ==# 'expr' ||
+        \   getwinvar(v:val, '&foldmethod') ==# 'syntax') &&
+        \  getwinvar(v:val, '&modifiable')")
+  for winnr in winnrs
+    call setwinvar(winnr, 'neocomplete_foldinfo', {
+          \ 'foldmethod' : getwinvar(winnr, '&foldmethod'),
+          \ 'foldexpr'   : getwinvar(winnr, '&foldexpr')
+          \ })
+    call setwinvar(winnr, '&foldmethod', 'manual')
+    call setwinvar(winnr, '&foldexpr', 0)
+  endfor
 endfunction"}}}
 
 let &cpo = s:save_cpo

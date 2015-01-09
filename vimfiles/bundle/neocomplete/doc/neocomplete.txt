@@ -1,6 +1,6 @@
 *neocomplete.txt*	Next generation of auto completion framework.
 
-Version: 1.2
+Version: 2.0
 Author: Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -43,7 +43,6 @@ Create filter		|neocomplete-create-filter|
 FILTERS			|neocomplete-filters|
 External sources	|neocomplete-external-sources|
 FAQ			|neocomplete-faq|
-Changelog		|neocomplete-changelog|
 
 ==============================================================================
 INTRODUCTION					*neocomplete-introduction*
@@ -162,8 +161,8 @@ further information in the vimproc documentation.
 
 						*neocomplete-snippets*
 
-If you like to use the snippet feature with neocomplete you need to install
-the neosnippet plugin (https://github.com/Shougo/neosnippet) or UltiSnips
+If you like to use the snippet feature with neocomplete, you need to install
+the neosnippet plugin (https://github.com/Shougo/neosnippet.vim) or UltiSnips
 (https://github.com/SirVer/ultisnips).
 
 						*neocomplete-context-filetype*
@@ -171,6 +170,11 @@ the neosnippet plugin (https://github.com/Shougo/neosnippet) or UltiSnips
 If you like to use the context filetype feature, you need to install the
 context_filetype.vim plugin which you can find under the following repository:
 https://github.com/Shougo/context_filetype.vim
+
+						*neocomplete-include*
+
+If you want to complete from include files or include files, you need to
+install the neoinclude plugin (https://github.com/Shougo/neoinclude.vim).
 
 ==============================================================================
 INTERFACE					*neocomplete-interface*
@@ -243,10 +247,6 @@ SOURCES COMMANDS 				*neocomplete-sources-COMMANDS*
 
 :NeoCompleteTagMakeCache		*:NeoCompleteTagMakeCache*
 		Make a cache from a tags file in current buffer.
-
-:NeoCompleteIncludeMakeCache [bufname]		*:NeoCompleteIncludeMakeCache*
-		Make a cache from an include file in [bufname].
-		Selects the current buffer name when the [bufname] is omitted.
 
 ------------------------------------------------------------------------------
 VARIABLES 					*neocomplete-variables*
@@ -391,11 +391,12 @@ g:neocomplete#enable_fuzzy_completion
 
 		Default value is 1.
 
-				*g:neocomplete#enable_refresh_always*
-g:neocomplete#enable_refresh_always
-		If it is non-0, neocomplete always refresh candidates.
-		You can get real fuzzy candidates like |YouCompleteMe|.
-		Note: This feature is heavy.
+				*g:neocomplete#enable_multibyte_completion*
+g:neocomplete#enable_multibyte_completion
+		If it is non-0, neocomplete can complete multibyte characters.
+		Note: This feature may conflict Input Method in Unix systems.
+		Note: To use multibyte completion, you must change
+		|g:neocomplete#keyword_patterns| variable.
 
 		Default value is 0.
 
@@ -406,19 +407,6 @@ g:neocomplete#lock_buffer_name_pattern
 		empty character string, neocomplete will ignore it.
 
 		Default value is ''.
-
-g:neocomplete#enable_prefetch		*g:neocomplete#enable_prefetch*
-		This variable controls whether neocomplete prefetches.  If
-		this variable is non-zero, neocomplete does not flick in
-		auto completion.
-
-		Note: This variable has a side effect.  Partial function (ex:
-		|complete_check()|) is disabled in completefunc.
-		Note: If this variable is 0, an input problem may occur in
-		using uim-skk or other IMEs on GVim.
-
-		Default value is 1 (|+xim| and GUI version.)
-		Default value is 0 (Others)
 
 g:neocomplete#lock_iminsert		*g:neocomplete#lock_iminsert*
 		If this variable is non-zero, neocomplete locks when
@@ -433,7 +421,7 @@ g:neocomplete#data_directory		*g:neocomplete#data_directory*
 		buffer.vim stores cache of the keyword in this
 		'buffer_cache' sub directory.
 
-		Default value is "$XDG_CACHE_DIR/neocomplete" or
+		Default value is "$XDG_CACHE_HOME/neocomplete" or
 		expand("~/.cache/neocomplete"); the absolute path of it.
 
 					*g:neocomplete#keyword_patterns*
@@ -572,7 +560,7 @@ g:neocomplete#sources			*g:neocomplete#sources*
 		  let g:neocomplete#sources = {}
 		endif
 		let g:neocomplete#sources._ = ['buffer']
-		let g:neocomplete#sources.cpp = ['buffer', 'include']
+		let g:neocomplete#sources.cpp = ['buffer', 'dictionary']
 <
 b:neocomplete_sources			*b:neocomplete_sources*
 		It is a list to decide use source names in buffer local.
@@ -581,15 +569,6 @@ b:neocomplete_sources			*b:neocomplete_sources*
 		" In cmdwin, only use vim source.
 		autocmd CmdwinEnter * let b:neocomplete_sources = ['vim']
 <
-				*g:neocomplete#force_overwrite_completefunc*
-g:neocomplete#force_overwrite_completefunc
-		If this variable is 1, neocomplete forces to overwrite
-		'completefunc' option.  This variable is useful for other
-		plugin overwrite 'completefunc'.  But other plugin's
-		'completefunc' is disabled.
-
-		Default value is 0.
-
 					*g:neocomplete#release_cache_time*
 g:neocomplete#release_cache_time
 		This variable defines time of automatic released cache by a
@@ -649,6 +628,17 @@ g:neocomplete#enable_auto_close_preview
 
 		Default value is 1.
 
+					*g:neocomplete#fallback_mappings*
+g:neocomplete#fallback_mappings
+		Neocomplete fallback mappings.
+		If you want to complete keywords by neocomplete and the
+		omnifunc, it is useful. >
+		" Search from neocomplete, omni candidates, vim keywords.
+		let g:neocomplete#fallback_mappings =
+		\ ["\<C-x>\<C-o>", "\<C-x>\<C-n>"]
+<
+		Default value is [].
+
 SOURCES VARIABLES 			*neocomplete-sources-variables*
 
 			*g:neocomplete#sources#buffer#cache_limit_size*
@@ -687,120 +677,6 @@ g:neocomplete#sources#dictionary#dictionaries
 		Note: Global 'dictionary' file is not loaded automatically.
 
 		Default value is {}.
-
-			*g:neocomplete#sources#dictionary#keyword_patterns*
-g:neocomplete#sources#dictionary#keyword_patterns
-		This option is deleted. You must use
-		|neocomplete-source-attribute-keyword_patterns|.
-
-				*g:neocomplete#sources#file_include#exprs*
-g:neocomplete#sources#file_include#exprs
-		It is the expression string of the line analysis to perform
-		to substitute an include file name.  When there is not it,
-		ignored.  Refer to 'includeexpr' for the
-		description form.  It is the dictionary of the character
-		string that assumed file type a key.
-
-		Example: Perl
->
-		if !exists('g:neocomplete#sources#file_include#exprs')
-		  let g:neocomplete#sources#file_include#exprs = {}
-		endif
-		let g:neocomplete#sources#file_include#exprs.perl =
-		\ 'fnamemodify(substitute(v:fname, "/", "::", "g"), ":r")'
-<
-
-		Because it is complicated, refer to s:source.initialize() in
-		autoload/neocomplete/sources/file.vim for the
-		initial value.
-
-				*g:neocomplete#sources#file_include#exts*
-g:neocomplete#sources#file_include#exts
-		It is the list of include file name extensions.  When there
-		is not it, all file name is used.  It is the dictionary of
-		the list that assumed file type a key.  In order to use this
-		feature you have to initialize
-		'g:neocomplete#sources#file_include#exts' as shown in the
-		following example.
-
-		Example: C++
->
-		if !exists('g:neocomplete#sources#file_include#exts')
-		  let g:neocomplete#sources#file_include#exts = {}
-		endif
-		let g:neocomplete#sources#file_include#exts.cpp =
-		\ ['', 'h', 'hpp', 'hxx']
-<
-		Because it is complicated, refer to s:source.initialize() in
-		autoload/neocomplete/sources/file.vim for the
-		initial value.
-
-				*g:neocomplete#sources#file_include#delimiters*
-g:neocomplete#sources#file_include#delimiters
-		It is the delimiter character of include path.  When there is
-		not it, "." is used.  It is the dictionary of the string that
-		assumed file type a key.
-
-		Because it is complicated, refer to s:source.initialize() in
-		autoload/neocomplete/sources/file.vim for the
-		initial value.
-
-					*g:neocomplete#sources#include#paths*
-g:neocomplete#sources#include#paths
-		It is the variable to enumerate path of the include file
-		every file type.  When there is not it, 'path' is used.
-		Refer to 'path' for the description form.  It is the
-		dictionary of the character string that assumed file type a
-		key.
-
-		Because it is complicated, refer to s:source.initialize() in
-		autoload/neocomplete/sources/include.vim for the
-		initial value.
-
-					*g:neocomplete#sources#include#exprs*
-g:neocomplete#sources#include#exprs
-		It is the expression string of the line analysis to perform
-		to acquire an include file name.  When there is not it,
-		'includeexpr' is used.  Refer to 'includeexpr' for the
-		description form.  It is the dictionary of the character
-		string that assumed file type a key.
-
-		Because it is complicated, refer to s:source.initialize() in
-		autoload/neocomplete/sources/include.vim for the
-		initial value.
-
-				*g:neocomplete#sources#include#patterns*
-g:neocomplete#sources#include#patterns
-		This variable appoints the pattern of the include command.
-		When there is not it, 'include' is used.  Refer to 'include'
-		for the description form.  It is the dictionary of the
-		character string that assumed file type a key.
-
-		Because it is complicated, refer to s:source.initialize() in
-		autoload/neocomplete/sources/include.vim for the
-		initial value.
-
-				*g:neocomplete#sources#include#functions*
-g:neocomplete#sources#include#functions
-		This variable appoints the function name of the include
-		command.  When there is not it, ignored.  It is the dictionary
-		of the function name string that assumed file type a key.
-
-		The function args are {lines} and {path}.
-		{lines} is the list of buffer lines.
-		{path} is the include path.
-		The return value is the list of include files.
-
-		Because it is complicated, refer to s:source.initialize() in
-		autoload/neocomplete/sources/include.vim for the
-		initial value.
-
-				*g:neocomplete#sources#include#max_processes*
-g:neocomplete#sources#include#max_processes
-		This variable appoints the max number of include processes.
-		When this variable is 0, include process will be disabled.
-
-		Default value is 20.
 
 			*g:neocomplete#sources#syntax#min_keyword_length*
 g:neocomplete#sources#syntax#min_keyword_length
@@ -1089,7 +965,8 @@ EXAMPLES					*neocomplete-examples*
 	"set completeopt+=longest
 	"let g:neocomplete#enable_auto_select = 1
 	"let g:neocomplete#disable_auto_complete = 1
-	"inoremap <expr><TAB>  pumvisible() ? "\<Down>" : "\<C-x>\<C-u>"
+	"inoremap <expr><TAB>  pumvisible() ? "\<Down>" :
+	" \ neocomplete#start_manual_complete()
 
 	" Enable omni completion.
 	autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
@@ -1145,23 +1022,13 @@ tag						*neocomplete-source-tag*
 		neocomplete does not make cache if you do not execute
 		|:NeoCompleteTagMakeCache| command.  Because tag is
 		too slow if tag read a big tags file.  You should use
-		more convenient include completion now.
+		more convenient include source completion now.
 
 syntax						*neocomplete-source-syntax*
 		This source analyzes a syntax file like
 		autoload/syntaxcomplete.vim offered by default, and to
 		add to candidate completion.  The plugin can recognize
 		candidates a lot more than autoload/syntaxcomplete.vim.
-
-include						*neocomplete-source-include*
-		This source will add the file which an opening buffer
-		refers to to candidate.  It is convenient, because you do
-		not need to prepare a tags file and a dictionary file.
-		But it is necessary for 'path' and 'include',
-		'includeexpr' to be set adequately.
-
-		Note: |vimproc| is required.
-		http://github.com/Shougo/vimproc
 
 vim						*neocomplete-source-vim*
 		This source analyzes context and start Omni completion of
@@ -1177,11 +1044,6 @@ dictionary					*neocomplete-source-dictionary*
 
 file						*neocomplete-source-file*
 		This source collects filename candidates.
-
-file_include				*neocomplete-source-file/include*
-		This source collects filename candidates.  It is useful
-		when you input header file name.  It recognizes include
-		pattern and include path like include.
 
 omni						*neocomplete-source-omni*
 		This source calls 'omnifunc' automatically when cursor
@@ -1604,6 +1466,10 @@ neosnippet source:
 
 https://github.com/Shougo/neosnippet.vim
 
+include, file/include sources:
+
+https://github.com/Shougo/neoinclude.vim
+
 UltiSnips source:
 
 https://github.com/SirVer/ultisnips
@@ -1708,23 +1574,6 @@ But you can use |unite.vim| instead to use quick match.
 	    \ "\<Plug>(neocomplete_start_unite_quick_match)" : '-'
 <
 
-Q: How can I change the order of candidates?:
-
-A: Todo.
-
-Q: An input problem occurred in using uim-skk or other IMEs:
-
-A: It may be fixed with setting |g:neocomplete#enable_prefetch| as 1.
-
-
-Q: include source does not work.
-
-A: include source depends on |vimproc|.  I recommend you to install it.  Also
-you can check 'path' option or change |g:neocomplete#sources#include#paths|.
-
-http://github.com/Shougo/vimproc
-
-
 Q: neocomplete cannot create cache files in "sudo vim":
 
 A: Because neocomplete (and other plugins) creates temporary files in super
@@ -1751,7 +1600,6 @@ A: Please try below settings.
 	if !exists('g:neocomplete#force_omni_input_patterns')
 	  let g:neocomplete#force_omni_input_patterns = {}
 	endif
-	let g:neocomplete#force_overwrite_completefunc = 1
 	let g:neocomplete#force_omni_input_patterns.c =
 	      \ '[^.[:digit:] *\t]\%(\.\|->\)\w*'
 	let g:neocomplete#force_omni_input_patterns.cpp =
@@ -1842,11 +1690,6 @@ You can disable it by following code.
 	endif
 	let g:neocomplete#text_mode_filetypes.gitcommit = 0
 <
-Q: Conflicts completefunc with other plugins in neocomplete.
-
-A: You can disable the error by |g:neocomplete#force_overwrite_completefunc|
-variable to 1.
-
 Q: I want to use Ruby omni completion.
 
 A: Please set |g:neocomplete#force_omni_input_patterns|.  But this completion
@@ -1871,6 +1714,7 @@ A: Please set |g:neocomplete#force_omni_input_patterns| as below.
 	let g:jedi#auto_vim_configuration = 0
 	let g:neocomplete#force_omni_input_patterns.python =
 	\ '\%([^. \t]\.\|^\s*@\|^\s*from\s.\+import \|^\s*from \|^\s*import \)\w*'
+	" alternative pattern: '\h\w*\|[^. \t]\.\w*'
 <
 Q: Candidates are not found in heavy completion(neco-look, etc).
 
@@ -1973,19 +1817,6 @@ A:
 >
 	let g:neocomplete#enable_auto_close_preview = 0
 <
-Q: I want to refresh candidates like |YouCompleteMe|.
-A:
-Note: This feature is heavy.
->
-	let g:neocomplete#enable_refresh_always = 1
-<
-
-Q: neocomplete auto select feature is not worked. Why?
-A: You should enable refresh always feature.
->
-	let g:neocomplete#enable_auto_select = 1
-	let g:neocomplete#enable_refresh_always = 1
-<
 
 Q: I want to use PHP omni completion.
 
@@ -2039,17 +1870,6 @@ A: It is feature. Because "longest" completeopt conflicts with auto
 completion.  To use "longest" option, you must disable auto completion.
 "longest" is good feature. But it is for manual completion only.
 
-Q: Auto completion does not work in ruby filetype with error messages.
-https://github.com/tpope/vim-rails/issues/283
-
-A: It is vim-rails problem. Not neocomplete.
-
-https://github.com/tpope/vim-rails/blob/master/autoload/rails.vim#L4468
-
-vim-rails overwrites completefunc. So neocomplete disabled.
-You can overwrite completefunc by
-|g:neocomplete#force_overwrite_completefunc|.
-
 Q: autoclose conflicts with neocomplete.
 https://github.com/Shougo/neocomplcache.vim/issues/350
 
@@ -2084,13 +1904,6 @@ A: >
 	g:neocomplete#force_omni_input_patterns.erlang =
 	\ '\<[[:digit:][:alnum:]_-]\+:[[:digit:][:alnum:]_-]*'
 
-Q: I want to complete candidates from header files.
-https://github.com/Shougo/neocomplete.vim/issues/118
-
-A: You can do it by |neocomplete-source-include|, but you must install
-|vimproc|.
-		http://github.com/Shougo/vimproc.vim
-
 Q: I want to look selected function's arguments in neocomplete. But I don't
 like preview window feature.
 https://github.com/Shougo/neocomplete.vim/issues/120
@@ -2119,6 +1932,12 @@ A: >
 	\ ['converter_remove_overlap', 'converter_remove_last_paren',
 	\  'converter_delimiter', 'converter_case',
 	\ 'converter_disable_abbr', 'converter_abbr'])
+
+Q: <C-x><C-u> does not work.
+https://github.com/Shougo/neocomplete.vim/issues/305
+
+A: It is feature.
+You must use |neocomplete#start_manual_complete()| instead of <C-x><C-u>.
 
 ==============================================================================
 vim:tw=78:ts=8:ft=help:norl:noet:fen:noet:

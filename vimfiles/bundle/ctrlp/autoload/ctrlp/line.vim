@@ -11,7 +11,7 @@ en
 let g:loaded_ctrlp_line = 1
 
 cal add(g:ctrlp_ext_vars, {
-	\ 'init': 'ctrlp#line#init()',
+	\ 'init': 'ctrlp#line#init(s:crbufnr)',
 	\ 'accept': 'ctrlp#line#accept',
 	\ 'lname': 'lines',
 	\ 'sname': 'lns',
@@ -29,13 +29,17 @@ fu! s:syntax()
 	en
 endf
 " Public {{{1
-fu! ctrlp#line#init()
-	let [bufs, lines] = [ctrlp#buffers('id'), []]
+fu! ctrlp#line#init(bufnr)
+	let [lines, bufnr] = [[], exists('s:bufnr') ? s:bufnr : a:bufnr]
+	let bufs = exists('s:lnmode') && s:lnmode ? ctrlp#buffers('id') : [bufnr]
 	for bufnr in bufs
 		let [lfb, bufn] = [getbufline(bufnr, 1, '$'), bufname(bufnr)]
-		let lfb = lfb == [] ? ctrlp#utils#readfile(fnamemodify(bufn, ':p')) : lfb
+		if lfb == [] && bufn != ''
+			let lfb = ctrlp#utils#readfile(fnamemodify(bufn, ':p'))
+		en
 		cal map(lfb, 'tr(v:val, ''	'', '' '')')
-		let [linenr, len_lfb, buft] = [1, len(lfb), fnamemodify(bufn, ':t')]
+		let [linenr, len_lfb] = [1, len(lfb)]
+		let buft = bufn == '' ? '[No Name]' : fnamemodify(bufn, ':t')
 		wh linenr <= len_lfb
 			let lfb[linenr - 1] .= '	|'.buft.'|'.bufnr.':'.linenr.'|'
 			let linenr += 1
@@ -48,14 +52,19 @@ endf
 
 fu! ctrlp#line#accept(mode, str)
 	let info = matchlist(a:str, '\t|[^|]\+|\(\d\+\):\(\d\+\)|$')
-	if info == [] | retu | en
-	let [bufnr, linenr] = [str2nr(get(info, 1)), get(info, 2)]
-	if bufnr > 0
-		cal ctrlp#acceptfile(a:mode, fnamemodify(bufname(bufnr), ':p'), linenr)
+	let bufnr = str2nr(get(info, 1))
+	if bufnr
+		cal ctrlp#acceptfile(a:mode, bufnr, get(info, 2))
 	en
 endf
 
-fu! ctrlp#line#id()
+fu! ctrlp#line#cmd(mode, ...)
+	let s:lnmode = a:mode
+	if a:0 && !empty(a:1)
+		let s:lnmode = 0
+		let bname = a:1 =~# '^%$\|^#\d*$' ? expand(a:1) : a:1
+		let s:bufnr = bufnr('^'.fnamemodify(bname, ':p').'$')
+	en
 	retu s:id
 endf
 "}}}

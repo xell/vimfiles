@@ -760,21 +760,128 @@ cab xasa .s/\(\a\<bar>[<>_-]\)\([^\x00-\xff]\&[^（），、：。“”；]\)/\
 vmap ,d1 :call BlockDiff_GetBlock1()<CR>
 vmap ,d2 :call BlockDiff_GetBlock2()<CR>
 " }}}
+" BufExplorer {{{2
+let g:bufExplorerShowUnlisted=1
+" }}}
 " Colorizer {{{2
 nmap <silent> <F6> <Plug>Colorizer
+let g:colorizer_startup = 0
+" }}}
+" CtrlP {{{2
+let g:ctrlp_match_window_bottom = 0
+let g:ctrlp_reuse_window = 'netrw\|quickfix'
+" }}}
+" Emmet {{{2
+let g:user_emmet_leader_key = '<D-e>'
+" If you want to complete tags using |omnifunc| then add this.
+let g:use_emmet_complete_tag = 1
+" Enable just for html/css
+let g:user_emmet_install_global = 0
+autocmd FileType html,css EmmetInstall
+" }}}
+" Edit Existing {{{2
+runtime macros/editexisting.vim
+" }}}
+" Fugitive {{{2
+let g:fugitive_summary_format = '(%ci) %s'
+if &loadplugins
+	let g:mystatusline_fugitive = '\ %{Fugitive_statusline_mod()}'
+	exec 'set statusline=' . g:mystatusline1 . g:mystatusline_fugitive . g:mystatusline2
+endif
+function! Fugitive_statusline_mod()
+	if exists("*fugitive#statusline")
+		return substitute(fugitive#statusline(), '\[Git\|\]', '', 'g')
+	else
+		return 'GIT'
+	endif
+endfunction
+
+" }}}
+" Gitv {{{2
+nnoremap <Leader>gv :Gitv!<CR>
+nnoremap <Leader>gV :Gitv<CR>
 " }}}
 " Gundo {{{2
 "let g:gundo_disable=1
 nnoremap <F5> :GundoToggle<CR>
 " }}}
-" Increment {{{2
-command! -nargs=0 IncHelp echo "<,>Inc [s]tart_0 [i]ncre_1 [r]epeat_1 [w]idth_4 [f]ill [h]ex [o]ct [p]at_@ [c]onfirm"
-
-" }}}
 " LanguageTool {{{2
-let g:languagetool_jar = '/usr/local/Cellar/languagetool/2.6/libexec/languagetool-commandline.jar'
+let g:languagetool_jar = '/usr/local/Cellar/languagetool/2.7/libexec/languagetool-commandline.jar'
 nmap <F7> :LanguageToolCheck<CR>
 " }}}
+" LaTeX {{{2
+" OPTIONAL: Starting with Vim 7, the filetype of empty .tex files defaults to
+" 'plaintex' instead of 'tex', which results in vim-latex not being loaded.
+" The following changes the default filetype back to 'tex':
+" See filetype.txt *ft-tex-plugin*
+let g:tex_flavor='latex'
+" See syntax.txt *g:tex_conceal*
+let g:tex_conceal="ag"
+" See syntax.txt *tex-nospell*
+let g:tex_comment_nospell = 1
+" See syntax.txt *tex-folding*, vim built-in vim fold support
+" It's based on fdm=syntax and is very inaccurate
+" When using latex-suite, it's deprecated de facto
+let g:tex_fold_enabled = 0
+
+" Display the spell highlight beyond the syntax highlights
+autocmd BufReadPost,FileReadPost *.tex syntax spell toplevel
+" autocmd BufReadPost,FileReadPost,BufWinEnter *.tex normal ,rf
+
+" g:Imap_UsePlaceHolders=0
+" g:Tex_IgnoredWarnings
+" g:Tex_IgnoreLevel
+
+let g:Tex_SmartKeyBS=0
+let g:Tex_SmartKeyQuote=0
+let g:Tex_SmartKeyDot=1
+
+let g:Tex_CatchVisMapErrors = 1
+
+" Set customized folding, see folding.vim
+let g:Tex_FoldedSections = 'part,chapter,chapterp,section,%%fakesection,'
+						\. 'subsection,subsubsection,'
+						\. 'paragraph'
+let g:Tex_UsePython=1
+let g:Tex_DefaultTargetFormat = 'pdf'
+"let g:Tex_CompileRule_dvi = 'latex --src-specials -interaction=nonstopmode $*'
+let g:Tex_CompileRule_pdf = 'xelatex --synctex=1 -src-specials -interaction=nonstopmode $*'
+" Set viewrule
+let g:Tex_ViewRule_pdf = 'Skim'
+
+if &term =~? 'xterm'
+	imap … <Plug>Tex_LeftRight
+	nmap … <Plug>Tex_LeftRight
+else
+	imap <A-;> <Plug>Tex_LeftRight
+	nmap <A-;> <Plug>Tex_LeftRight
+endif
+" Change the default <F7>->FastCommandInsert to <C-F7>
+nmap <C-F7> <Plug>Tex_FastCommandInsert
+
+" }}}
+" Matchit {{{2
+" TODO define some new block
+runtime macros/matchit.vim
+" }}}
+" MarksBrowser {{{2
+"let g:marksCloseWhenSelected = 0
+let g:marksShowTypes = "abcdefghijklmnopqrstuvwxyz" . "ABCDEFGHIJKLMNOPQRSTUVWXYZ" . "0123456789.'`^<>\""
+nmap <Leader>mb :MarksBrowser<cr><cr>
+" Default
+"let s:all_marks = "abcdefghijklmnopqrstuvwxyz.'`^<>\""
+" }}}
+" NERDTree {{{2
+let NERDTreeShowBookmarks = 1
+nmap <Leader>t :NERDTreeToggle<CR>
+nmap <Leader>b :NERDTreeFromBookmark 
+" }}}
+
+
+
+
+
+
 " Thesaurus {{{2
 " TODO changeless the location of mthesaur.txt
 " mac or unix must use '/usr/share/myspell/dicts/th_en_US_v2.idx'
@@ -796,42 +903,8 @@ let g:tcomment_types = {'pandoc': "<!-- %s -->", 'pandoc_inline': "<!-- %s -->",
 " Translate EnToCn {{{2
 "nmap <Leader>e :Trans<CR>
 " }}}
-" Matchit {{{2
-" TODO difine some new block
-" }}}
 " WinFullScreen {{{2
 nnoremap <C-Enter> :WinFullScreen<CR>
-" }}}
-" Emmet {{{2
-let g:user_emmet_leader_key = '<D-e>'
-" If you want to complete tags using |omnifunc| then add this.
-" let g:use_emmet_complete_tag = 1
-" }}}
-" BufExplorer {{{2
-let g:bufExplorerShowUnlisted=1
-" }}}
-" EasyMotion {{{2
-let g:EasyMotion_do_mapping = 0
-
-"nnoremap <silent> <Leader>j :call EasyMotionJK(0,0)<CR>
-"nnoremap <silent> <Leader>k :call EasyMotionJK(0,1)<CR>
-" let g:EasyMotion_mapping_f = ',f'
-" let g:EasyMotion_mapping_F = ''
-" let g:EasyMotion_mapping_t = ''
-" let g:EasyMotion_mapping_T = ''
-" let g:EasyMotion_mapping_w = ',w'
-" let g:EasyMotion_mapping_W = ''
-" let g:EasyMotion_mapping_b = ''
-" let g:EasyMotion_mapping_B = ''
-" let g:EasyMotion_mapping_e = ''
-" let g:EasyMotion_mapping_E = ''
-" let g:EasyMotion_mapping_ge = ''
-" let g:EasyMotion_mapping_gE = ''
-" let g:EasyMotion_mapping_j = ',j'
-" let g:EasyMotion_mapping_k = ',k'
-
-nnoremap <silent> <Leader>D :call EasyMotion#F(0,0)<CR>
-nnoremap <silent> <Leader>d :call EasyMotion#WB(0,0)<CR>
 " }}}
 " Quich Filter {{{2
 let g:filteringDefaultAutoFollow = 1
@@ -849,13 +922,6 @@ nnoremap ,g :call FilteringGetForSource().return()<CR>
 " nmap <Leader>F :call Gather(input("Filter on term: "), 0)<CR>
 " nmap <Leader>l :call Gather(@/, 0)<CR>:echo<CR>
 " nmap <Leader>g :call GotoOpenSearchBuffer()<CR>
-" }}}
-" MarksBrowser {{{2
-"let g:marksCloseWhenSelected = 0
-let g:marksShowTypes = "abcdefghijklmnopqrstuvwxyz" . "ABCDEFGHIJKLMNOPQRSTUVWXYZ" . "0123456789.'`^<>\""
-nmap <Leader>mb :MarksBrowser<cr><cr>
-" Default
-"let s:all_marks = "abcdefghijklmnopqrstuvwxyz.'`^<>\""
 " }}}
 " Showmarks {{{2
 " Enable ShowMarks
@@ -949,11 +1015,6 @@ highlight link MyTagListTagName Type
 nmap <F10> :TlistToggle<CR>
 imap <F10> <ESC><F10>i
 " }}}
-" NERDTree {{{2
-let NERDTreeShowBookmarks = 1
-nmap <Leader>t :NERDTreeToggle<CR>
-nmap <Leader>b :NERDTreeFromBookmark 
-" }}}
 " FuzzyFinder {{{2
 let g:fuf_modesDisable = ['aroundmrufile', 'mrucmd', 'dir', 'bookmark', 'taggedfile', 'line', 'quickfix']
 let g:fuf_keyPreview = '<C-H>'
@@ -987,92 +1048,6 @@ nmap <Leader>fg :call <SID>fuf_test()<CR>
 function! s:fuf_test()
 	exec "call fuf#givenfile#launch('', 0, '>', split(glob('" . g:myvimfiles . "/**/*'), \"\\n\"))"
 endfunction
-
-" }}}
-" Fugitive {{{2
-let g:fugitive_summary_format = '(%ci) %s'
-if &loadplugins
-	let g:mystatusline_fugitive = '\ %{Fugitive_statusline_mod()}'
-	exec 'set statusline=' . g:mystatusline1 . g:mystatusline_fugitive . g:mystatusline2
-endif
-function! Fugitive_statusline_mod()
-	if exists("*fugitive#statusline")
-		return substitute(fugitive#statusline(), '\[Git\|\]', '', 'g')
-	else
-		return 'GIT'
-	endif
-endfunction
-
-" }}}
-" Gitv {{{2
-nnoremap <Leader>gv :Gitv!<CR>
-nnoremap <Leader>gV :Gitv<CR>
-" }}}
-" Git-Vim {{{2
-let g:git_no_map_default = 1
-nnoremap <Leader>ga :Gadd<CR>
-nnoremap <Leader>gd :Gdiff
-nnoremap <Leader>gD :call GitDiff('--cached')<CR>
-nnoremap <Leader>gs :Gstatus<CR>
-nnoremap <Leader>gS :Git status -s -b<CR>
-nnoremap <Leader>gl :GitLog
-nnoremap <Leader>gL :Glog<CR>:cw<CR>:match Special /[+-]\d\{4})\s\zs.*\ze$/<CR>
-nnoremap <Leader>gc :Gcommit<CR>
-nnoremap <Leader>gC :Gcommit -a<CR>
-nnoremap <Leader>gp :GitPullRebase<CR>
-nnoremap <Leader>ge :Gedit<CR>
-nnoremap <Leader>gk :silent !gitx<CR>
-nnoremap <Leader>gK :silent !gitx --all<CR>
-" }}}
-" LaTeX {{{2
-" OPTIONAL: Starting with Vim 7, the filetype of empty .tex files defaults to
-" 'plaintex' instead of 'tex', which results in vim-latex not being loaded.
-" The following changes the default filetype back to 'tex':
-" See filetype.txt *ft-tex-plugin*
-let g:tex_flavor='latex'
-" See syntax.txt *g:tex_conceal*
-let g:tex_conceal="ag"
-" See syntax.txt *tex-nospell*
-let g:tex_comment_nospell = 1
-" See syntax.txt *tex-folding*, vim built-in vim fold support
-" It's based on fdm=syntax and is very inaccurate
-" When using latex-suite, it's deprecated de facto
-let g:tex_fold_enabled = 0
-
-" Display the spell highlight beyond the syntax highlights
-autocmd BufReadPost,FileReadPost *.tex syntax spell toplevel
-" autocmd BufReadPost,FileReadPost,BufWinEnter *.tex normal ,rf
-
-" g:Imap_UsePlaceHolders=0
-" g:Tex_IgnoredWarnings
-" g:Tex_IgnoreLevel
-
-let g:Tex_SmartKeyBS=0
-let g:Tex_SmartKeyQuote=0
-let g:Tex_SmartKeyDot=1
-
-let g:Tex_CatchVisMapErrors = 1
-
-" Set customized folding, see folding.vim
-let g:Tex_FoldedSections = 'part,chapter,chapterp,section,%%fakesection,'
-						\. 'subsection,subsubsection,'
-						\. 'paragraph'
-let g:Tex_UsePython=1
-let g:Tex_DefaultTargetFormat = 'pdf'
-"let g:Tex_CompileRule_dvi = 'latex --src-specials -interaction=nonstopmode $*'
-let g:Tex_CompileRule_pdf = 'xelatex --synctex=1 -src-specials -interaction=nonstopmode $*'
-" Set viewrule
-let g:Tex_ViewRule_pdf = 'Skim'
-
-if &term =~? 'xterm'
-	imap … <Plug>Tex_LeftRight
-	nmap … <Plug>Tex_LeftRight
-else
-	imap <A-;> <Plug>Tex_LeftRight
-	nmap <A-;> <Plug>Tex_LeftRight
-endif
-" Change the default <F7>->FastCommandInsert to <C-F7>
-nmap <C-F7> <Plug>Tex_FastCommandInsert
 
 " }}}
 " IMAP from latex-suite TODO {{{2
@@ -1230,10 +1205,6 @@ endif
 " CSS-after {{{2
 let g:cssColorVimDoNotMessMyUpdatetime = 4000
 " }}}
-" CtrlP {{{2
-let g:ctrlp_match_window_bottom = 0
-let g:ctrlp_reuse_window = 'netrw\|quickfix'
-" }}}
 " SimpleNote {{{2
 exec 'so ' . expand("<sfile>:p:h") . '/.simplenoteconf'
 " }}}
@@ -1245,8 +1216,6 @@ command! -nargs=1 Es call xelltoolkit#edit_samename_file('<args>')
 " Xell WordCount {{{2
 nmap <silent> <S-F6> :call ShowLiveWordCount()<CR>
 " }}}
-" Evervim {{{2
-exec 'so ' . expand("<sfile>:p:h") . '/.evervimconf'
 " Vimim {{{2
 let g:vimim_map = 'c-bslash'
 " let g:vimim_mode='static'

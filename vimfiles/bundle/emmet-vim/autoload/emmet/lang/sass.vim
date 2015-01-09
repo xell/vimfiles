@@ -1,16 +1,12 @@
-function! emmet#lang#sass#findTokens(str)
-  return emmet#lang#html#findTokens(a:str)
+function! emmet#lang#sass#findTokens(str) abort
+  return emmet#lang#css#findTokens(a:str)
 endfunction
 
-function! emmet#lang#sass#parseIntoTree(abbr, type)
-  if a:abbr =~ '>'
+function! emmet#lang#sass#parseIntoTree(abbr, type) abort
     return emmet#lang#html#parseIntoTree(a:abbr, a:type)
-  else
-    return emmet#lang#css#parseIntoTree(a:abbr, a:type)
-  endif
 endfunction
 
-function! emmet#lang#sass#toString(settings, current, type, inline, filters, itemno, indent)
+function! emmet#lang#sass#toString(settings, current, type, inline, filters, itemno, indent) abort
   let settings = a:settings
   let current = a:current
   let type = a:type
@@ -18,7 +14,7 @@ function! emmet#lang#sass#toString(settings, current, type, inline, filters, ite
   let filters = a:filters
   let itemno = a:itemno
   let indent = a:indent
-  let str = ""
+  let str = ''
 
   let current_name = current.name
   let current_name = substitute(current.name, '\$$', itemno+1, '')
@@ -27,13 +23,13 @@ function! emmet#lang#sass#toString(settings, current, type, inline, filters, ite
     let tmp = ''
     for attr in keys(current.attr)
       let val = current.attr[attr]
-      while val =~ '\$\([^#{]\|$\)'
+      while val =~# '\$\([^#{]\|$\)'
         let val = substitute(val, '\(\$\+\)\([^{]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
       endwhile
       let attr = substitute(attr, '\$$', itemno+1, '')
-      if attr == 'id'
+      if attr ==# 'id'
         let str .= '#' . val
-      elseif attr == 'class'
+      elseif attr ==# 'class'
         let str .= '.' . val
       else
         let tmp .= attr . ': ' . val
@@ -50,10 +46,14 @@ function! emmet#lang#sass#toString(settings, current, type, inline, filters, ite
 
     let inner = ''
     for child in current.child
-      let inner .= emmet#toString(child, type, inline, filters, itemno, indent)
+      let tmp = emmet#toString(child, type, inline, filters, itemno, indent)
+      let tmp = substitute(tmp, "\n", "\n" . escape(indent, '\'), 'g')
+      let tmp = substitute(tmp, "\n" . escape(indent, '\') . '$', '${cursor}\n', 'g')
+      let inner .= tmp
     endfor
-    let inner = substitute(inner, "\n", "\n" . indent, 'g')
-    let str .= indent . inner
+    if len(inner) > 0
+      let str .= indent . inner
+    endif
   else
     let text = emmet#lang#css#toString(settings, current, type, inline, filters, itemno, indent)
     let text = substitute(text, '\s*;\ze\(\${[^}]\+}\)\?\(\n\|$\)', '', 'g')
@@ -62,24 +62,24 @@ function! emmet#lang#sass#toString(settings, current, type, inline, filters, ite
   return str
 endfunction
 
-function! emmet#lang#sass#imageSize()
+function! emmet#lang#sass#imageSize() abort
 endfunction
 
-function! emmet#lang#sass#encodeImage()
+function! emmet#lang#sass#encodeImage() abort
 endfunction
 
-function! emmet#lang#sass#parseTag(tag)
+function! emmet#lang#sass#parseTag(tag) abort
 endfunction
 
-function! emmet#lang#sass#toggleComment()
+function! emmet#lang#sass#toggleComment() abort
 endfunction
 
-function! emmet#lang#sass#balanceTag(flag) range
+function! emmet#lang#sass#balanceTag(flag) range abort
   let block = emmet#util#getVisualBlock()
   if a:flag == -2 || a:flag == 2
     let curpos = [0, line("'<"), col("'<"), 0]
   else
-    let curpos = getpos('.')
+    let curpos = emmet#util#getcurpos()
   endif
   let n = curpos[1]
   let ml = len(matchstr(getline(n), '^\s*'))
@@ -139,7 +139,11 @@ function! emmet#lang#sass#balanceTag(flag) range
   endif
 endfunction
 
-function! emmet#lang#sass#moveNextPrev(flag)
+function! emmet#lang#sass#moveNextPrevItem(flag) abort
+  return emmet#lang#sass#moveNextPrev(a:flag)
+endfunction
+
+function! emmet#lang#sass#moveNextPrev(flag) abort
   let pos = search('""\|\(^\s*|\s*\zs\)', a:flag ? 'Wpb' : 'Wp')
   if pos == 2
     startinsert!
@@ -149,8 +153,8 @@ function! emmet#lang#sass#moveNextPrev(flag)
   endif
 endfunction
 
-function! emmet#lang#sass#splitJoinTag()
+function! emmet#lang#sass#splitJoinTag() abort
 endfunction
 
-function! emmet#lang#sass#removeTag()
+function! emmet#lang#sass#removeTag() abort
 endfunction

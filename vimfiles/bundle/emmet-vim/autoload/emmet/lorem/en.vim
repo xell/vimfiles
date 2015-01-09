@@ -1,5 +1,5 @@
-function! emmet#lorem#en#expand(command)
-  let wcount = matchstr(a:command, '^\%(lorem\|lipsum\)\(\d*\)}$', '\1', '')
+function! emmet#lorem#en#expand(command) abort
+  let wcount = matchstr(a:command, '\(\d*\)$')
   let wcount = wcount > 0 ? wcount : 30
   
   let common = ['lorem', 'ipsum', 'dolor', 'sit', 'amet', 'consectetur', 'adipisicing', 'elit']
@@ -48,13 +48,13 @@ function! emmet#lorem#en#expand(command)
     call add(ret, word)
     if (sentence > 5 && emmet#util#rand() < 10000) || i == wcount - 1
       if i == wcount - 1
-        let endc = "?!..."[emmet#util#rand() % 5]
+        let endc = '?!...'[emmet#util#rand() % 5]
         call add(ret, endc)
       else
-        let endc = "?!,..."[emmet#util#rand() % 6]
+        let endc = '?!,...'[emmet#util#rand() % 6]
         call add(ret, endc . ' ')
       endif
-      if endc != ','
+      if endc !=# ','
         let sentence = 0
       endif
     else

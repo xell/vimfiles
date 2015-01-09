@@ -86,6 +86,10 @@ function! neocomplete#init#_autocmds() "{{{
           \ call neocomplete#init#disable()
     autocmd InsertCharPre *
           \ call neocomplete#handler#_on_insert_char_pre()
+    autocmd TextChangedI *
+          \ call neocomplete#handler#_on_text_changed()
+    autocmd VimLeavePre *
+          \ call neocomplete#init#disable()
   augroup END
 
   if g:neocomplete#enable_insert_char_pre
@@ -129,13 +133,6 @@ function! neocomplete#init#_others() "{{{
           \ 'Detected set paste! Disabled neocomplete.')
   endif
 
-  " Set completefunc.
-  let completefunc_save = &l:completefunc
-  let &completefunc = 'neocomplete#complete#manual_complete'
-  if completefunc_save != ''
-    let &l:completefunc = completefunc_save
-  endif
-
   command! -nargs=0 -bar NeoCompleteDisable
         \ call neocomplete#init#disable()
 
@@ -153,12 +150,12 @@ function! neocomplete#init#_variables() "{{{
         \ 'g:neocomplete#keyword_patterns',
         \'filename',
         \ neocomplete#util#is_windows() ?
-        \'\%(\a\+:/\)\?\%([/[:alnum:]()$+_~.\x80-\xff-]\|[^[:print:]]\|\\.\)\+' :
-        \'\%([/\[\][:alnum:]()$+_~.-]\|[^[:print:]]\|\\.\)\+')
+        \'\%(\a\+:/\)\?\%([/[:alnum:]()$+_~.{}\x80-\xff-]\|[^[:print:]]\|\\.\)\+' :
+        \'\%([/\[\][:alnum:]()$+_~.{}-]\|[^[:print:]]\|\\.\)\+')
   call neocomplete#util#set_default_dictionary(
         \'g:neocomplete#keyword_patterns',
         \'lisp,scheme,clojure,int-gosh,int-clisp,int-clj',
-        \'[[:alpha:]+*/@$_=.!?-][[:alnum:]+*/@$_:=.!?-]*')
+        \'[[:alpha:]!$%&*+/:<=>?@\^_~\-][[:alnum:]!$%&*./:<=>?@\^_~\-]*')
   call neocomplete#util#set_default_dictionary(
         \'g:neocomplete#keyword_patterns',
         \'ruby,int-irb',
@@ -369,6 +366,10 @@ function! neocomplete#init#_variables() "{{{
         \'g:neocomplete#keyword_patterns',
         \'go',
         \'\h\w*')
+  call neocomplete#util#set_default_dictionary(
+        \'g:neocomplete#keyword_patterns',
+        \'toml',
+        \'\h[[:alnum:]_.-]*')
   "}}}
 
   " Initialize same file types. "{{{
@@ -466,7 +467,7 @@ function! neocomplete#init#_variables() "{{{
         \ 'int-ocaml', 'ocaml')
   call neocomplete#util#set_default_dictionary(
         \ 'g:neocomplete#same_filetypes',
-        \ 'int-clj', 'clojure')
+        \ 'int-clj,int-lein', 'clojure')
   call neocomplete#util#set_default_dictionary(
         \ 'g:neocomplete#same_filetypes',
         \ 'int-sml,int-smlsharp', 'sml')
@@ -619,6 +620,7 @@ function! neocomplete#init#_current_neocomplete() "{{{
         \ 'sources' : [],
         \ 'sources_filetype' : '',
         \ 'within_comment' : 0,
+        \ 'is_auto_complete' : 0,
         \}
 endfunction"}}}
 

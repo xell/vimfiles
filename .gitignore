@@ -8,6 +8,5 @@ tags-*
 .com.apple.*
 *.sw[ponm]
 xell_test.vim
-easycolour_cache.txt
 .simplenoteconf
 .evervimconf
