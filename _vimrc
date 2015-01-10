@@ -278,18 +278,6 @@ nmap <Leader>p :exec 'e /Users/xell/Documents/notes/rj.md'<CR>
 
 " }}}
 
-" Notes {{{2
-let g:xell_notes_root = glob('~/Documents/notes/notes')
-" TODO non-exists
-let g:xell_notes_ex_root = glob('~/Documents/notes/xnotes_export')
-
-" TODO XXX notes_index is useless
-let g:xell_notes_index = 'index.noteindex'
-let g:xell_notes_temp = 'temp.md'
-let g:xell_notes_default_ext = 'md'
-
-" }}}
-
 " }}}
 
 " UI and Display {{{1
@@ -745,6 +733,18 @@ cab xasa .s/\(\a\<bar>[<>_-]\)\([^\x00-\xff]\&[^（），、：。“”；]\)/\
 
 " Scripts {{{1
 """"""""""""""""""""""""""""""""""""""""""""""""""""" 
+
+" XellNotes {{{2
+let g:xell_notes_root = glob('~/Documents/notes/notes')
+" TODO non-exists
+let g:xell_notes_ex_root = glob('~/Documents/notes/xnotes_export')
+" TODO make temp file more useful
+" or delete it? cause it conflicts with TempNote()
+let g:xell_notes_temp = 'temp.md'
+" TODO it should not be connected with ffs
+" i.e. ffs should be more general, not focusing with notes
+let g:xell_notes_default_ext = 'md'
+" }}}
 
 " Blockdiff {{{2
 vmap ,d1 :call BlockDiff_GetBlock1()<CR>
