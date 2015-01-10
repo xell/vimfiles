@@ -87,7 +87,7 @@ function! s:openfile() " {{{1
 	endif
 
 	botright new
-	exec 'silent! edit! ' . substitute(filename, ' ', '\\ ', 'g')
+	exec 'silent! edit! ' . filename
 	exec 'silent! bdelete! ' . t:bufnr
 	augroup! ffs
 	normal gg
