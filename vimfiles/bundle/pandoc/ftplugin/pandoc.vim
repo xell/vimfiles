@@ -77,10 +77,9 @@ call xelltoolkit#imap('**', '*<++>*<++>', 1)
 call xelltoolkit#imap('``', '`<++>`<++>', 1)
 call xelltoolkit#imap('[[', '[<++>](<++>)<++>', 1)
 call xelltoolkit#imap('["', '[<++>](<++>"<++>")<++>', 1)
-call xelltoolkit#imap('~~~~', '~~<++>~~<++>', 1)
+call xelltoolkit#imap('~~', '~~<++>~~<++>', 1)
 call xelltoolkit#imap('$$', '$<++>$<++>', 1)
 call xelltoolkit#imap('{{', '{==<++>==}<++>', 1)
-call xelltoolkit#imap(']]', '［<++>］<++>', 1)
 
 imap <buffer> <c-w><c-w> <Esc>:call <SID>shift_plus()<CR>
 imap <buffer> <c-w><c-q> <Esc>:call <SID>shift_minus()<CR>
@@ -213,6 +212,10 @@ function! MarkdownLevel2() " {{{2
         return ">6"
     endif
 
+	if getline(v:lnum) =~ '^\s*$' 
+				\ && getline(v:lnum + 1) =~ '\%(^#\s\)\|\%(^<div\sclass="rst-rubric"\)'
+		return "0"
+	endif
 	if getline(v:lnum) =~ '^\s*$' && getline(v:lnum + 1) =~ '^##\s'
 		return "1"
 	endif
