@@ -770,7 +770,11 @@ let g:user_emmet_install_global = 0
 autocmd FileType html,css EmmetInstall
 " }}}
 " Edit Existing {{{2
-runtime macros/editexisting.vim
+" Can not use the following because mvim will warning 
+" Error detected while processing /Applications/MacVim.app/Contents/Resources/vim/runtime/macros/editexisting.vim:
+" line   71:
+" E122: Function <SNR>12_EditElsewhere already exists, add ! to replace it
+" runtime macros/editexisting.vim
 " }}}
 " Fugitive {{{2
 let g:fugitive_summary_format = '(%ci) %s'
