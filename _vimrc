@@ -634,8 +634,6 @@ nmap <S-Tab> :call xelltoolkit#goto_pre_word(g:urlpattern)<CR>
 
 " Modify texts {{{2
 
-inoremap jj <Esc>
-
 " For insert enter when normal
 nmap <S-Enter> i<Enter><Esc>
 " For delete the Tab
@@ -644,6 +642,47 @@ imap <S-Tab> <BS>
 " Move line
 nmap <C-Up> ddkP
 nmap <C-Down> ddp
+
+" Auto close pairs IMAP {{{3
+" The latency of IMAP from latex-suite is too long to use.
+let g:Imap_FreezeImap = 1
+" Remap the jumpforward to other, originally <C-j>
+imap <D-C-J> <Plug>IMAP_JumpForward
+nmap <D-C-Y> <Plug>IMAP_JumpForward
+function! s:imap_jump()
+    let isfound = search('<++>', 'cW')
+    if isfound
+        if col('.') == col('$') - 4
+            normal 4x
+            startinsert!
+        else
+            normal 4x
+            startinsert
+        endif
+    endif
+endfunction
+inoremap <D-j> <C-O>:call <SID>imap_jump()<CR>
+
+call xelltoolkit#imap('()', '(<++>)<++>', 0)
+call xelltoolkit#imap('[]', '[<++>]<++>', 0)
+call xelltoolkit#imap('{}', '{<++>}<++>', 0)
+call xelltoolkit#imap('<>', '<<++>><++>', 0)
+call xelltoolkit#imap('""', '"<++>"<++>', 0)
+call xelltoolkit#imap("''", "'<++>'<++>", 0)
+" call xelltoolkit#imap('%%', '%<++>%<++>', 0)
+
+" for reference in windows TODO
+" augroup MyIMAPs
+" 	autocmd!
+" 	autocmd VimEnter * call IMAP('()', '(<++>)<++>', '')
+" 	autocmd VimEnter * call IMAP('[]', '[<++>]<++>', '')
+" 	autocmd VimEnter * call IMAP('{}', '{<++>}<++>', '')
+" 	autocmd VimEnter * call IMAP('<>', '<<++>><++>', '')
+" 	autocmd VimEnter * call IMAP('""', '"<++>"<++>', '')
+" 	autocmd VimEnter * call IMAP("''", "'<++>'<++>", '')
+" 	autocmd VimEnter * call IMAP('%%', '%<++>%<++>', '')
+" augroup END
+" }}}
 
 " }}}
 
@@ -893,6 +932,9 @@ endif
 " Change the default <F7>->FastCommandInsert to <C-F7>
 nmap <C-F7> <Plug>Tex_FastCommandInsert
 
+" }}}
+" local_vimrc {{{2
+let g:local_vimrc = ".exrc"
 " }}}
 " Matchit {{{2
 " TODO define some new block
@@ -1164,46 +1206,6 @@ nnoremap <C-Enter> :WinFullScreen<CR>
 nmap <silent> <S-F6> :call ShowLiveWordCount()<CR>
 " }}}
 
-" IMAP from latex-suite TODO {{{2
-let g:Imap_FreezeImap = 1
-" Remap the jumpforward to other, originally <C-j>
-imap <D-C-J> <Plug>IMAP_JumpForward
-nmap <D-C-Y> <Plug>IMAP_JumpForward
-function! s:imap_jump()
-    let isfound = search('<++>', 'cW')
-    if isfound
-        if col('.') == col('$') - 4
-            normal 4x
-            startinsert!
-        else
-            normal 4x
-            startinsert
-        endif
-    endif
-endfunction
-inoremap <D-j> <C-O>:call <SID>imap_jump()<CR>
-
-call xelltoolkit#imap('()', '(<++>)<++>', 0)
-call xelltoolkit#imap('[]', '[<++>]<++>', 0)
-call xelltoolkit#imap('{}', '{<++>}<++>', 0)
-call xelltoolkit#imap('<>', '<<++>><++>', 0)
-call xelltoolkit#imap('""', '"<++>"<++>', 0)
-call xelltoolkit#imap("''", "'<++>'<++>", 0)
-" call xelltoolkit#imap('%%', '%<++>%<++>', 0)
-
-" for reference in windows TODO
-" augroup MyIMAPs
-" 	autocmd!
-" 	autocmd VimEnter * call IMAP('()', '(<++>)<++>', '')
-" 	autocmd VimEnter * call IMAP('[]', '[<++>]<++>', '')
-" 	autocmd VimEnter * call IMAP('{}', '{<++>}<++>', '')
-" 	autocmd VimEnter * call IMAP('<>', '<<++>><++>', '')
-" 	autocmd VimEnter * call IMAP('""', '"<++>"<++>', '')
-" 	autocmd VimEnter * call IMAP("''", "'<++>'<++>", '')
-" 	autocmd VimEnter * call IMAP('%%', '%<++>%<++>', '')
-" augroup END
-
-" }}}
 " Xell Other {{{2
 "delete the current file
 com! Rm call xelltoolkit#delete_file()
