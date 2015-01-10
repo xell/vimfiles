@@ -198,7 +198,8 @@ exec 'set dictionary=' . g:myvimfiles . '/dictionary.txt'
 " imap <D-i> <Esc>:call <SID>setim()<CR>i
 
 " set imd
-set noimd
+" set noimd
+autocmd GUIEnter * set noimd
 
 " http://www.v2ex.com/t/40375
 " }}}
