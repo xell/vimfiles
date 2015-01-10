@@ -246,6 +246,7 @@ let g:t2t_target_ext = {'html': 'html', 'md': 'md', 'rst': 'rst', 'txt': 'txt', 
 let g:pandoc_syntax_accuracy = 1
 let g:pandoc_syntax_full_html_tex = 1
 let g:pandoc_syntax_table = 0
+let g:pandoc_fold_level = 2
 
 let g:pandoc_target_ext = {'plain': 'txt', 'markdown': 'md', 'rst': 'rst', 'html': 'html', 'html5': 'html', 'latex': 'tex', 'mediawiki': 'wiki', 'opendocument': 'fodt', 'odt': 'odt', 'docx': 'docx', 'slidy': 'html', 'dzslides': 'html', 'rtf': 'rtf'}
 

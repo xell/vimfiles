@@ -115,26 +115,31 @@ endfunction
 
 " }}}
 
-" TODO folder level
 " Folding {{{1
 " # Folding sections with ATX style headers.
 "
 " Taken from
 " http://stackoverflow.com/questions/3828606/vim-markdown-folding/4677454#4677454
 "
-command! -buffer -nargs=0 ToggleFoldMethod call <SID>toggle_fold_method()
-function! s:toggle_fold_method() " {{{2
-	if !b:folder_complex
-		setlocal foldmethod=manual
-		setlocal foldexpr=
-	else
+command! -buffer -nargs=1 ChangeFoldMethod call <SID>change_fold_method(<args>)
+function! s:change_fold_method(level) " {{{2
+    if a:level == 0
+        setlocal foldmethod=manual
+        setlocal foldexpr=
+    elseif a:level == 1
 		setlocal foldmethod=expr
-		setlocal foldexpr=MarkdownLevel()
-	endif
-	let b:folder_complex = !b:folder_complex
+		setlocal foldexpr=MarkdownLevel1()
+    elseif a:level == 2
+		setlocal foldmethod=expr
+		setlocal foldexpr=MarkdownLevel2()
+    elseif a:level == 3
+		setlocal foldmethod=expr
+		setlocal foldexpr=MarkdownLevel3()
+    else
+    endif
 endfunction
 " }}}
-function! MarkdownLevel() " {{{2
+function! MarkdownLevel3() " {{{2
     if getline(v:lnum) =~ '^# .*$'
         return ">1"
     endif
@@ -188,8 +193,67 @@ function! MarkdownLevel() " {{{2
 	endif
     return "="
 endfunction "}}}
-let b:folder_complex = 1
-call s:toggle_fold_method()
+function! MarkdownLevel2() " {{{2
+    if getline(v:lnum) =~ '^# .*$'
+        return ">1"
+    endif
+    if getline(v:lnum) =~ '^## .*$'
+        return ">2"
+    endif
+    if getline(v:lnum) =~ '^### .*$'
+        return ">3"
+    endif
+    if getline(v:lnum) =~ '^#### .*$'
+        return ">4"
+    endif
+    if getline(v:lnum) =~ '^##### .*$'
+        return ">5"
+    endif
+    if getline(v:lnum) =~ '^###### .*$'
+        return ">6"
+    endif
+
+	if getline(v:lnum) =~ '^\s*$' && getline(v:lnum + 1) =~ '^##\s'
+		return "1"
+	endif
+	if getline(v:lnum) =~ '^\s*$' && getline(v:lnum + 1) =~ '^###\s'
+		return "2"
+	endif
+	if getline(v:lnum) =~ '^\s*$' && getline(v:lnum + 1) =~ '^####\s'
+		return "3"
+	endif
+	if getline(v:lnum) =~ '^\s*$' && getline(v:lnum + 1) =~ '^#####\s'
+		return "4"
+	endif
+    return "="
+endfunction "}}}
+function! MarkdownLevel1() " {{{2
+    if getline(v:lnum) =~ '^# .*$'
+        return ">1"
+    endif
+    if getline(v:lnum) =~ '^## .*$'
+        return ">2"
+    endif
+    if getline(v:lnum) =~ '^### .*$'
+        return ">3"
+    endif
+    if getline(v:lnum) =~ '^#### .*$'
+        return ">4"
+    endif
+    if getline(v:lnum) =~ '^##### .*$'
+        return ">5"
+    endif
+    if getline(v:lnum) =~ '^###### .*$'
+        return ">6"
+    endif
+
+    return "="
+endfunction "}}}
+if exists('g:pandoc_fold_level')
+    call s:change_fold_method(g:pandoc_fold_level)
+else
+    call s:change_fold_method(2)
+endif
 
 setlocal foldcolumn=5
 setlocal foldtext=Mkdfoldtext()
