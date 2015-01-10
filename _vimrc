@@ -222,12 +222,6 @@ let g:webserver_host = 'http://localhost:80/~xell'
 let g:webserver_dir = glob('~/Sites')
 " }}}
 
-" Proxy TODO should not be here {{{2
-let g:proxy_list = '/Users/xell/Code/pac/xell.proxylist'
-let g:proxy_pac = '/Users/xell/Sites/proxylist.pac'
-let g:hosts_list = '/Users/xell/Code/pac/xell.hostslist'
-" }}}
-
 " Docs TODO should not be here {{{2
 " Specify use what function to look for the output html of doc file
 let g:browser_open_rules = {'t2t': 'GetOutputHTML', 'md': 'GetOutputHTML', 'mkd': 'GetOutputHTML', 'markdown': 'GetOutputHTML', 'rst': 'GetOutputHTML', 'noteindex': 'GetOutputHTML'}
@@ -239,10 +233,6 @@ let g:docs_convert_buffer_rules = {
 			\ 'pandoc': 'PandocConvertBufferWrapper',
 			\ 'rst': 'RstConvertBufferWrapper',
 			\ 'filelist': 'NotesConvertWrapper'}
-
-" session {{{3
-let g:session_path = glob('~/.vimsession')
-" }}}
 
 " Text2tags specification {{{3
 let g:t2t_cmd = '/usr/local/bin/txt2tags'
@@ -280,6 +270,10 @@ let g:rst_html_root = g:rst_tpl_root . '/html'
 let g:rst_html_tpl_root = g:rst_html_root . '/tpl'
 let g:rst_html_style_root = g:rst_html_root . '/style'
 let g:rst_odt_style_root = g:rst_tpl_root . '/odt'
+" }}}
+
+" Diary rj TODO {{{3
+nmap <Leader>p :exec 'e /Users/xell/Documents/notes/rj.md'<CR>
 " }}}
 
 " }}}
@@ -589,9 +583,6 @@ noremap  <D-v> "+gP
 cnoremap <D-v> <C-R>+
 inoremap <D-v> <C-R><C-O>+
 
-" Open or yank web url
-nmap <expr> <Leader>Y OpenInBrowser(1, xelltoolkit#get_word_at_cursor(g:urlpattern))
-nmap <expr> <Leader>y xelltoolkit#get_copy(xelltoolkit#get_word_at_cursor(g:urlpattern))
 " }}}
 
 " Search {{{2
@@ -736,7 +727,6 @@ noremap <Leader>mp :silent !open -a Marked\ 2.app '%:p'<CR>
 """"""""""""""""""""""""""""""""""""""""""""""""""""" 
 ca xs mks! ~/Documents/xs1.vim
 ca xl so ~/Documents/xs1.vim
-cab xrj e ~/Documents/notes/rj.t2t
 cab xhost e /etc/hosts<CR>
 cab xbp e ~/.bash_profile
 " Must in /etc/sudoers set username ALL=(ALL) NOPASSWD:ALL
@@ -753,7 +743,7 @@ cab xasa .s/\(\a\<bar>[<>_-]\)\([^\x00-\xff]\&[^（），、：。“”；]\)/\
 
 " }}}
 
-" Plugins {{{1
+" Scripts {{{1
 """"""""""""""""""""""""""""""""""""""""""""""""""""" 
 
 " Blockdiff {{{2
@@ -839,6 +829,9 @@ nnoremap <Leader>gV :Gitv<CR>
 " Gundo {{{2
 "let g:gundo_disable=1
 nnoremap <F5> :GundoToggle<CR>
+" }}}
+" Hostslist {{{2
+let g:hosts_list = '/Users/xell/Code/pac/xell.hostslist'
 " }}}
 " LanguageTool {{{2
 let g:languagetool_jar = '/usr/local/Cellar/languagetool/2.7/libexec/languagetool-commandline.jar'
@@ -1023,6 +1016,18 @@ let NERDTreeShowBookmarks = 1
 nmap <Leader>t :NERDTreeToggle<CR>
 nmap <Leader>b :NERDTreeFromBookmark 
 " }}}
+" OpenURI {{{2
+" Open or yank web url
+nmap <expr> <Leader>Y OpenInBrowser(1, xelltoolkit#get_word_at_cursor(g:urlpattern))
+nmap <expr> <Leader>y xelltoolkit#get_copy(xelltoolkit#get_word_at_cursor(g:urlpattern))
+command! -bang -nargs=? OpenInBrowser call OpenInBrowser(<bang>1, '<args>')
+command! -nargs=0 OpenInDefaultPrg call xelltoolkit#run('', expand("%:p"))
+command! -nargs=1 Es call xelltoolkit#edit_samename_file('<args>')
+" }}}
+" Proxylist {{{2
+let g:proxy_list = '/Users/xell/Code/pac/xell.proxylist'
+let g:proxy_pac = '/Users/xell/Sites/proxylist.pac'
+" }}}
 " Quich Filter {{{2
 let g:filteringDefaultAutoFollow = 1
 
@@ -1039,6 +1044,9 @@ nnoremap ,g :call FilteringGetForSource().return()<CR>
 " nmap <Leader>F :call Gather(input("Filter on term: "), 0)<CR>
 " nmap <Leader>l :call Gather(@/, 0)<CR>:echo<CR>
 " nmap <Leader>g :call GotoOpenSearchBuffer()<CR>
+" }}}
+" SessionManager {{{2
+let g:session_path = glob('~/.vimsession')
 " }}}
 " Showmarks {{{2
 " Enable ShowMarks
@@ -1072,7 +1080,7 @@ nnoremap gcl :let g:tcommentOptions = {'col': 1}<CR>:normal gcc<CR>:let g:tcomme
 let g:tcommentOptions = {}
 let g:tcommentBlockXML = "<!--%s-->\n"
 " Defind new pandoc type TODO block comment
-let g:tcomment_types = {'pandoc': "<!-- %s -->", 'pandoc_inline': "<!-- %s -->", 'pandoc_block': "<!-- %s -->\n  ", 'proxylist': '#%s', 'noteindex': '*%s', 'conf': '#%s', 'todotxt': 'x %s', 'hostslist': '#%s'}
+let g:tcomment_types = {'pandoc': "<!-- %s -->", 'pandoc_inline': "<!-- %s -->", 'pandoc_block': "<!-- %s -->\n  ", 'proxylist': '#%s', 'noteindex': '*%s', 'conf': '#%s', 'hostslist': '#%s'}
 "call tcomment#DefineType('pandoc', "<!-- %s -->")
 "call tcomment#DefineType('pandoc_inline', "<!-- %s -->")
 "call tcomment#DefineType('pandoc_block', "<!-- %s -->\n  ")
@@ -1190,11 +1198,6 @@ call xelltoolkit#imap("''", "'<++>'<++>", 0)
 " augroup END
 
 " }}}
-" Xell URI {{{2
-command! -bang -nargs=? OpenInBrowser call OpenInBrowser(<bang>1, '<args>')
-command! -nargs=0 OpenInDefaultPrg call xelltoolkit#run('', expand("%:p"))
-command! -nargs=1 Es call xelltoolkit#edit_samename_file('<args>')
-" }}}
 " Xell Other {{{2
 "delete the current file
 com! Rm call xelltoolkit#delete_file()
@@ -1213,9 +1216,6 @@ cab mmm match Temp /\~\~../
 cab xxc bd book.log <bar> ccl
 
 set exrc
-" TODO
-let g:todo_file = glob('~/Documents/notes/todo.txt')
-nmap <Leader>p :exec 'e ' . g:todo_file<CR>
 
 " Mathematica filetype
 let filetype_m = "mma"
@@ -1223,9 +1223,6 @@ let filetype_m = "mma"
 " SH filetype, see *sh.vim*
 let g:is_bash=1
 let g:sh_fold_enabled=3
-
-" TODO
-" g:processing_doc_path
 
 " Define command WhatSyntax for looking up syntax
 command! -nargs=0 -bar WhatSyntax echomsg synIDattr(synID(line("."),col("."),0),"name") synIDattr(synIDtrans(synID(line("."),col("."),0)),"name") synIDattr(synID(line("."),col("."),1),"name") synIDattr(synIDtrans(synID(line("."),col("."),1)),"name")
