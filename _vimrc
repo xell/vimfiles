@@ -797,6 +797,41 @@ function! Fugitive_statusline_mod()
 endfunction
 
 " }}}
+" FuzzyFinder {{{2
+let g:fuf_modesDisable = ['aroundmrufile', 'mrucmd', 'dir', 'bookmark', 'taggedfile', 'line', 'quickfix']
+let g:fuf_keyPreview = '<C-H>'
+let g:fuf_keyOpenTabpage = '<C-Return>'
+
+" Usage : ,fe n:
+nmap <Leader>fe :FufFile<CR>
+let g:fuf_abbrevMap = {
+            \ "^v:" : ['$VIM/**/',],
+            \ "^n:" : [g:xell_notes_root . '/'],
+            \ }
+
+nmap <Leader>ff :FufMruFile<CR>
+" All file in current directory recursively
+nmap <Leader>fd :FufCoverageFile<CR>
+nmap <Leader>ft :FufTag<CR>
+nmap <Leader>fh :FufHelp<CR><C-E>
+nmap <Leader>fb :FufBuffer<CR>
+
+nmap <Leader>fc :call fuf#givencmd#launch('', 0, '>', <SID>getAllCommands())<CR>
+function! s:getAllCommands()
+  redir => commands
+  silent command
+  redir END
+  return map((split(commands, "\n")[3:]),
+	  \      '":" . matchstr(v:val, ''^....\zs\S*'')')
+endfunction
+
+" All user vimfiles
+nmap <Leader>fg :call <SID>fuf_test()<CR>
+function! s:fuf_test()
+	exec "call fuf#givenfile#launch('', 0, '>', split(glob('" . g:myvimfiles . "/**/*'), \"\\n\"))"
+endfunction
+
+" }}}
 " Gitv {{{2
 nnoremap <Leader>gv :Gitv!<CR>
 nnoremap <Leader>gV :Gitv<CR>
@@ -870,225 +905,6 @@ let g:marksShowTypes = "abcdefghijklmnopqrstuvwxyz" . "ABCDEFGHIJKLMNOPQRSTUVWXY
 nmap <Leader>mb :MarksBrowser<cr><cr>
 " Default
 "let s:all_marks = "abcdefghijklmnopqrstuvwxyz.'`^<>\""
-" }}}
-" NERDTree {{{2
-let NERDTreeShowBookmarks = 1
-nmap <Leader>t :NERDTreeToggle<CR>
-nmap <Leader>b :NERDTreeFromBookmark 
-" }}}
-
-
-
-
-
-
-" Thesaurus {{{2
-" TODO changeless the location of mthesaur.txt
-" mac or unix must use '/usr/share/myspell/dicts/th_en_US_v2.idx'
-set thesaurus=~/Library/Thesaurus/mthesaur.txt
-imap <c-t> <Esc>bl:Thesaurus<CR>
-" }}}
-" tComment {{{2
-" While gcc respects indent blank, I defined gcl to put comment character
-" right in the first column.
-nnoremap gcl :let g:tcommentOptions = {'col': 1}<CR>:normal gcc<CR>:let g:tcommentOptions = {}<CR>
-let g:tcommentOptions = {}
-let g:tcommentBlockXML = "<!--%s-->\n"
-" Defind new pandoc type TODO block comment
-let g:tcomment_types = {'pandoc': "<!-- %s -->", 'pandoc_inline': "<!-- %s -->", 'pandoc_block': "<!-- %s -->\n  ", 'proxylist': '#%s', 'noteindex': '*%s', 'conf': '#%s', 'todotxt': 'x %s', 'hostslist': '#%s'}
-"call tcomment#DefineType('pandoc', "<!-- %s -->")
-"call tcomment#DefineType('pandoc_inline', "<!-- %s -->")
-"call tcomment#DefineType('pandoc_block', "<!-- %s -->\n  ")
-" }}}
-" Translate EnToCn {{{2
-"nmap <Leader>e :Trans<CR>
-" }}}
-" WinFullScreen {{{2
-nnoremap <C-Enter> :WinFullScreen<CR>
-" }}}
-" Quich Filter {{{2
-let g:filteringDefaultAutoFollow = 1
-
-" After / search, use this to show the search result window
-" just like quickfix list, but with sync scroll
-nnoremap ,l :call FilteringNew().addToParameter('alt', @/).run()<CR>
-" After / search, use this to enter a keword filtering the search
-" i.e. do a second search in the first search result
-nnoremap ,F :call FilteringNew().parseQuery(input('>'), '<Bar>').run()<CR>
-" Re-open previous "look" windows selectively
-nnoremap ,g :call FilteringGetForSource().return()<CR>
-
-" Old settings, name are more intuitive to understand
-" nmap <Leader>F :call Gather(input("Filter on term: "), 0)<CR>
-" nmap <Leader>l :call Gather(@/, 0)<CR>:echo<CR>
-" nmap <Leader>g :call GotoOpenSearchBuffer()<CR>
-" }}}
-" Showmarks {{{2
-" Enable ShowMarks
-let showmarks_enable = 1
-" Show which marks
-let showmarks_include = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-" Ignore help, quickfix, non-modifiable buffers
-let showmarks_ignore_type = "hqm"
-" Hilight lower & upper marks
-"let showmarks_hlline_lower = 1
-"let showmarks_hlline_upper = 1
-"augroup MyShowMarks
-"	autocmd!
-"	autocmd BufRead,FileReadPost * normal ,mo
-"augroup END
-" }}}
-" Voom {{{2
-let g:voom_tree_placement="right"
-let g:voom_tree_width=30
-"let g:voom_return_key = '<C-Return>'
-"let g:voom_tab_key = ''
-"let g:voom_user_command = "so $VIM/vimfiles/voom_addons/mediawiki.vim"
-let g:voom_tab_key = '<C-Tab>'
-let g:voom_return_key = '<C-Return>'
-
-nmap <silent> <Leader>; :call BuildTOC()<CR>
-" BuildTOC  {{{3
-function! BuildTOC()
-	if !exists('t:toc_enable')
-		" Open TOC
-		let t:toc_enable = 'enable'
-		let t:col_ori = &columns
-		" Change window size
-		if t:col_ori <= 100
-			let col = g:voom_tree_width + t:col_ori
-			exec 'set columns=' . col
-		endif
-		if &ft == 'txt2tags'
-			exec 'Voom txt2tags'
-			return
-		elseif &ft == 'autohotkey'
-			exec 'Voom ahk'
-			return
-		elseif &ft == 'python'
-			exec 'Voom python'
-			return
-		elseif &ft == 'rst'
-			exec 'Voom rest'
-			return
-		elseif &ft == 'markdown' || &ft == 'pandoc'
-			exec 'Voom markdown'
-			return
-		elseif &ft == 'mediawiki'
-			exec 'Voom wiki'
-			return
-		" Style {\{3}\d [\{3}\d
-		elseif search('\({\{3}\d\)\|\([\{3}\d\)','nw')
-			exec 'Voom'
-			return
-		" Style {\{3}$
-		else
-			exec 'TToC ^.*{\{3}$'
-			return
-		endif
-	else
-		" Close TOC
-		unlet t:toc_enable
-		let winnum = bufwinnr('*_VOOM*')
-		if winnum != -1
-			exec winnum . 'wincmd w'
-			exec 'wincmd c'
-		endif
-		exec 'set columns=' . t:col_ori
-		unlet t:col_ori
-		return
-endfunction
-" }}}
-
-" }}}
-" TToC {{{2
-" Use function as a navigation tree toc, for example
-" nmap <Leader>tt :TToC \<fu\%[nction!]\s\zs.*\ze$<CR>
-" }}}
-" Taglist {{{2
-let g:Tlist_Show_One_File=1
-let Tlist_Sort_Type = "name"
-highlight link MyTagListFileName Identifier
-highlight link MyTagListTagName Type
-
-" For toggle the Tlist windows
-nmap <F10> :TlistToggle<CR>
-imap <F10> <ESC><F10>i
-" }}}
-" FuzzyFinder {{{2
-let g:fuf_modesDisable = ['aroundmrufile', 'mrucmd', 'dir', 'bookmark', 'taggedfile', 'line', 'quickfix']
-let g:fuf_keyPreview = '<C-H>'
-let g:fuf_keyOpenTabpage = '<C-Return>'
-
-" Usage : ,fe n:
-nmap <Leader>fe :FufFile<CR>
-let g:fuf_abbrevMap = {
-            \ "^v:" : ['$VIM/**/',],
-            \ "^n:" : [g:xell_notes_root . '/'],
-            \ }
-
-nmap <Leader>ff :FufMruFile<CR>
-" All file in current directory recursively
-nmap <Leader>fd :FufCoverageFile<CR>
-nmap <Leader>ft :FufTag<CR>
-nmap <Leader>fh :FufHelp<CR><C-E>
-nmap <Leader>fb :FufBuffer<CR>
-
-nmap <Leader>fc :call fuf#givencmd#launch('', 0, '>', <SID>getAllCommands())<CR>
-function! s:getAllCommands()
-  redir => commands
-  silent command
-  redir END
-  return map((split(commands, "\n")[3:]),
-	  \      '":" . matchstr(v:val, ''^....\zs\S*'')')
-endfunction
-
-" All user vimfiles
-nmap <Leader>fg :call <SID>fuf_test()<CR>
-function! s:fuf_test()
-	exec "call fuf#givenfile#launch('', 0, '>', split(glob('" . g:myvimfiles . "/**/*'), \"\\n\"))"
-endfunction
-
-" }}}
-" IMAP from latex-suite TODO {{{2
-let g:Imap_FreezeImap = 1
-" Remap the jumpforward to other, originally <C-j>
-imap <D-C-J> <Plug>IMAP_JumpForward
-nmap <D-C-Y> <Plug>IMAP_JumpForward
-function! s:imap_jump()
-    let isfound = search('<++>', 'cW')
-    if isfound
-        if col('.') == col('$') - 4
-            normal 4x
-            startinsert!
-        else
-            normal 4x
-            startinsert
-        endif
-    endif
-endfunction
-inoremap <D-j> <C-O>:call <SID>imap_jump()<CR>
-
-call xelltoolkit#imap('()', '(<++>)<++>', 0)
-call xelltoolkit#imap('[]', '[<++>]<++>', 0)
-call xelltoolkit#imap('{}', '{<++>}<++>', 0)
-call xelltoolkit#imap('<>', '<<++>><++>', 0)
-call xelltoolkit#imap('""', '"<++>"<++>', 0)
-call xelltoolkit#imap("''", "'<++>'<++>", 0)
-" call xelltoolkit#imap('%%', '%<++>%<++>', 0)
-
-" for reference in windows TODO
-" augroup MyIMAPs
-" 	autocmd!
-" 	autocmd VimEnter * call IMAP('()', '(<++>)<++>', '')
-" 	autocmd VimEnter * call IMAP('[]', '[<++>]<++>', '')
-" 	autocmd VimEnter * call IMAP('{}', '{<++>}<++>', '')
-" 	autocmd VimEnter * call IMAP('<>', '<<++>><++>', '')
-" 	autocmd VimEnter * call IMAP('""', '"<++>"<++>', '')
-" 	autocmd VimEnter * call IMAP("''", "'<++>'<++>", '')
-" 	autocmd VimEnter * call IMAP('%%', '%<++>%<++>', '')
-" augroup END
-
 " }}}
 " Neocomplete {{{2
 if $SUDO_USER == ''
@@ -1202,28 +1018,182 @@ else
 endif
 
 " }}}
-" CSS-after {{{2
-let g:cssColorVimDoNotMessMyUpdatetime = 4000
+" NERDTree {{{2
+let NERDTreeShowBookmarks = 1
+nmap <Leader>t :NERDTreeToggle<CR>
+nmap <Leader>b :NERDTreeFromBookmark 
 " }}}
-" SimpleNote {{{2
-exec 'so ' . expand("<sfile>:p:h") . '/.simplenoteconf'
+" Quich Filter {{{2
+let g:filteringDefaultAutoFollow = 1
+
+" After / search, use this to show the search result window
+" just like quickfix list, but with sync scroll
+nnoremap ,l :call FilteringNew().addToParameter('alt', @/).run()<CR>
+" After / search, use this to enter a keword filtering the search
+" i.e. do a second search in the first search result
+nnoremap ,F :call FilteringNew().parseQuery(input('>'), '<Bar>').run()<CR>
+" Re-open previous "look" windows selectively
+nnoremap ,g :call FilteringGetForSource().return()<CR>
+
+" Old settings, name are more intuitive to understand
+" nmap <Leader>F :call Gather(input("Filter on term: "), 0)<CR>
+" nmap <Leader>l :call Gather(@/, 0)<CR>:echo<CR>
+" nmap <Leader>g :call GotoOpenSearchBuffer()<CR>
+" }}}
+" Showmarks {{{2
+" Enable ShowMarks
+let showmarks_enable = 1
+" Show which marks
+let showmarks_include = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+" Ignore help, quickfix, non-modifiable buffers
+let showmarks_ignore_type = "hqm"
+" Hilight lower & upper marks
+"let showmarks_hlline_lower = 1
+"let showmarks_hlline_upper = 1
+"augroup MyShowMarks
+"	autocmd!
+"	autocmd BufRead,FileReadPost * normal ,mo
+"augroup END
+" }}}
+" Taglist {{{2
+let g:Tlist_Show_One_File=1
+let Tlist_Sort_Type = "name"
+highlight link MyTagListFileName Identifier
+highlight link MyTagListTagName Type
+
+" For toggle the Tlist windows
+nmap <F10> :TlistToggle<CR>
+imap <F10> <ESC><F10>i
+" }}}
+" tComment {{{2
+" While gcc respects indent blank, I defined gcl to put comment character
+" right in the first column.
+nnoremap gcl :let g:tcommentOptions = {'col': 1}<CR>:normal gcc<CR>:let g:tcommentOptions = {}<CR>
+let g:tcommentOptions = {}
+let g:tcommentBlockXML = "<!--%s-->\n"
+" Defind new pandoc type TODO block comment
+let g:tcomment_types = {'pandoc': "<!-- %s -->", 'pandoc_inline': "<!-- %s -->", 'pandoc_block': "<!-- %s -->\n  ", 'proxylist': '#%s', 'noteindex': '*%s', 'conf': '#%s', 'todotxt': 'x %s', 'hostslist': '#%s'}
+"call tcomment#DefineType('pandoc', "<!-- %s -->")
+"call tcomment#DefineType('pandoc_inline', "<!-- %s -->")
+"call tcomment#DefineType('pandoc_block', "<!-- %s -->\n  ")
+" }}}
+" Thesaurus {{{2
+" mac or unix must use '/usr/share/myspell/dicts/th_en_US_v2.idx'
+" or assign g:thesaurus_file
+imap <c-t> <Esc>bl:Thesaurus<CR>
+" }}}
+" VOoM {{{2
+let g:voom_tree_placement="right"
+let g:voom_tree_width=30
+"let g:voom_user_command = "so $VIM/vimfiles/voom_addons/mediawiki.vim"
+let g:voom_tab_key = '<C-Tab>'
+let g:voom_return_key = '<C-Return>'
+
+nmap <silent> <Leader>; :call BuildVOoMTOC()<CR>
+" BuildVOoMTOC  {{{3
+function! BuildVOoMTOC()
+	if !exists('t:toc_enable')
+		" Open TOC
+		let t:toc_enable = 'enable'
+		let t:col_ori = &columns
+		" Change window size
+		if t:col_ori <= 100
+			let col = g:voom_tree_width + t:col_ori
+			exec 'set columns=' . col
+		endif
+		if &ft == 'txt2tags'
+			exec 'Voom txt2tags'
+			return
+		elseif &ft == 'autohotkey'
+			exec 'Voom ahk'
+			return
+		elseif &ft == 'python'
+			exec 'Voom python'
+			return
+		elseif &ft == 'rst'
+			exec 'Voom rest'
+			return
+		elseif &ft == 'markdown' || &ft == 'pandoc'
+			exec 'Voom markdown'
+			return
+		elseif &ft == 'mediawiki'
+			exec 'Voom wiki'
+			return
+		" Style {\{3}\d [\{3}\d
+		elseif search('\({\{3}\d\)\|\([\{3}\d\)','nw')
+			exec 'Voom'
+			return
+		" Style {\{3}$
+		else
+			exec 'TToC ^.*{\{3}$'
+			return
+		endif
+	else
+		" Close TOC
+		unlet t:toc_enable
+		let winnum = bufwinnr('*_VOOM*')
+		if winnum != -1
+			exec winnum . 'wincmd w'
+			exec 'wincmd c'
+		endif
+		exec 'set columns=' . t:col_ori
+		unlet t:col_ori
+		return
+endfunction
+" }}}
+
+" }}}
+" WinFullScreen {{{2
+nnoremap <C-Enter> :WinFullScreen<CR>
+" }}}
+" WordCount {{{2
+nmap <silent> <S-F6> :call ShowLiveWordCount()<CR>
+" }}}
+
+" IMAP from latex-suite TODO {{{2
+let g:Imap_FreezeImap = 1
+" Remap the jumpforward to other, originally <C-j>
+imap <D-C-J> <Plug>IMAP_JumpForward
+nmap <D-C-Y> <Plug>IMAP_JumpForward
+function! s:imap_jump()
+    let isfound = search('<++>', 'cW')
+    if isfound
+        if col('.') == col('$') - 4
+            normal 4x
+            startinsert!
+        else
+            normal 4x
+            startinsert
+        endif
+    endif
+endfunction
+inoremap <D-j> <C-O>:call <SID>imap_jump()<CR>
+
+call xelltoolkit#imap('()', '(<++>)<++>', 0)
+call xelltoolkit#imap('[]', '[<++>]<++>', 0)
+call xelltoolkit#imap('{}', '{<++>}<++>', 0)
+call xelltoolkit#imap('<>', '<<++>><++>', 0)
+call xelltoolkit#imap('""', '"<++>"<++>', 0)
+call xelltoolkit#imap("''", "'<++>'<++>", 0)
+" call xelltoolkit#imap('%%', '%<++>%<++>', 0)
+
+" for reference in windows TODO
+" augroup MyIMAPs
+" 	autocmd!
+" 	autocmd VimEnter * call IMAP('()', '(<++>)<++>', '')
+" 	autocmd VimEnter * call IMAP('[]', '[<++>]<++>', '')
+" 	autocmd VimEnter * call IMAP('{}', '{<++>}<++>', '')
+" 	autocmd VimEnter * call IMAP('<>', '<<++>><++>', '')
+" 	autocmd VimEnter * call IMAP('""', '"<++>"<++>', '')
+" 	autocmd VimEnter * call IMAP("''", "'<++>'<++>", '')
+" 	autocmd VimEnter * call IMAP('%%', '%<++>%<++>', '')
+" augroup END
+
 " }}}
 " Xell URI {{{2
 command! -bang -nargs=? OpenInBrowser call OpenInBrowser(<bang>1, '<args>')
 command! -nargs=0 OpenInDefaultPrg call xelltoolkit#run('', expand("%:p"))
 command! -nargs=1 Es call xelltoolkit#edit_samename_file('<args>')
-" }}}
-" Xell WordCount {{{2
-nmap <silent> <S-F6> :call ShowLiveWordCount()<CR>
-" }}}
-" Vimim {{{2
-let g:vimim_map = 'c-bslash'
-" let g:vimim_mode='static'
-let g:vimim_shuangpin = 'nature'
-" let g:vimim_cloud = 'qq.shuangpin.nature'
-let g:vimim_cloud = -1
-" let g:vimim_mycloud = 'dll:' . g:myvimfiles . 'bundle/vimim/plugin/libvimim.so'
-" let g:vimim_mycloud = 'dll:' . g:myvimfiles . '/bundle/vimim/plugin/libvimim.so:arg:func'
 " }}}
 " Xell Other {{{2
 "delete the current file

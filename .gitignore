@@ -8,5 +8,3 @@ tags-*
 .com.apple.*
 *.sw[ponm]
 xell_test.vim
-.simplenoteconf
-.evervimconf
