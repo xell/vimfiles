@@ -817,6 +817,11 @@ autocmd FileType html,css EmmetInstall
 " E122: Function <SNR>12_EditElsewhere already exists, add ! to replace it
 " runtime macros/editexisting.vim
 " }}}
+" FFS {{{2
+nmap <Leader><Leader><Leader> :call FFS()<CR>
+let g:ffs_forbiden_path = ['/Users/xell', '/Users/xell/Library', '/Users/xell/Codes', '/Applications', '/Library']
+
+" }}}
 " Fugitive {{{2
 let g:fugitive_summary_format = '(%ci) %s'
 if &loadplugins

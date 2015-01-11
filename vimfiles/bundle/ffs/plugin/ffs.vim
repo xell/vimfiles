@@ -9,9 +9,6 @@ endif
 let g:loaded_xell_ffs = 1
 " }}}
 
-nmap <Leader><Leader><Leader> :call FFS()<CR>
-let g:ffs_forbiden_path = ['/Users/xell', '/Users/xell/Library', '/Users/xell/Codes', '/Applications', '/Library', '/P', '/P/apps']
-
 function! FFS()
 	let t:ffs_start_path = expand("%:p:h")
 	for forbiden_path in g:ffs_forbiden_path
