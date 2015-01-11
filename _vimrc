@@ -819,8 +819,7 @@ autocmd FileType html,css EmmetInstall
 " }}}
 " FFS {{{2
 nmap <Leader><Leader><Leader> :call FFS()<CR>
-let g:ffs_forbiden_path = ['/Users/xell', '/Users/xell/Library', '/Users/xell/Codes', '/Applications', '/Library']
-
+let g:ffs_forbiden_path = ['/Users/xell', '/Users/xell/Library', '/Users/xell/Codes', '/Users/xell/Documents', '/Applications', '/Library']
 " }}}
 " Fugitive {{{2
 let g:fugitive_summary_format = '(%ci) %s'
