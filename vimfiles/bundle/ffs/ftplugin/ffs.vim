@@ -84,6 +84,8 @@ function! s:openfile() " {{{1
 				let filename = filename . '.' . fileext
 			endif
 		endif
+    else
+        let filename = substitute(filename, ' ', '\\ ', 'g')
 	endif
 
 	botright new
