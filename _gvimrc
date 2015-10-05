@@ -148,6 +148,8 @@ endfunction
 set linespace=4
 set guifont=Consolas:h15
 " useless {{{2
+"set guifont=YaHei_Consolas_Hybrid:h14
+"set guifont=Input:h14
 "set guifont=Megatops_ProCoder_1.0:h12
 "set guifont=Andale_Mono:h12
 "set guifont=Courier\ New:h14
