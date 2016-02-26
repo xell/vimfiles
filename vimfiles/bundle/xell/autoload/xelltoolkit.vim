@@ -212,7 +212,7 @@ function! xelltoolkit#grep_in_lcd_r(option, include, pattern) " {{{
 	let pattern = a:pattern
 
 	" vimgrep: vimgrep /\cPATTERN/j ./**/*.type1 ./**/*.type2
-    let cmd = 'grep! -HnIr'
+    let cmd = 'silent! grep! -HnIr'
 
     if has_key(g:grep_include_dict, a:include)
         let filetypes = g:grep_include_dict[a:include]
