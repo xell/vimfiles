@@ -4,9 +4,6 @@ if (exists("b:did_ftplugin"))
 endif
 let b:did_ftplugin = 1
 
-let b:testres1 = []
-let b:testres2 = []
-
 setlocal hidden
 setlocal bufhidden=delete
 setlocal buftype=nofile
@@ -17,7 +14,8 @@ let t:keyword = ''
 let t:bufnr = bufnr('%')
 
 nnoremap <buffer> <Esc> :bd!<CR>
-inoremap <buffer> <D-Return> <Esc>:call <SID>generate_filelist()<CR>
+inoremap <buffer> <S-Return> <Esc>:call <SID>generate_filelist()<CR>
+inoremap <buffer> <D-Return> <Esc>:call <SID>generate_lcd()<CR>
 inoremap <buffer> <Return> <Return><Esc>:call <SID>openfile()<CR>
 
 augroup ffs
@@ -123,3 +121,13 @@ function! s:generate_filelist() " {{{1
 endfunction
 " }}}
 
+function! s:generate_lcd() " {{{
+	call xelltoolkit#grep_in_lcd_r('', '', t:keyword)
+	cwindow
+	if &ft == 'qf'
+		exec 'match ErrorMsg /\c' . t:keyword . '/'
+	endif
+	let @/ = t:keyword
+    bd ffs
+endfunction
+" }}}
