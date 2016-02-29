@@ -423,12 +423,16 @@ endfunction "}}}
 " Link {{{1
 " Search, copy and open
 nmap <buffer> <expr> <Leader>y xelltoolkit#get_copy(<SID>get_link())
-nmap <buffer> <expr> <Leader>Y OpenInBrowser(1,<SID>get_link())
+nmap <buffer> <Leader>Y :call <SID>open()<CR>
 nmap <buffer> <Tab> :call xelltoolkit#goto_next_word(b:tabpattern)<CR>
 nmap <buffer> <S-Tab> :call xelltoolkit#goto_pre_word(b:tabpattern)<CR>
 
 " let b:tabpattern = '\(\[[^\^]\{-}\]\([:\[]\)\@!\(([^)]\{-})\)\?\)\|' . g:urlpattern
 let b:tabpattern = '\(\[[^\^]\{-}\]\([:\[]\)\@!\(([^ ]\{-}\%(\s"[^"]\{-}"\)\?)\)\?\)\|' . g:urlpattern
+
+function! s:open()
+    call OpenInBrowser(1,s:get_link())
+endfunction
 
 function! s:get_link()
 	let linktext = xelltoolkit#get_word_at_cursor(b:tabpattern)

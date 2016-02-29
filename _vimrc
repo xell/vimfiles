@@ -1022,7 +1022,7 @@ nmap <Leader>b :NERDTreeFromBookmark
 " }}}
 " OpenURI {{{2
 " Open or yank web url
-nmap <expr> <Leader>Y OpenInBrowser(1, xelltoolkit#get_word_at_cursor(g:urlpattern))
+nmap <Leader>Y :call Open()<CR>
 nmap <expr> <Leader>y xelltoolkit#get_copy(xelltoolkit#get_word_at_cursor(g:urlpattern))
 command! -bang -nargs=? OpenInBrowser call OpenInBrowser(<bang>1, '<args>')
 command! -nargs=0 OpenInDefaultPrg call xelltoolkit#run('', expand("%:p"))

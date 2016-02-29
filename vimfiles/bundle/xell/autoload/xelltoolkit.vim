@@ -1,5 +1,4 @@
 
-" TODO relocate the cursor
 function! xelltoolkit#get_word_at_cursor(pattern) "{{{1
 	let col = col('.') - 1
 	let ori_line = line('.')

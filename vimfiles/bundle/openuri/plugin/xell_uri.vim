@@ -13,6 +13,11 @@ set cpo&vim
 
 " }}}
 
+function! Open()
+    let url = xelltoolkit#get_word_at_cursor(g:urlpattern)
+    call OpenInBrowser(1, url)
+endfunction
+
 " Open in user specified browser {{{1
 " Use ! to enforce unsupported file
 function! OpenInBrowser(strict, ...)
