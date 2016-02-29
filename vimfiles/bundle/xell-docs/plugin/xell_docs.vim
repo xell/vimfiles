@@ -13,6 +13,56 @@ set cpo&vim
 
 " }}}
 
+" Global {{{1
+" These convert rule functions only consider current buffer
+" Definition : function Wrapper(out_type, config)
+let g:docs_convert_buffer_rules = {
+			\ 'txt2tags': 'Txt2tagsConvertBufferWrapper',
+			\ 'pandoc': 'PandocConvertBufferWrapper',
+			\ 'rst': 'RstConvertBufferWrapper',
+			\ 'filelist': 'NotesConvertWrapper'}
+
+" Text2tags specification {{{3
+let g:t2t_cmd = '/usr/local/bin/txt2tags'
+let g:t2t_cf_path = glob('~/Documents/_special/_tpl/t2t')
+
+let g:t2t_target_ext = {'html': 'html', 'md': 'md', 'rst': 'rst', 'txt': 'txt', 'html5': 'html', 'rtf': 'rtf', 'tex': 'tex'}
+" }}}
+
+" Pandoc specification {{{3
+let g:pandoc_syntax_accuracy = 1
+let g:pandoc_syntax_full_html_tex = 1
+let g:pandoc_syntax_table = 0
+let g:pandoc_fold_level = 2
+
+let g:pandoc_target_ext = {'plain': 'txt', 'markdown': 'md', 'rst': 'rst', 'html': 'html', 'html5': 'html', 'latex': 'tex', 'mediawiki': 'wiki', 'opendocument': 'fodt', 'odt': 'odt', 'docx': 'docx', 'slidy': 'html', 'dzslides': 'html', 'rtf': 'rtf'}
+
+let g:pandoc_exec = 'pandoc'
+let g:pandoc_tpl_root = '/Users/xell/Documents/_special/_tpl/pandoc'
+let g:pandoc_csl_root = g:pandoc_tpl_root . '/csl'
+let g:pandoc_css_root = g:pandoc_tpl_root . '/css'
+let g:pandoc_htmltpl_root = g:pandoc_tpl_root . '/html'
+let g:pandoc_docx_root = g:pandoc_tpl_root . '/docx'
+let g:pandoc_odt_root = g:pandoc_tpl_root . '/odt'
+let g:pandoc_bib = 'biblio.bib'
+let g:pandoc_csl = g:pandoc_csl_root . '/Chinese-GB7714-2005-Numeric-1.0.csl'
+
+" }}}
+
+" Rst Docutils specification {{{3
+let g:rst_target_ext = {'html': 'html', 'odt': 'odt'}
+
+let g:rst2odt_exec = 'rst2odt.py'
+let g:rst2html_exec = 'rst2html.py'
+let g:rst_tpl_root = '/Users/xell/Documents/_special/_tpl/docutils'
+let g:rst_html_root = g:rst_tpl_root . '/html'
+let g:rst_html_tpl_root = g:rst_html_root . '/tpl'
+let g:rst_html_style_root = g:rst_html_root . '/style'
+let g:rst_odt_style_root = g:rst_tpl_root . '/odt'
+" }}}
+
+" }}}
+
 command! -nargs=* ConvertBuffer :call <SID>convert_buffer(<f-args>)
 
 function! s:convert_buffer(...) " {{{1
