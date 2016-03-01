@@ -323,6 +323,42 @@ endfunction "}}}
 
 " }}}
 
+" Link {{{1
+" Search, copy and open
+nmap <buffer> <expr> <Leader>y xelltoolkit#get_copy(<SID>get_link())
+nmap <buffer> <Leader>Y :call <SID>open()<CR>
+nmap <buffer> <Tab> :call xelltoolkit#goto_next_word(b:tabpattern)<CR>
+nmap <buffer> <S-Tab> :call xelltoolkit#goto_pre_word(b:tabpattern)<CR>
+
+" let b:tabpattern = '\(\[[^\^]\{-}\]\([:\[]\)\@!\(([^)]\{-})\)\?\)\|' . g:urlpattern
+let b:tabpattern = '\(\[[^\^]\{-}\]\([:\[]\)\@!\(([^ ]\{-}\%(\s"[^"]\{-}"\)\?)\)\?\)\|' . g:urlpattern
+
+function! s:open()
+    call OpenInBrowser(1,s:get_link())
+endfunction
+
+function! s:get_link()
+	let linktext = xelltoolkit#get_word_at_cursor(b:tabpattern)
+
+	if linktext == ''
+		echohl WarningMsg | echomsg 'Wrong URI!' | echohl None
+		return ''
+	elseif linktext !~ '^\['   " http or file
+		return linktext
+	elseif linktext =~ '\]('   " [linktext](http title)
+		return matchstr(linktext, '\](\(\zs[^ ]\{-}\ze\%(\s"[^"]\{-}"\)\?\))', 0)
+	endif
+
+	" [linktext][id] or [linktext][] or [linktext]
+	if linktext =~ '\]\[' && linktext !~ '\[\]'
+		let id = matchstr(linktext, '\]\[\zs[^]]\+\ze\]', 0)
+	else
+		let id = matchstr(linktext, '^\[\zs[^]]\+\ze\]', 0)
+	endif
+	return matchstr(getline(searchpos('^[ ]\{0,3}\[' . id . '\]:\s', 'n')[0]), '\]:\s\zs[^ ]\+\ze')
+endfunction
+" }}}
+
 " Check duplicated ids {{{1
 command! -buffer -nargs=0 CheckDupIDs call <SID>check_dup_ids()
 function! s:check_dup_ids() "{{{2
@@ -417,43 +453,6 @@ function! s:check_dup_ids() "{{{2
 	setlocal noshowcmd
 	setlocal nowrap
 endfunction "}}}
-" }}}
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Link {{{1
-" Search, copy and open
-nmap <buffer> <expr> <Leader>y xelltoolkit#get_copy(<SID>get_link())
-nmap <buffer> <Leader>Y :call <SID>open()<CR>
-nmap <buffer> <Tab> :call xelltoolkit#goto_next_word(b:tabpattern)<CR>
-nmap <buffer> <S-Tab> :call xelltoolkit#goto_pre_word(b:tabpattern)<CR>
-
-" let b:tabpattern = '\(\[[^\^]\{-}\]\([:\[]\)\@!\(([^)]\{-})\)\?\)\|' . g:urlpattern
-let b:tabpattern = '\(\[[^\^]\{-}\]\([:\[]\)\@!\(([^ ]\{-}\%(\s"[^"]\{-}"\)\?)\)\?\)\|' . g:urlpattern
-
-function! s:open()
-    call OpenInBrowser(1,s:get_link())
-endfunction
-
-function! s:get_link()
-	let linktext = xelltoolkit#get_word_at_cursor(b:tabpattern)
-
-	if linktext == ''
-		echohl WarningMsg | echomsg 'Wrong URI!' | echohl None
-		return ''
-	elseif linktext !~ '^\['   " http or file
-		return linktext
-	elseif linktext =~ '\]('   " [linktext](http title)
-		return matchstr(linktext, '\](\(\zs[^ ]\{-}\ze\%(\s"[^"]\{-}"\)\?\))', 0)
-	endif
-
-	" [linktext][id] or [linktext][] or [linktext]
-	if linktext =~ '\]\[' && linktext !~ '\[\]'
-		let id = matchstr(linktext, '\]\[\zs[^]]\+\ze\]', 0)
-	else
-		let id = matchstr(linktext, '^\[\zs[^]]\+\ze\]', 0)
-	endif
-	return matchstr(getline(searchpos('^[ ]\{0,3}\[' . id . '\]:\s', 'n')[0]), '\]:\s\zs[^ ]\+\ze')
-endfunction
 " }}}
 
 " Create reference links {{{1
@@ -638,13 +637,10 @@ function! s:extend_dict(dict, key, value) "{{{2
 	let temp_d[a:key] = a:value
 	call extend(a:dict, temp_d)
 endfunction "}}}
-" }}}
-
 " TODO
 "" Jump back to existing reference link (or fn link)
 " map <buffer><silent> <LocalLeader>br :call pandoc_misc#Pandoc_Back_From_Ref()<cr>
-
-" NoMatchParen
+" }}}
 
 " Conversion Wrapper {{{1
 function! PandocConvertBufferWrapper(out_type, config)
@@ -668,20 +664,6 @@ function! PandocConvertBufferWrapper(out_type, config)
 
 endfunction
 " }}}
-
-" XXX TEMP
-command! -buffer -nargs=1 Run call <SID>open_docs('<args>')
-
-function! s:open_docs(type)
-	if a:type =~? 'docx\?'
-		call xelltoolkit#run('', expand('%:p:r') . '.' . a:type)
-	elseif a:type =~? 'odt'
-		call xelltoolkit#run('D:\P\libreoffice\LibreOfficeWriterPortable.exe', expand('%:p:r') . '.' . a:type)
-	else
-		call xelltoolkit#echo_msg('Target unsupported.')
-	endif
-endfunction
-
 
 " XXX Disabled {{{1
 " # Save folding between sessions

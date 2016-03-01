@@ -223,7 +223,9 @@ let g:webserver_host = 'http://localhost:80/~xell'
 let g:webserver_dir = glob('~/Sites')
 " }}}
 
-" Docs TODO should not be here {{{2
+" TODO
+" Docs should not be here {{{2
+
 " Specify use what function to look for the output html of doc file
 let g:browser_open_rules = {'t2t': 'GetOutputHTML', 'md': 'GetOutputHTML', 'mkd': 'GetOutputHTML', 'markdown': 'GetOutputHTML', 'rst': 'GetOutputHTML', 'noteindex': 'GetOutputHTML'}
 
@@ -1027,6 +1029,12 @@ nmap <expr> <Leader>y xelltoolkit#get_copy(xelltoolkit#get_word_at_cursor(g:urlp
 command! -bang -nargs=? OpenInBrowser call OpenInBrowser(<bang>1, '<args>')
 command! -nargs=0 OpenInDefaultPrg call xelltoolkit#run('', expand("%:p"))
 command! -nargs=1 Es call xelltoolkit#edit_samename_file('<args>')
+" }}}
+" Pandoc markdown filetype {{{2
+let g:pandoc_syntax_accuracy = 1
+let g:pandoc_syntax_full_html_tex = 1
+let g:pandoc_syntax_table = 0
+let g:pandoc_fold_level = 2
 " }}}
 " Proxylist {{{2
 let g:proxy_list = '/Users/xell/Code/pac/xell.proxylist'
