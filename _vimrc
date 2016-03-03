@@ -1074,6 +1074,12 @@ let showmarks_ignore_type = "hqm"
 "	autocmd BufRead,FileReadPost * normal ,mo
 "augroup END
 " }}}
+" Table-Mode {{{2
+" ReST-compatible tables
+let g:table_mode_corner_corner="+"
+let g:table_mode_header_fillchar="="
+let g:table_mode_delimiter = '|'
+" }}}
 " Taglist {{{2
 let g:Tlist_Show_One_File=1
 let Tlist_Sort_Type = "name"
