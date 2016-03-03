@@ -38,7 +38,7 @@ endfunction
 
 " Open note {{{1
 nmap <silent> <Leader>. :call <SID>note_taking()<CR>
-function! s:note_taking() "{{{2
+function! s:note_taking()
     if &modified
         tabnew
     else
@@ -80,19 +80,8 @@ function! s:note_taking() "{{{2
     call append(2, notes)
 
     return
-endfunction "}}}
-
-nmap <silent> <Leader>/ :call <SID>note_taking_temp()<CR>
-function! s:note_taking_temp() "{{{2
-	let temp_file = g:xell_notes_root . '/' . g:xell_notes_temp
-	if filereadable(glob(temp_file))
-		execute 'e ' . temp_file
-		normal G
-	else
-		call xelltoolkit#echo_msg("Temp file doesn't exist. Please re-check.")
-		return
-	endif
-endfunction "}}}
+endfunction
+"}}}
 
 " nmap <silent> <Leader>p :execute 'e ' . g:xell_notes_root . '/' . 'plan.t2t'<CR>
 " }}}

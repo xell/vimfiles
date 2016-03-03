@@ -732,10 +732,7 @@ cab xasa .s/\(\a\<bar>[<>_-]\)\([^\x00-\xff]\&[^（），、：。“”；]\)/\
 " XellNotes {{{2
 let g:xell_notes_root = glob('~/Documents/notes/notes')
 " TODO non-exists
-let g:xell_notes_ex_root = glob('~/Documents/notes/xnotes_export')
-" TODO make temp file more useful
-" or delete it? cause it conflicts with TempNote()
-let g:xell_notes_temp = 'temp.md'
+let g:xell_notes_ex_root = glob('~/Documents/notes/notes_preview')
 " TODO it should not be connected with ffs
 " i.e. ffs should be more general, not focusing with notes
 let g:xell_notes_default_ext = 'md'

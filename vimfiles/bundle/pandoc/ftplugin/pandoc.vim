@@ -642,29 +642,6 @@ endfunction "}}}
 " map <buffer><silent> <LocalLeader>br :call pandoc_misc#Pandoc_Back_From_Ref()<cr>
 " }}}
 
-" Conversion Wrapper {{{1
-function! PandocConvertBufferWrapper(out_type, config)
-	if expand('%:p') =~? xelltoolkit#fname2pattern(g:xell_notes_root) 
-				\ && a:out_type == '' && a:config == ''
-		let answer = input("It's a note. Process convert?(y/N)")
-		if answer !=? 'y'
-			echo "Conversion canceled."
-			return
-		endif
-	endif
-
-	if a:out_type == ''
-		let out_type = 'html'
-	else
-		let out_type = a:out_type
-	endif
-
-	" Only convert current buffer
-	call PandocConverter('', out_type, a:config, '')
-
-endfunction
-" }}}
-
 " XXX Disabled {{{1
 " # Save folding between sessions
 "
