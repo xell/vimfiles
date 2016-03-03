@@ -773,6 +773,7 @@ nmap <Leader><Leader><Leader> :call FFS()<CR>
 let g:ffs_forbiden_path = ['/Users/xell', '/Users/xell/Library', '/Users/xell/Codes', '/Users/xell/Documents', '/Applications', '/Library']
 " }}}
 " Fugitive {{{2
+nmap <Leader>gs :Gstatus<CR>
 let g:fugitive_summary_format = '(%ci) %s'
 if &loadplugins
 	let g:mystatusline_fugitive = '\ %{Fugitive_statusline_mod()}'
@@ -823,8 +824,9 @@ endfunction
 
 " }}}
 " Gitv {{{2
-nnoremap <Leader>gv :Gitv!<CR>
-nnoremap <Leader>gV :Gitv<CR>
+nnoremap <Leader>gV :Gitv --all<CR>
+nnoremap <Leader>gv :Gitv! --all<CR>
+vmap <leader>gv :Gitv! --all<cr>
 " }}}
 " Gundo {{{2
 "let g:gundo_disable=1
