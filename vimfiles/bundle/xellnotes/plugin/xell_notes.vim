@@ -133,7 +133,7 @@ endfunction
 
 " Generate temp note file name
 function s:temp_note_filename()
-    return g:xell_notes_root . '/temp_' . strftime("%Y%m%d-%H%M%S") . '.tempnote'
+    return g:xell_notes_root . '/temp_' . strftime("%Y%m%d-%H%M%S") . '.' . g:xell_notes_temp_ext
 endfunction
 
 " }}}
@@ -164,7 +164,7 @@ function! AddNote()
     endif
 
     " tempnote doc
-    if fileext == 'tempnote'
+    if fileext == g:xell_notes_temp_ext
         " disable BufDelete autocmd trigger
         exec 'autocmd! BufDelete <buffer>'
         let newfilename = input("Note name:\n")
@@ -185,7 +185,7 @@ function! AddNote()
     endif
 
     " existed doc
-    if filefullname != '' && fileext != 'tempnote'
+    if filefullname != '' && fileext != g:xell_notes_temp_ext
         let ischangefilename = input("Change file name? (y/N)")
         if ischangefilename =~ '^y'
             let newfilename = input("Note name:\n")

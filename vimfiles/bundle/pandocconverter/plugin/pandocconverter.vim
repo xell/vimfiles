@@ -14,11 +14,9 @@ set cpo&vim
 
 command! -nargs=* Pandoc :call PandocConverterBuffer(<f-args>)
 nmap <Leader>/ :Pandoc<CR>
-command! -nargs=* Preview :call PandocPreview(<f-args>)
 let g:target_profile_default = 'normal.html'
 let g:pandoc_bib_default = 'biblio.bib'
 let g:pandoc_config_file = '/Users/xell/.pandoc/pdconfig'
-let s:pandoc_preview_temp = '-preview'
 let g:pandocconverter_scope = ['pandoc', 'markdown']
 
 function! PandocConverterBuffer(...) "{{{1
@@ -151,10 +149,6 @@ function! PandocConverter(inputfile_fullpath, target_profile) " {{{1
     return [outputfile_fullpath, a:target_profile]
 endfunction "}}}
 
-function! PandocConverterProcessTest()
-    call writefile(s:preproc_numbering(readfile(expand('%:p')), 1, 1, 1), '/Users/xell/Documents/temp/pandoc_new/mid.md')
-endfunction
-
 "=================================================================
 " Preprocess customized tag
 function! s:preproc_customized_tag(file_content) " {{{1
@@ -210,10 +204,8 @@ function! s:preproc_clean_spaces(file_content) " {{{1
 endfunction
 " }}}
 
-"=================================================================
 " Change xell-def cross-refs into texts, etc.
 " 标题 [=] 图 [-] 表 [~]
-
 " Preprocess figures, tables and title references by language
 " For -N --number-sections
 function! s:preproc_numbering(file_content, language, is_whole, is_chapter) "{{{
@@ -564,7 +556,6 @@ function! s:preproc_no_numbering(file_content, language) "{{{
 endfunction
 " }}}
 
-"=================================================================
 " Read profile
 function! s:read_profile(profile) "{{{
     let pandoc_config = readfile(g:pandoc_config_file)
@@ -588,7 +579,7 @@ function! s:read_profile(profile) "{{{
         if line_content =~? '^\['
             break
         endif
-        if line_content =~? '^#'
+        if line_content =~? '^#' || line_content =~? '^[:blank:]*$'
             let line_num = line_num + 1
             continue
         endif
@@ -642,7 +633,6 @@ function! s:determine_level(level_list, title) "{{{
 
 endfunction
 " }}}
-
 
 " End {{{1
 let &cpo = s:savecpo

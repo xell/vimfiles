@@ -148,6 +148,7 @@ endfunction
 set linespace=4
 set guifont=Consolas:h15
 " useless {{{2
+"set guifont=Menlo_Regular:h14
 "set guifont=YaHei_Consolas_Hybrid:h14
 "set guifont=Input:h14
 "set guifont=Megatops_ProCoder_1.0:h12
@@ -158,6 +159,7 @@ set guifont=Consolas:h15
 "set guifont=WenQuanYi\ Micro\ Hei\ Mono
 "
 " guifontwide will disable the function of changing font size in Edit
+"set guifontwide=Yahei_Mono:h14
 "set guifontwide=Microsoft\ YaHei:h14
 "set guifontwide=Source\ Han\ Sans\ CN\ ExtraLight:h14
 "set guifontwide=TextMate

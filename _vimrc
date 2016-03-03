@@ -336,7 +336,7 @@ function! s:XellBufferStatuslineHighlight()
 	if empty(buffername)
 		highlight StatusLine guifg=White guibg=#047BC1
 		"highlight StatusLineNC guifg=LightGreen guibg=White
-	elseif buffername =~ '\%(\.tmp\|0\)$' || expand("%:p") =~ '^\/private\/var' || expand("%:e") =~ 'tempnote'
+	elseif buffername =~ '\%(\.tmp\|0\)$' || expand("%:p") =~ '^\/private\/var' || expand("%:e") =~ g:xell_notes_temp_ext
 		highlight StatusLine guifg=White guibg=#DA4C4D
 		"highlight StatusLineNC guifg=White guibg=LightRed
 	else
@@ -731,11 +731,11 @@ cab xasa .s/\(\a\<bar>[<>_-]\)\([^\x00-\xff]\&[^（），、：。“”；]\)/\
 
 " XellNotes {{{2
 let g:xell_notes_root = glob('~/Documents/notes/notes')
-" TODO non-exists
 let g:xell_notes_ex_root = glob('~/Documents/notes/notes_preview')
 " TODO it should not be connected with ffs
 " i.e. ffs should be more general, not focusing with notes
 let g:xell_notes_default_ext = 'md'
+let g:xell_notes_temp_ext = 'tempnote'
 " }}}
 
 " Blockdiff {{{2
