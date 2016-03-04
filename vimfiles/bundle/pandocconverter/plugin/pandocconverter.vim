@@ -158,9 +158,9 @@ function! s:preproc_customized_tag(file_content) " {{{1
 	while (line_index < end_of_file)
 		let cur = file_content[line_index]
 
-        " {...} -> ~~{...}~~
+        " {=...} -> ~~{...}~~
 		if cur =~? '{[^}]\+}'
-            let cur = substitute(cur, '{[^}]\+}', '\~\~&\~\~', 'g')
+            let cur = substitute(cur, '{=\([^=][^}]\{-}\)}', '\~\~{\1}\~\~', 'g')
 			let file_content[line_index] = cur
         endif
 		" if cur =~? '{\([^}]\+\)}'

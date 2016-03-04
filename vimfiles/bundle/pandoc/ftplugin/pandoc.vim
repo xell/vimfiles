@@ -68,7 +68,7 @@ vnoremap <buffer> <M-t> "zc~~<C-R>Z~~<Esc>
 vnoremap <buffer> <M-8> "zc**<C-R>Z**<Esc>
 inoremap <buffer> <M-8> ****<++><Left><Left><Left><Left><Left><Left>
 vnoremap <buffer> <M-0> "zc*<C-R>Z*<Esc>
-vnoremap <buffer> <M-[> "zc{==<C-R>Z==}<Esc>
+vnoremap <buffer> <M-[> "zc{=<C-R>Z}<Esc>
 
 nnoremap <buffer> j gj
 nnoremap <buffer> k gk
@@ -79,7 +79,7 @@ call xelltoolkit#imap('[[', '[<++>](<++>)<++>', 1)
 call xelltoolkit#imap('["', '[<++>](<++>"<++>")<++>', 1)
 call xelltoolkit#imap('~~', '~~<++>~~<++>', 1)
 call xelltoolkit#imap('$$', '$<++>$<++>', 1)
-call xelltoolkit#imap('{{', '{==<++>==}<++>', 1)
+call xelltoolkit#imap('{{', '{=<++>}<++>', 1)
 
 imap <buffer> <c-w><c-w> <Esc>:call <SID>shift_plus()<CR>
 imap <buffer> <c-w><c-q> <Esc>:call <SID>shift_minus()<CR>

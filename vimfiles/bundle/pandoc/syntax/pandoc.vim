@@ -78,7 +78,7 @@ syn match pdcSetexHeader /^.\+\n[-]\+$/ contains=@Spell
 
 " Inline {{{1
 " CriticMarkup
-syn match pdcTempPPP '{[^}]\{-}}' containedin=ALLBUT,cmHighlight,cmHighlightLeft,cmHighlightRight
+syn match pdcTempPPP '{=[^=][^}]\{-}}' containedin=ALLBUT,cmHighlight,cmHighlightLeft,cmHighlightRight
 syn match   cmHighlight     '{==[^=].\{-}==}' contains=@Spell,cmHighlightLeft,cmHighlightRight
 syn match   cmHighlightLeft '{==' contained conceal
 syn match   cmHighlightRight '==}' contained conceal
