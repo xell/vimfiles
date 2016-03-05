@@ -702,6 +702,14 @@ endif
 " Marked 2 support TODO
 noremap <Leader>mp :silent !open -a Marked\ 2.app '%:p'<CR>
 
+" diff two windows
+command! -nargs=0 Diffthis call <SID>difftwowindows()
+function! s:difftwowindows()
+    diffthis
+    exec "normal \<C-w>w"
+    diffthis
+endfunction
+
 " }}}
 
 " }}}
