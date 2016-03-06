@@ -1,7 +1,6 @@
 " Pandoc filetype plugin
 " Language:	Pandoc
 " Maintainer:	Xell Liu
-" Last Change:	2012-02-01
 
 " Init {{{1
 

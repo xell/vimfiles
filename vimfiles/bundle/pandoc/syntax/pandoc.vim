@@ -2,7 +2,6 @@
 " Filename: pandoc.vim
 " Language: Markdown
 " Maintainer: Xell Liu
-" Last change: 2012-02-01
 " 
 " This file is a mixture of Schultz's and Sanson's with heavy modification of
 " mine.
