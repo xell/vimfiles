@@ -69,7 +69,7 @@ function! PandocConverter(inputfile_fullpath, target_profile) " {{{1
     " read the profile {{{
     let [pandoc_options, pandoc_target_ext, pandoc_customized_options] = s:read_profile(a:target_profile)
     if pandoc_options == -1 || pandoc_options == ''
-        return -1
+        return [-1, '']
     endif
     let pandoc_customized_options_flags = split(pandoc_customized_options, '\zs')
     " language 1->zh 0->en
@@ -148,7 +148,7 @@ function! PandocConverter(inputfile_fullpath, target_profile) " {{{1
     let cmd = 'pandoc ' . pandoc_options . '-o "' . outputfile_fullpath . '" "' . pandoc_middlefile_fname . '"'
     call xelltoolkit#system(cmd)
     if delete(pandoc_middlefile_fname) != 0
-        return -2
+        return [-2, '']
     endif
     return [outputfile_fullpath, a:target_profile]
 endfunction "}}}
