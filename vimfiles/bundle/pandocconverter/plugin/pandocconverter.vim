@@ -54,7 +54,7 @@ function! PandocConverterBuffer(...) "{{{1
         call xelltoolkit#echo_msg("Cannot delete middle file.")
         return
     else
-        echo "Generated [" . target_profile . '] ' . xelltoolkit#fname_name(outputfile_fullpath) . '.' . xelltoolkit#fname_ext(outputfile_fullpath)
+        echo "Generated [" . xelltoolkit#fname_name(target_profile) . '] ' . xelltoolkit#fname_name(outputfile_fullpath) . '.' . xelltoolkit#fname_ext(outputfile_fullpath)
     endif
 endfunction "}}}
 
@@ -111,10 +111,14 @@ function! PandocConverter(inputfile_fullpath, target_profile) " {{{1
     let file_content = readfile(a:inputfile_fullpath)
     " process customized tag(s)
     if pandoc_customized_tag
-        let file_content = s:preproc_customized_tag(file_content)
+        if pandoc_target_ext =~? 'tex'
+            let file_content = s:preproc_customized_tag_tex(file_content)
+        else
+            let file_content = s:preproc_customized_tag_html_docx(file_content)
+        endif
     endif
-    " process spaces between en and zh for docx
-    if pandoc_target_ext =~? 'docx'
+    " process spaces between en and zh for docx and tex
+    if pandoc_target_ext =~? 'docx' || pandoc_target_ext =~? 'tex'
         let file_content = s:preproc_clean_spaces(file_content)
     endif
     " process customized references
@@ -151,7 +155,7 @@ endfunction "}}}
 
 "=================================================================
 " Preprocess customized tag
-function! s:preproc_customized_tag(file_content) " {{{1
+function! s:preproc_customized_tag_html_docx(file_content) " {{{1
     let file_content = a:file_content
 	let line_index = 0
 	let end_of_file = len(file_content)
@@ -159,7 +163,7 @@ function! s:preproc_customized_tag(file_content) " {{{1
 		let cur = file_content[line_index]
 
         " {=...} -> ~~{...}~~
-		if cur =~? '{[^}]\+}'
+		if cur =~? '{=\([^=][^}]\{-}\)}'
             let cur = substitute(cur, '{=\([^=][^}]\{-}\)}', '\~\~{\1}\~\~', 'g')
 			let file_content[line_index] = cur
         endif
@@ -175,6 +179,29 @@ function! s:preproc_customized_tag(file_content) " {{{1
 		" 	let file_content[line_index] = cur
 		" endif
 
+		let line_index = line_index + 1
+	endwhile
+
+	return file_content
+endfunction
+" }}}
+function! s:preproc_customized_tag_tex(file_content) " {{{1
+    let file_content = a:file_content
+	let line_index = 0
+	let end_of_file = len(file_content)
+	while (line_index < end_of_file)
+		let cur = file_content[line_index]
+
+        " {=...} -> \temp{\{...\}}
+		if cur =~? '{[^}]\+}'
+            let cur = substitute(cur, '{=\([^=][^}]\{-}\)}', '\\temp{\\{\1\\}}', 'g')
+        endif
+        " ~~...~~ -> \temp{...}
+        if cur =~? '\~\~\([^~]\+\)\~\~'
+            let cur = substitute(cur, '\~\~\([^~]\+\)\~\~', '\\temp{\1}', 'g')
+        endif
+
+        let file_content[line_index] = cur
 		let line_index = line_index + 1
 	endwhile
 

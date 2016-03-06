@@ -884,8 +884,22 @@ let g:Tex_UsePython=1
 let g:Tex_DefaultTargetFormat = 'pdf'
 "let g:Tex_CompileRule_dvi = 'latex --src-specials -interaction=nonstopmode $*'
 let g:Tex_CompileRule_pdf = 'xelatex --synctex=1 -src-specials -interaction=nonstopmode $*'
+"let g:Tex_CompileRule_pdf = 'latexmk --synctex=-1 -src-specials -interaction=nonstopmode $*'
+" let g:Tex_CompileRule_pdf = 'latexmk -pdf $*'
 " Set viewrule
 let g:Tex_ViewRule_pdf = 'Skim'
+" Suppress fake latexmk warnings
+let g:Tex_IgnoredWarnings =
+        \"Underfull\n".
+        \"Overfull\n".
+        \"specifier changed to\n".
+        \"You have requested\n".
+        \"Missing number, treated as zero.\n".
+        \"There were undefined references\n".
+        \"Citation %.%# undefined\n".
+        \"Hyper reference `bhfn\n".
+        \"Label(s) may have changed"
+let g:Tex_IgnoreLevel = 9
 
 if &term =~? 'xterm'
 	imap … <Plug>Tex_LeftRight
