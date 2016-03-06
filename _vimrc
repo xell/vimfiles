@@ -440,6 +440,7 @@ if &term =~? 'xterm'
 	nmap ¢ :4wincmd w<CR>
 	nmap ∞ :5wincmd w<CR>
 endif
+noremap ]f <C-W>gf
 " }}}
 
 " Windows {{{2

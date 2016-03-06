@@ -49,6 +49,10 @@ let g:colors_name = "xell"
  highlight VertSplit     guifg=#d3cfcd     guibg=#444444     ctermfg=7  ctermbg=0
  highlight Visual        guifg=#000000     guibg=#90ee90     ctermfg=8  ctermbg=2
 
+ highlight DiffAdd       guifg=#ff0000     guibg=#fce6e6
+ highlight DiffDelete    guifg=#d5ffff     guibg=#d5ffff
+ highlight DiffChange    guifg=#ff0000     guibg=#fce6e6
+
  highlight Temp          guifg=#ff9b37     guibg=bg          ctermfg=1  ctermbg=8
 
 " vim:cc=26,44,62 tw=0 ts=4 sw=4
