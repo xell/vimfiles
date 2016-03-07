@@ -298,9 +298,6 @@ endfunction
 " 
 " 删除 xell_tempfile
 " 
-" 未完成：
-" 
-" 删除 noteindex 设置，整理对应的 notes converting
 
 " End {{{1
 let &cpo = s:savecpo

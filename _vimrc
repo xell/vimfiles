@@ -227,7 +227,7 @@ let g:webserver_dir = glob('~/Sites')
 " Docs should not be here {{{2
 
 " Specify use what function to look for the output html of doc file
-let g:browser_open_rules = {'t2t': 'GetOutputHTML', 'md': 'GetOutputHTML', 'mkd': 'GetOutputHTML', 'markdown': 'GetOutputHTML', 'rst': 'GetOutputHTML', 'noteindex': 'GetOutputHTML'}
+let g:browser_open_rules = {'t2t': 'GetOutputHTML', 'md': 'GetOutputHTML', 'mkd': 'GetOutputHTML', 'markdown': 'GetOutputHTML', 'rst': 'GetOutputHTML', 'mdindex': 'GetOutputHTML'}
 
 " Diary rj TODO
 nmap <Leader>p :exec 'e /Users/xell/Documents/notes/rj.md'<CR>
@@ -1119,11 +1119,7 @@ imap <F10> <ESC><F10>i
 nnoremap gcl :let g:tcommentOptions = {'col': 1}<CR>:normal gcc<CR>:let g:tcommentOptions = {}<CR>
 let g:tcommentOptions = {}
 let g:tcommentBlockXML = "<!--%s-->\n"
-" Defind new pandoc type TODO block comment
-let g:tcomment_types = {'pandoc': "<!-- %s -->", 'pandoc_inline': "<!-- %s -->", 'pandoc_block': "<!-- %s -->\n  ", 'proxylist': '#%s', 'noteindex': '*%s', 'conf': '#%s', 'hostslist': '#%s'}
-"call tcomment#DefineType('pandoc', "<!-- %s -->")
-"call tcomment#DefineType('pandoc_inline', "<!-- %s -->")
-"call tcomment#DefineType('pandoc_block', "<!-- %s -->\n  ")
+let g:tcomment_types = {'pandoc': "<!-- %s -->", 'pandoc_inline': "<!-- %s -->", 'pandoc_block': "<!-- %s -->\n  ", 'proxylist': '#%s', 'conf': '#%s', 'hostslist': '#%s', 'mdindex': '# %s'}
 " }}}
 " Thesaurus {{{2
 " mac or unix must use '/usr/share/myspell/dicts/th_en_US_v2.idx'
