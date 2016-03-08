@@ -169,12 +169,6 @@ set guifont=Consolas:h15
 "set guifontwide=Megatops_ProCoder_1.0:h12 
 "}}}
 
-" for encoding see http://www.gracecode.com/archives/2989/
-" if has("gui_win32")
-"     exec 'set guifont='.iconv('Courier_New', &enc, 'gbk').':h11:cANSI'
-"     exec 'set guifontwide='.iconv('微软雅黑', &enc, 'gbk').':h11'
-" endif
-
 " }}}
 
 " Xell Fullscreen and Writeroom {{{1
