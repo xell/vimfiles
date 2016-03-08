@@ -688,7 +688,7 @@ nmap <Leader>rce :exec 'e ' . substitute(system('readlink ' . $MYVIMRC), '\(\s\|
 nmap <Leader>rcl :so $MYVIMRC<CR>
 
 " Edit gvimrc
-nmap <Leader>rcge :e $MYGVIMRC<CR>
+nmap <Leader>rcge :exec 'e ' . substitute(system('readlink ' . $MYGVIMRC), '\(\s\|\n\)\+$', '', '')<CR>
 " Reload gvimrc
 nmap <Leader>rcgl :so $MYGVIMRC<CR>
 

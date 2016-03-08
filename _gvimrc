@@ -182,7 +182,12 @@ command! -nargs=0 WRSNew call WriteRoomStart('new')
 command! -nargs=0 WRE call WriteRoomEnd()
 " }}}
 
-" Other {{{1
+" GUI menu {{{1
+
+" Don't close the last tab with D-w {{{2
+macm File.Close key=<nop>
+nnoremap <silent> <D-w> <Esc>:tabclose<CR>
+" }}}
 
 " Temp Note(file) Saving {{{2
 " As for :macm, must use in has("gui_macvim")
