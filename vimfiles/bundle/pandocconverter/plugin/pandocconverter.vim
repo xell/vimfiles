@@ -14,22 +14,28 @@ set cpo&vim
 
 command! -nargs=* Pandoc :call PandocConverterBuffer(<f-args>)
 nmap <Leader>/ :Pandoc<CR>
-let g:target_profile_default = 'normal.html'
+nmap <Leader>mp :call PandocPreviewBuffer(1)<CR>
+vmap <Leader>mp :call PandocPreviewBuffer(0)<CR>
+noremap <Leader>mP :silent !open -a Marked\ 2.app '%:p'<CR>
+nmap <Leader>md :call PandocPreviewDeletion()<CR>
+let g:pandoc_profile_default = 'normal.html'
 let g:pandoc_bib_default = 'biblio.bib'
 let g:pandoc_config_file = '/Users/xell/.pandoc/pdconfig'
-let g:pandocconverter_scope = ['pandoc', 'markdown']
+let g:pandoc_support_filetypes = ['pandoc', 'markdown']
+" let g:pandoc_preview_root = '/Users/xell/Documents/temp/preview'
+let g:pandoc_preview_fname = 'tmp_preview'
 
+"=================================================================
+" Covert current buffer via Pandoc
 function! PandocConverterBuffer(...) "{{{1
-    let input_type = &ft
-
     " check if it's supported
-    if match(g:pandocconverter_scope, input_type) == -1
+    if &ft == '' || match(g:pandoc_support_filetypes, &ft) == -1
         call xelltoolkit#echo_msg("Pandoc doesn't support this filetype!")
         return
     endif
     " determine the profile
     if a:0 == 0
-        let target_profile = g:target_profile_default
+        let target_profile = g:pandoc_profile_default
         let file_content = readfile(expand('%:p'))
         for line_content in file_content
             if line_content =~# '<!--\sPandoc:[^ ]\+\s-->'
@@ -57,7 +63,6 @@ function! PandocConverterBuffer(...) "{{{1
         echo "Generated [" . xelltoolkit#fname_name(target_profile) . '] ' . xelltoolkit#fname_name(outputfile_fullpath) . '.' . xelltoolkit#fname_ext(outputfile_fullpath)
     endif
 endfunction "}}}
-
 " Given input filename full path and profile name, generate output file
 " Return the full path of the generated file
 function! PandocConverter(inputfile_fullpath, target_profile) " {{{1
@@ -109,8 +114,8 @@ function! PandocConverter(inputfile_fullpath, target_profile) " {{{1
     " preprocess file {{{
 
     let file_content = readfile(a:inputfile_fullpath)
-    " process customized tag(s)
-    if pandoc_customized_tag
+    " preprocess customized tag(s)
+    if pandoc_customized_tag 
         if pandoc_target_ext =~? 'tex'
             let file_content = s:preproc_customized_tag_tex(file_content)
         else
@@ -150,11 +155,146 @@ function! PandocConverter(inputfile_fullpath, target_profile) " {{{1
     if delete(pandoc_middlefile_fname) != 0
         return [-2, '']
     endif
+
+    " postprocess {{{
+    if pandoc_customized_tag && pandoc_target_ext =~? 'tex'
+        call writefile(s:postproc_customized_tag_tex(readfile(outputfile_fullpath)), outputfile_fullpath)
+    endif
+    " }}}
     return [outputfile_fullpath, a:target_profile]
 endfunction "}}}
+" Read profile
+function! s:read_profile(profile) "{{{
+    let pandoc_config = readfile(g:pandoc_config_file)
+
+    let pandoc_options = ''
+    let pandoc_target_ext = ''
+    let pandoc_customized_options = ''
+
+    " check if there's the profile AND the ext 0000
+    let profile_linenum = match(pandoc_config, '^\[' . a:profile . '\][01]\{5}')
+    if profile_linenum == -1
+        return [-1, -1, -1]
+    endif
+
+    let pandoc_target_ext = matchstr(pandoc_config[profile_linenum], '\.\zs[^ ]\+\ze\]')
+    let pandoc_customized_options = matchstr(pandoc_config[profile_linenum], '\]\zs[01]\{5}\ze$')
+	let end = len(pandoc_config)
+    let line_num = profile_linenum + 1
+    while(line_num < end)
+        let line_content = pandoc_config[line_num]
+        if line_content =~? '^\['
+            break
+        endif
+        if line_content =~? '^#' || line_content =~? '^[:blank:]*$'
+            let line_num = line_num + 1
+            continue
+        endif
+        let pandoc_options .= line_content . ' '
+        let line_num = line_num + 1
+    endwhile
+
+    return [pandoc_options, pandoc_target_ext, pandoc_customized_options]
+endfunction
+" }}}
 
 "=================================================================
-" Preprocess customized tag
+" Preview the generated HTML of whole of partly selected current buffer
+" in browser's popup window
+function! PandocPreviewBuffer(normal_mode) range " {{{1
+    " check if it's supported
+    if &ft == '' || match(g:pandoc_support_filetypes, &ft) == -1
+        call xelltoolkit#echo_msg("Pandoc doesn't support this filetype!")
+        return
+    endif
+
+    let input_fname_full = expand('%:p')
+    let preview_md_fname_full = expand('%:p:h') . '/' . g:pandoc_preview_fname . '.md'
+
+    " generate the preview md file
+    let file_content = []
+    if a:normal_mode
+        " copy the whole current buffer
+        let file_content = readfile(input_fname_full)
+    else
+        " use the selection in visual mode
+        call extend(file_content, ['% Temporary Preview', '% Xell', '% %date', ''])
+        let index = 0
+        while (index <= a:lastline - a:firstline)
+            call add(file_content, getline(a:firstline + index))
+            let index = index + 1
+        endwhile
+        unlet index
+    endif
+
+    call writefile(file_content, preview_md_fname_full)
+
+    let target_profile = 'preview.html'
+    let preview_html_fname_full = PandocConverter(preview_md_fname_full, target_profile)[0]
+    
+    let preview_cmd = 'open "x-marked://open?file=' . preview_html_fname_full . '"'
+    call xelltoolkit#system(preview_cmd)
+
+    return
+endfunction
+" }}}
+function! PandocPreviewDeletion() " {{{1
+    " check if it's supported
+    if &ft == '' || match(g:pandoc_support_filetypes, &ft) == -1
+        call xelltoolkit#echo_msg("Pandoc doesn't support this filetype!")
+        return
+    endif
+
+    let is_sure = input('Are you sure? [Y/n]')
+    if is_sure =~? '^n'
+        echo 'Nothing happened.'
+        return
+    endif
+
+
+    let buffer_head = expand('%:p:h')
+    let preview_md = buffer_head . '/' . g:pandoc_preview_fname . '.md'
+    if buffer_head =~? xelltoolkit#fname2pattern(g:xell_notes_root)
+        let preview_html = g:xell_notes_ex_root . '/' . g:pandoc_preview_fname . '.html'
+    else
+        let preview_html = buffer_head . '/' . g:pandoc_preview_fname . '.html'
+    endif
+    if filereadable(preview_md) && filereadable(preview_html)
+        if delete(preview_md) == 0 && delete(preview_html) == 0
+            echo ' Both preview files were deleted!'
+        else
+            call xelltoolkit#echo_msg('Something went wrong while deleting.')
+        endif
+    else
+        call xelltoolkit#echo_msg('Preview file(s) unreadable!')
+    endif
+    return
+endfunction
+" }}}
+
+"=================================================================
+" Process customized tag
+" Cleaning the blank between zh and en for docx
+function! s:preproc_clean_spaces(file_content) " {{{1
+" 处理中英文之间的空格，对应 docx 输出，因为这些软件可以自动调整字符间距
+    let file_content = a:file_content
+
+	let line_index = 0
+	let end_of_file = len(file_content)
+	while (line_index < end_of_file)
+		let cur = file_content[line_index]
+
+		let cur = substitute(cur, '[^\x00-\xff]\zs\s\ze\%(\w\|\[\|\]\|\$\|`\|\.\)', '', 'g')
+		let cur = substitute(cur, '\%(\w\|\[\|\]\|\$\|`\|\.\)\zs\s\ze[^\x00-\xff]', '', 'g')
+
+		let file_content[line_index] = cur
+
+		let line_index = line_index + 1
+	endwhile
+
+	return file_content
+endfunction
+" }}}
 function! s:preproc_customized_tag_html_docx(file_content) " {{{1
     let file_content = a:file_content
 	let line_index = 0
@@ -192,13 +332,35 @@ function! s:preproc_customized_tag_tex(file_content) " {{{1
 	while (line_index < end_of_file)
 		let cur = file_content[line_index]
 
-        " {=...} -> \temp{\{...\}}
-		if cur =~? '{[^}]\+}'
-            let cur = substitute(cur, '{=\([^=][^}]\{-}\)}', '\\temp{\\{\1\\}}', 'g')
+        " {=...} -> ((!!!...!!!))
+        " use very special signs to mark
+		if cur =~? '{=\([^=][^}]\{-}\)}'
+            let cur = substitute(cur, '{=\([^=][^}]\{-}\)}', '((!!!\1!!!))', 'g')
         endif
-        " ~~...~~ -> \temp{...}
-        if cur =~? '\~\~\([^~]\+\)\~\~'
-            let cur = substitute(cur, '\~\~\([^~]\+\)\~\~', '\\temp{\1}', 'g')
+
+        let file_content[line_index] = cur
+		let line_index = line_index + 1
+	endwhile
+
+	return file_content
+endfunction "{{{
+function! s:postproc_customized_tag_tex(file_content) " {{{1
+    let file_content = a:file_content
+	let line_index = 0
+	let end_of_file = len(file_content)
+	while (line_index < end_of_file)
+		let cur = file_content[line_index]
+
+        " \sout -> \temp
+		if cur =~? '\\sout{'
+            let cur = substitute(cur, '\\sout{', '\\temp{', 'g')
+        endif
+        " ((!!!...!!!))) ->\temp{\{...\}}
+        if cur =~? '((!!!'
+            let cur = substitute(cur, '((!!!', '\\temp{\\{', 'g')
+        endif
+        if cur =~? '!!!))'
+            let cur = substitute(cur, '!!!))', '\\}}', 'g')
         endif
 
         let file_content[line_index] = cur
@@ -209,28 +371,7 @@ function! s:preproc_customized_tag_tex(file_content) " {{{1
 endfunction
 " }}}
 
-" Cleaning the blank between zh and en for docx
-function! s:preproc_clean_spaces(file_content) " {{{1
-" 处理中英文之间的空格，对应 docx 输出，因为这些软件可以自动调整字符间距
-    let file_content = a:file_content
-
-	let line_index = 0
-	let end_of_file = len(file_content)
-	while (line_index < end_of_file)
-		let cur = file_content[line_index]
-
-		let cur = substitute(cur, '[^\x00-\xff]\zs\s\ze\%(\w\|\[\|\]\|\$\|`\|\.\)', '', 'g')
-		let cur = substitute(cur, '\%(\w\|\[\|\]\|\$\|`\|\.\)\zs\s\ze[^\x00-\xff]', '', 'g')
-
-		let file_content[line_index] = cur
-
-		let line_index = line_index + 1
-	endwhile
-
-	return file_content
-endfunction
-" }}}
-
+"=================================================================
 " Change xell-def cross-refs into texts, etc.
 " 标题 [=] 图 [-] 表 [~]
 " Preprocess figures, tables and title references by language
@@ -582,42 +723,6 @@ function! s:preproc_no_numbering(file_content, language) "{{{
 	return file_content
 endfunction
 " }}}
-
-" Read profile
-function! s:read_profile(profile) "{{{
-    let pandoc_config = readfile(g:pandoc_config_file)
-
-    let pandoc_options = ''
-    let pandoc_target_ext = ''
-    let pandoc_customized_options = ''
-
-    " check if there's the profile AND the ext 0000
-    let profile_linenum = match(pandoc_config, '^\[' . a:profile . '\][01]\{5}')
-    if profile_linenum == -1
-        return [-1, -1, -1]
-    endif
-
-    let pandoc_target_ext = matchstr(pandoc_config[profile_linenum], '\.\zs[^ ]\+\ze\]')
-    let pandoc_customized_options = matchstr(pandoc_config[profile_linenum], '\]\zs[01]\{5}\ze$')
-	let end = len(pandoc_config)
-    let line_num = profile_linenum + 1
-    while(line_num < end)
-        let line_content = pandoc_config[line_num]
-        if line_content =~? '^\['
-            break
-        endif
-        if line_content =~? '^#' || line_content =~? '^[:blank:]*$'
-            let line_num = line_num + 1
-            continue
-        endif
-        let pandoc_options .= line_content . ' '
-        let line_num = line_num + 1
-    endwhile
-
-    return [pandoc_options, pandoc_target_ext, pandoc_customized_options]
-endfunction
-" }}}
-
 " 给定行号，返回第几章
 function! s:determine_toplevel(toplevel_list, linenum) "{{{
 " toplevel_list: [[level_num, line_num], ...]
@@ -632,7 +737,6 @@ function! s:determine_toplevel(toplevel_list, linenum) "{{{
 	return max(tmp_list)
 endfunction
 " }}}
-
 " 给定章节标题，返回处理后的章节号
 function! s:determine_level(level_list, title) "{{{
 " level_list: [[level_num, line_num, title], ...]
