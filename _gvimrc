@@ -18,7 +18,7 @@ set confirm
 
 " Transparency only for MacVim GUI
 if &term == 'builtin_gui'
-	set transparency=4
+    set transparency=4
 endif
 
 " Set colorscheme {{{1
@@ -47,22 +47,22 @@ set columns=101
 " Change the window size incrementally {{{2
 let g:increments = 3
 function! ChangeWindowSizeV(incre, direction)
-	let y = &lines
-	let x = &columns
-	if a:direction =~ "down"
-		let y += a:incre
-		execute 'set lines=' . y
-	elseif a:direction =~ "up"
-		let y -= a:incre
-		execute 'set lines=' . y
-	elseif a:direction =~ "left"
-		let x -= a:incre
-		execute 'set columns=' . x
-	elseif a:direction =~ "right"
-		let x += a:incre
-		execute 'set columns=' . x
-	endif
-	"execute 'set lines=' . x
+    let y = &lines
+    let x = &columns
+    if a:direction =~ "down"
+        let y += a:incre
+        execute 'set lines=' . y
+    elseif a:direction =~ "up"
+        let y -= a:incre
+        execute 'set lines=' . y
+    elseif a:direction =~ "left"
+        let x -= a:incre
+        execute 'set columns=' . x
+    elseif a:direction =~ "right"
+        let x += a:incre
+        execute 'set columns=' . x
+    endif
+    "execute 'set lines=' . x
 endfunction
 nmap <C-A-Down> :call ChangeWindowSizeV(g:increments, "down")<CR>
 nmap <C-A-Up> :call ChangeWindowSizeV(g:increments, "up")<CR>
@@ -75,38 +75,38 @@ nmap <C-A-Right> :call ChangeWindowSizeV(g:increments, "right")<CR>
 nmap <silent> <F1> :call <SID>sizeAndPositionOfWindowSmall()<CR>
 nmap <silent> <F2> :call <SID>sizeAndPositionOfWindow()<CR>
 if !exists("s:sizeandpositionofwindow")
-	let s:sizeandpositionofwindowsmall = 0
+    let s:sizeandpositionofwindowsmall = 0
 endif
 function! s:sizeAndPositionOfWindowSmall()
-	if !s:sizeandpositionofwindowsmall
-		set lines=9
-		set columns=101
-		"winpos 50 60
-		let s:sizeandpositionofwindowsmall = !s:sizeandpositionofwindowsmall
-	else
+    if !s:sizeandpositionofwindowsmall
+        set lines=9
+        set columns=101
+        "winpos 50 60
+        let s:sizeandpositionofwindowsmall = !s:sizeandpositionofwindowsmall
+    else
         set lines=40
-		set columns=101
-		"winpos 66 103
-		let s:sizeandpositionofwindowsmall = !s:sizeandpositionofwindowsmall
-	endif
+        set columns=101
+        "winpos 66 103
+        let s:sizeandpositionofwindowsmall = !s:sizeandpositionofwindowsmall
+    endif
 endfunction
 
 " toggle between two window size, see F2
 if !exists("s:sizeandpositionofwindow")
-	let s:sizeandpositionofwindow = 0
+    let s:sizeandpositionofwindow = 0
 endif
 function! s:sizeAndPositionOfWindow()
-	if s:sizeandpositionofwindow
+    if s:sizeandpositionofwindow
         set lines=40
-		set columns=169
-		"winpos 50 60
-		let s:sizeandpositionofwindow = !s:sizeandpositionofwindow
-	else
+        set columns=169
+        "winpos 50 60
+        let s:sizeandpositionofwindow = !s:sizeandpositionofwindow
+    else
         set lines=68
         set columns=259
-		"winpos 66 103
-		let s:sizeandpositionofwindow = !s:sizeandpositionofwindow
-	endif
+        "winpos 66 103
+        let s:sizeandpositionofwindow = !s:sizeandpositionofwindow
+    endif
 endfunction
 " }}}
 " }}}
@@ -115,36 +115,36 @@ endfunction
 set guitablabel=%{GuiTabLabel()}
 " see :h tabpage
 function! GuiTabLabel()
-  let label = ''
-  let bufnrlist = tabpagebuflist(v:lnum)
+    let label = ''
+    let bufnrlist = tabpagebuflist(v:lnum)
 
-  let label .= tabpagenr().'_'
+    let label .= tabpagenr().'_'
 
-  " Add '+' if one of the buffers in the tab page is modified
-  for bufnr in bufnrlist
-	if getbufvar(bufnr, "&modified")
-	  let label .= '+'
-	  break
-	endif
-  endfor
+    " Add '+' if one of the buffers in the tab page is modified
+    for bufnr in bufnrlist
+        if getbufvar(bufnr, "&modified")
+            let label .= '+'
+            break
+        endif
+    endfor
 
-  " Append the number of windows in the tab page if more than one
-  "" let wincount = tabpagewinnr(v:lnum, '$')
-  "" if wincount > 1
-  ""   let label .= wincount
-  "" endif
-  "" if label != ''
-  ""   let label .= ' '
-  "" endif
+    " Append the number of windows in the tab page if more than one
+    "" let wincount = tabpagewinnr(v:lnum, '$')
+    "" if wincount > 1
+    ""   let label .= wincount
+    "" endif
+    "" if label != ''
+    ""   let label .= ' '
+    "" endif
 
-  " Append the buffer name
-  return label . bufname(bufnrlist[tabpagewinnr(v:lnum) - 1])
+    " Append the buffer name
+    return label . bufname(bufnrlist[tabpagewinnr(v:lnum) - 1])
 endfunction
 " }}}
 
 " Font setup {{{1
 "---------------------------------------
-	" TODO
+" TODO
 set linespace=4
 set guifont=Consolas:h15
 " useless {{{2
@@ -186,11 +186,11 @@ command! -nargs=0 WRE call WriteRoomEnd()
 
 " Temp Note(file) Saving {{{2
 " As for :macm, must use in has("gui_macvim")
-macm File.Save<Tab>:w				key=<Nop>
+macm File.Save<Tab>:w key=<Nop>
 nmap <D-s> :call TempNote()<CR>
 imap <D-s> <Esc><D-s>a
 
-macm Edit.Paste<Tab>"+gP			key=<Nop>
+macm Edit.Paste<Tab>"+gP key=<Nop>
 " imap <D-v> <Esc>"+gpa
 " nmap <D-v> "+gp
 
@@ -198,38 +198,38 @@ macm Edit.Find.Use\ Selection\ for\ Find  key=<Nop>
 " }}}
 
 " Find General {{{2
-macm Edit.Find.Find\.\.\.			key=<Nop>
+macm Edit.Find.Find\.\.\. key=<Nop>
 nmap <D-f> :call <SID>find_general()<CR>
 
 " Default -i; include only this filetype; no exclude TODO
 function! s:find_general()
-	let pattern = input('What to find: ')
-	if pattern == ''
-		call xelltoolkit#echo_msg('Empty inquery!')
-		return
-	endif
+    let pattern = input('What to find: ')
+    if pattern == ''
+        call xelltoolkit#echo_msg('Empty inquery!')
+        return
+    endif
 
-	let option = input('Ignore case? (Y/n)')
+    let option = input('Ignore case? (Y/n)')
 
 
-	if expand('%:p:h') =~? xelltoolkit#fname2pattern(g:xell_notes_root)
-		let include = 'note'
-	else
-		let include = input('This filetype? (Y/n)')
-		if include == ''
-			let include = expand('%:e')
-		else
-			let include = ''
-		endif
-	endif
+    if expand('%:p:h') =~? xelltoolkit#fname2pattern(g:xell_notes_root)
+        let include = 'note'
+    else
+        let include = input('This filetype? (Y/n)')
+        if include == ''
+            let include = expand('%:e')
+        else
+            let include = ''
+        endif
+    endif
 
-	call xelltoolkit#grep_in_lcd_r(option, include, pattern)
+    call xelltoolkit#grep_in_lcd_r(option, include, pattern)
 
-	cwindow
+    cwindow
 
-	if &ft == 'qf'
-		exec 'match ErrorMsg /\c' . pattern . '/'
-	endif
+    if &ft == 'qf'
+        exec 'match ErrorMsg /\c' . pattern . '/'
+    endif
 endfunction
 " }}}
 
