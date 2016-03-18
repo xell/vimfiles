@@ -456,7 +456,7 @@ nmap <Leader>wl :botright vertical split<CR>
 
 " Split windows
 nmap <Leader>s <C-W>s<C-W>j
-nmap <Leader>v <C-W>v
+nmap <Leader>v <C-W>v<C-W>l
 
 " Switch two windows back and forth
 noremap <Backspace> <C-W>p
@@ -1218,6 +1218,11 @@ let g:sh_fold_enabled=3
 
 " Define command WhatSyntax for looking up syntax
 command! -nargs=0 -bar WhatSyntax echomsg synIDattr(synID(line("."),col("."),0),"name") synIDattr(synIDtrans(synID(line("."),col("."),0)),"name") synIDattr(synID(line("."),col("."),1),"name") synIDattr(synIDtrans(synID(line("."),col("."),1)),"name")
+
+" Capitalization of the current line
+" Capitalize all words in titles of publications and documents, except a, an, the, at, by, for, in, of, on, to, up, and, as, but, or, and nor.
+" https://taptoe.wordpress.com/2013/02/06/vim-capitalize-every-first-character-of-every-word-in-a-sentence/
+command! -nargs=0 Capitalize s/\v^\a|\:\s\a|<%(a>|an>|and>|as>|at>|but>|by>|for>|in>|nor>|of>|on>|or>|the>|to>|up>)@!\a/\U&/g
 
 " NFO view {{{2
 " 能够漂亮地显示.NFO文件
