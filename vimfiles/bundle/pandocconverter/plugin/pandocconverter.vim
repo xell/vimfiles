@@ -128,7 +128,7 @@ function! PandocConverter(inputfile_fullpath, target_profile) " {{{1
     endif
     " process customized references
     if pandoc_customized_number
-        let file_content = s:preproc_numbering(file_content, pandoc_cusomized_language, pandoc_customized_whole, pandoc_customized_chapter)
+        let file_content = s:preproc_numbering(file_content, pandoc_cusomized_language, pandoc_customized_whole, pandoc_customized_chapter, pandoc_target_ext =~? 'tex')
     else 
         let file_content = s:preproc_no_numbering(file_content, pandoc_cusomized_language)
     endif
@@ -375,8 +375,8 @@ endfunction
 " Change xell-def cross-refs into texts, etc.
 " 标题 [=] 图 [-] 表 [~]
 " Preprocess figures, tables and title references by language
-" For -N --number-sections
-function! s:preproc_numbering(file_content, language, is_whole, is_chapter) "{{{
+" Numbering the titles of figures and tables, and the cites for html and docx
+function! s:preproc_numbering(file_content, language, is_whole, is_chapter, is_tex) "{{{
 
     let file_content = a:file_content
     let is_whole = a:is_whole
@@ -473,8 +473,10 @@ function! s:preproc_numbering(file_content, language, is_whole, is_chapter) "{{{
 					return file_content
 				endif
 				let fig_dic[fig_title] = fig_prefix . fig_index
-				let title = substitute(cur, '!\[.\+\]', '![' . fig_dic[fig_title] . ' ' . fig_title . ']', '')
-				let file_content[line_index] = title
+                if !a:is_tex
+                    let title = substitute(cur, '!\[.\+\]', '![' . fig_dic[fig_title] . ' ' . fig_title . ']', '')
+                    let file_content[line_index] = title
+                endif
 				let fig_index = fig_index + 1
 			endif
 			" table
@@ -485,8 +487,10 @@ function! s:preproc_numbering(file_content, language, is_whole, is_chapter) "{{{
 					return file_content
 				endif
 				let tbl_dic[tbl_title] = tbl_prefix . tbl_index
-				let title = 'Table: ' . tbl_dic[tbl_title] . ' ' . tbl_title
-				let file_content[line_index] = title
+                if !a:is_tex
+                    let title = 'Table: ' . tbl_dic[tbl_title] . ' ' . tbl_title
+                    let file_content[line_index] = title
+                endif
 				let tbl_index = tbl_index + 1
 			endif
 
@@ -514,26 +518,30 @@ function! s:preproc_numbering(file_content, language, is_whole, is_chapter) "{{{
 					let fig_index = 1
 				endif
 				let fig_dic[fig_title] = fig_prefix . chapter_index . '-' . fig_index
-				let title = substitute(cur, '!\[.\+\]', '![' . fig_dic[fig_title] . ' ' . fig_title . ']', '')
-				let file_content[line_index] = title
+                if !a:is_tex
+                    let title = substitute(cur, '!\[.\+\]', '![' . fig_dic[fig_title] . ' ' . fig_title . ']', '')
+                    let file_content[line_index] = title
+                endif
 			endif
 			" table
-			if cur =~ '^Table:\s'
-				let tbl_title = matchstr(cur, '^Table:\s\zs.*\ze$')
-				if has_key(tbl_dic, tbl_title)
-					call xelltoolkit#echo_msg("Duplicated table title! Preprocess stopped")
-					return file_content
-				endif
-			if has_key(tbl_toplevel_dic, chapter_index)
-				let tbl_index = tbl_index + 1
-			else
-				let tbl_toplevel_dic[chapter_index] = 1
-				let tbl_index = 1
-			endif
-				let tbl_dic[tbl_title] = tbl_prefix . chapter_index . '-' . tbl_index
-				let title = 'Table: ' . tbl_dic[tbl_title] . ' ' . tbl_title
-				let file_content[line_index] = title
-			endif
+            if cur =~ '^Table:\s'
+                let tbl_title = matchstr(cur, '^Table:\s\zs.*\ze$')
+                if has_key(tbl_dic, tbl_title)
+                    call xelltoolkit#echo_msg("Duplicated table title! Preprocess stopped")
+                    return file_content
+                endif
+                if has_key(tbl_toplevel_dic, chapter_index)
+                    let tbl_index = tbl_index + 1
+                else
+                    let tbl_toplevel_dic[chapter_index] = 1
+                    let tbl_index = 1
+                endif
+                let tbl_dic[tbl_title] = tbl_prefix . chapter_index . '-' . tbl_index
+                if !a:is_tex
+                    let title = 'Table: ' . tbl_dic[tbl_title] . ' ' . tbl_title
+                    let file_content[line_index] = title
+                endif
+            endif
 
 			let line_index = line_index + 1
 		endwhile
@@ -629,7 +637,7 @@ function! s:preproc_numbering(file_content, language, is_whole, is_chapter) "{{{
 endfunction
 
 " }}}
-" For no -N --number-sections
+" Do not number, use original titles of figures, tables and headings
 function! s:preproc_no_numbering(file_content, language) "{{{
 
     let file_content = a:file_content
