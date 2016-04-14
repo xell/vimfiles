@@ -145,8 +145,10 @@ syn match pdcFigure '!\[\@='
 syn match pdcLinkRef '^\s*\[.\{-}\]:\s\+\S.*$'
 
 " Footnote ======================================================
-syn match pdcFootnoteID /\[\^[^\]]\+\]/ nextgroup=pdcFootnoteDef
-syn region pdcFootnoteDef matchgroup=pdcFootnoteID start=/\^\[/ matchgroup=pdcFootnoteID end=/\]/ oneline
+" syn match pdcFootnoteID /\[\^[^\]]\+\]/ nextgroup=pdcFootnoteDef
+" syn region pdcFootnoteDef matchgroup=pdcFootnoteID start=/\^\[/ matchgroup=pdcFootnoteID end=/\]/ oneline
+syn match pdcFootnoteID /\[\^[^\]]\+\]/
+syn match pdcFootnoteDef /\zs\^\[[^\]]\+\]\ze[^\^]/
 
 " }}}
 
