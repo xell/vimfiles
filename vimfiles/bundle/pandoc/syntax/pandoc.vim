@@ -6,7 +6,6 @@
 " This file is a mixture of Schultz's and Sanson's with heavy modification of
 " mine.
 
-
 " Initialization {{{1
 if version < 600
 	syntax clear
@@ -244,6 +243,5 @@ hi default link pdcTableCaptionCont Label
 " syn match pdcTempPPP '{[^=][^=][^}]\{-}[^=][^=]}' containedin=ALL
 " syn match pdcTempPPP '{[^=][^=][^}]\{-}[^=][^=]}' containedin=ALLBUT,cmHighlight
 hi default link pdcTempPPP MoreMsg
-
 
 let b:current_syntax = "pandoc"
