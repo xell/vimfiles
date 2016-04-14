@@ -1,3 +1,11 @@
 " au BufEnter * if &ft ==# 'xml' | commands | endif
-nmap <Leader>p :exec 'e /Users/xell/Documents/notes/rj.md'<CR>
 
+call TestSw()
+
+function! TestSw()
+    let buflist = []
+    for i in range(tabpagenr('$'))
+       call extend(buflist, tabpagebuflist(i + 1))
+    endfor
+    echo buflist
+endfunction
