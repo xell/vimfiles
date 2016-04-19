@@ -739,6 +739,7 @@ let g:xell_notes_ex_root = glob('~/Documents/notes/notes_preview')
 let g:xell_notes_default_ext = 'md'
 let g:xell_notes_temp_ext = 'tempnote'
 nmap <Leader>rj :exec 'e /Users/xell/Documents/notes/rj.md'<CR>
+nmap <Leader>p :exec 'e /Users/xell/Documents/notes/projects/main.xproject'<CR>
 " }}}
 
 " Blockdiff {{{2

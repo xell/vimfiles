@@ -7,9 +7,6 @@ if exists("b:did_ftplugin")
   finish
 endif
 
-" Don't load another plugin for this buffer
-let b:did_ftplugin = 1
-
 setlocal wrapscan
 
 setlocal expandtab
@@ -20,6 +17,9 @@ setlocal shiftwidth=2
 setlocal formatoptions+=ro
 setlocal comments=:-
 
+nmap <buffer> <Leader>pp :let @/="" <bar> match<CR>
+
+" folder {{{
 setlocal foldmethod=expr
 setlocal foldexpr=XProjectFold()
 setlocal foldlevel=99
@@ -29,11 +29,91 @@ function! XProjectFold()
         return '>2'
     endif
 endfunction
+" }}}
+
+let g:xproject_soon = 1
+let g:xproject_hint = 5
 
 " highlight xprojectFilter guibg=#3D0E14
 highlight xprojectFilter guibg=#7F0F23
-command! -buffer -nargs=+ Filter call <SID>filter_highlight(<f-args>)
-function! s:filter_highlight(term, ...) "{{{
+command! -buffer -nargs=? Filter call <SID>filter_highlight(<f-args>)
+function! s:filter_highlight(...) "{{{
+    if a:0 == 1
+        call s:filter_highlight_old(a:1)
+        return
+    endif
+
+    let content = readfile(expand('%'))
+
+    " collect all @contexts
+    " contexts_dict = {'@a': [1, 2, 3], '@b': [3, 5]}
+    let contexts_dict = {}
+    for lnum in range(len(content))
+        let lnum_contexts = []
+        call substitute(content[lnum], '@[^( ]\+',
+                    \ '\=add(lnum_contexts, submatch(0))', 'g')
+        if lnum_contexts != []
+            for con in lnum_contexts
+                if con !~? '@\(start\|due\)'
+                    let contexts_dict[con] = add(get(contexts_dict, con, []), lnum)
+                endif
+            endfor
+        endif
+    endfor
+
+    " sort by the length of contexts_dict[key]
+    let contexts_list = []
+    let contexts_dict_copy = deepcopy(contexts_dict)
+    for i in range(len(keys(contexts_dict_copy)))
+        let max = 0
+        let max_key = ''
+        for [key, value] in items(contexts_dict_copy)
+            if len(value) > max
+                let max = len(value)
+                let max_key = key
+            endif
+        endfor
+        call add(contexts_list, max_key)
+        call remove(contexts_dict_copy, max_key)
+    endfor
+    unlet contexts_dict_copy
+
+    " construct the prompt
+    let prompt = "Please select:\n"
+    let lnum = 0
+    if g:xproject_hint < (len(contexts_list) - 2)
+        let hint_num = g:xproject_hint
+    else
+        let hint_num = len(contexts_list) - 2
+    endif
+
+    while lnum < hint_num
+        let prompt .= (lnum + 1) . " : " . contexts_list[lnum] . "\n"
+        let lnum += 1
+    endwhile
+    let prompt .= "Others: "
+    while lnum < len(contexts_list) - 1
+        let prompt .= contexts_list[lnum] . ", "
+        let lnum += 1
+    endwhile
+    let prompt .= contexts_list[lnum] . "\n? "
+
+    " get the final search term
+    let answer = input(prompt)
+    if answer == ''
+        let term = contexts_list[0]
+    elseif answer >= 1 && answer <=5
+        let term = contexts_list[answer - 1]
+    else
+        let term = answer
+    endif
+
+    call s:filter_highlight_old(term)
+
+endfunction "}}}
+
+" command! -buffer -nargs=+ Filter call <SID>filter_highlight(<f-args>)
+function! s:filter_highlight_old(term, ...) "{{{
     let content = readfile(expand('%'))
     let lnum = 0
     let highlight_lnum = []
@@ -85,41 +165,57 @@ endfunction
 " }}}
 
 " Scan the content, add @overdue and @soon
+let b:lnum_overdueandsoon = []
+sign define overdue text=>> texthl=Error
+sign define soon text=>> texthl=Question
 function! OverdueAndSoon() "{{{
     let lnum = 1
     let lend = line('$')
     let today_date = str2nr(strftime('%Y%m%d'))
+    for lnum_oad in b:lnum_overdueandsoon
+        exec ':sign unplace ' . lnum_oad
+    endfor
+    let b:lnum_overdueandsoon = []
     while lnum <= lend
+        " remove all (hand-added) @overdue or @soon
+        call setline(lnum,
+                    \ substitute(getline(lnum), '\s@\(overdue\|soon\)', '', 'g'))
         let lcontent = getline(lnum)
-        if lcontent =~? '@\(done\|cancelled\|soon\|overdue\)'
+
+        " skip all @done and @cancelled
+        if lcontent =~? '@\(done\|cancelled\)'
             let lnum += 1
             continue
         endif
+        " add @overdue or @soon by computing the due date
         let [start_date, due_date] = s:extract_xproject_dates(getline(lnum))
         if due_date != 0 && due_date < today_date
             call setline(lnum, lcontent . ' @overdue')
+            call add(b:lnum_overdueandsoon, lnum)
+            exe ":sign place " . lnum . " line=" . lnum . " name=overdue file=" . expand("%:p")
         endif
-        " due 415 today 414
-        if due_date != 0 && due_date >= today_date && due_date <= today_date + 1
+        if due_date != 0 && due_date >= today_date && due_date <= today_date + g:xproject_soon
             call setline(lnum, lcontent . ' @soon')
+            call add(b:lnum_overdueandsoon, lnum)
+            exe ":sign place " . lnum . " line=" . lnum . " name=soon file=" . expand("%:p")
         endif
         let lnum += 1
     endwhile
 endfunction "}}}
 call OverdueAndSoon()
-nmap <buffer> ,po :call OverdueAndSoon()<CR>
 
 " Scan the content, highlight/mark today tasks
-" highlight xprojectFilterToday guibg=#006602
-highlight xprojectFilterToday gui=underline
+let b:lnum_today = []
+sign define today text=>> texthl=Question
 function! FilterToday() "{{{
-    let highlight_lnum = []
 
     let lnum = 1
     let lend = line('$')
     let today_date = str2nr(strftime('%Y%m%d'))
-    sign unplace *
-	sign define piet text=>> texthl=Search
+    for lnum_t in b:lnum_today
+        exec ':sign unplace ' . lnum_t
+    endfor
+    let b:lnum_today = []
     while lnum <= lend
         let lcontent = getline(lnum)
         if lcontent =~? '@\(done\|cancelled\|overdue\)'
@@ -129,19 +225,28 @@ function! FilterToday() "{{{
         let [start_date, due_date] = s:extract_xproject_dates(getline(lnum))
         if start_date != 0 && start_date <= today_date
                     \ && due_date != 0 && due_date >= today_date
-            call add(highlight_lnum, lnum)
-            exe ":sign place 2 line=" . lnum . " name=piet file=" . expand("%:p")
+            call add(b:lnum_today, lnum)
+            exe ":sign place " . lnum . " line=" . lnum . " name=today file=" . expand("%:p")
         endif
         let lnum += 1
     endwhile
 
     let highlight_pattern = '\%'
-    let highlight_pattern .= join(highlight_lnum, 'l.*\|\%')
+    let highlight_pattern .= join(b:lnum_today, 'l.*\|\%')
     let highlight_pattern .= 'l.*'
     let @/ = highlight_pattern
-    exec '2match xprojectFilterToday /' . highlight_pattern . '/'
+    exec '2match Question /' . highlight_pattern . '/'
 endfunction "}}}
 call FilterToday()
-nmap <buffer> ,pt :call FilterToday()<CR>
 
+function! MarkMainItems()
+    call OverdueAndSoon()
+    call FilterToday()
+endfunction
+nmap <buffer> <Leader>pm :call MarkMainItems()<CR>
 
+" matchadd({group}, {pattern}[, {priority}[, {id}[, {dict}]]])
+call matchadd("Temp", '\s\zs@\(urgent\|important\)', 999)
+
+" Don't load another plugin for this buffer
+let b:did_ftplugin = 1
