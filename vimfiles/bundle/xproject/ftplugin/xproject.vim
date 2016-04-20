@@ -36,17 +36,17 @@ let g:xproject_hint = 5
 
 " highlight xprojectFilter guibg=#3D0E14
 highlight xprojectFilter guibg=#7F0F23
-command! -buffer -nargs=? Filter call <SID>filter_highlight(<f-args>)
-function! s:filter_highlight(...) "{{{
+command! -buffer -nargs=? Filter call FilterHighlightHelper(<f-args>)
+function! FilterHighlightHelper(...) "{{{
     if a:0 == 1
-        call s:filter_highlight_old(a:1)
+        call s:filter_highlight(a:1, [-1])
         return
     endif
 
     let content = readfile(expand('%'))
 
     " collect all @contexts
-    " contexts_dict = {'@a': [1, 2, 3], '@b': [3, 5]}
+    " contexts_dict = {'@a': [0, 2, 3], '@b': [3, 5]}
     let contexts_dict = {}
     for lnum in range(len(content))
         let lnum_contexts = []
@@ -55,7 +55,7 @@ function! s:filter_highlight(...) "{{{
         if lnum_contexts != []
             for con in lnum_contexts
                 if con !~? '@\(start\|due\)'
-                    let contexts_dict[con] = add(get(contexts_dict, con, []), lnum)
+                    let contexts_dict[con] = add(get(contexts_dict, con, []), lnum + 1)
                 endif
             endfor
         endif
@@ -108,33 +108,30 @@ function! s:filter_highlight(...) "{{{
         let term = answer
     endif
 
-    call s:filter_highlight_old(term)
+    call s:filter_highlight(term, get(contexts_dict, term, [-1]))
 
 endfunction "}}}
-
-" command! -buffer -nargs=+ Filter call <SID>filter_highlight(<f-args>)
-function! s:filter_highlight_old(term, ...) "{{{
-    let content = readfile(expand('%'))
-    let lnum = 0
-    let highlight_lnum = []
-    while (lnum < len(content))
-        if content[lnum] =~? a:term
-            call add(highlight_lnum, lnum + 1)
-        endif
-        let lnum += 1
-    endwhile
+function! s:filter_highlight(term, highlight_lnum) "{{{
+    if a:highlight_lnum[0] == -1
+        " scan the current file for term
+        let content = readfile(expand('%'))
+        let lnum = 0
+        let highlight_lnum = []
+        while (lnum < len(content))
+            if content[lnum] =~? a:term
+                call add(highlight_lnum, lnum + 1)
+            endif
+            let lnum += 1
+        endwhile
+    else
+        let highlight_lnum = a:highlight_lnum
+    endif
     let highlight_pattern = '\%'
     let highlight_pattern .= join(highlight_lnum, 'l.*\|\%')
     let highlight_pattern .= 'l.*'
     let @/ = highlight_pattern
-    if a:0 == 0
-        exec 'match xprojectFilter /' . highlight_pattern . '/'
-    elseif a:0 == 1
-        exec 'match ' . a:1 . ' /' . highlight_pattern . '/'
-    endif
-"  * vim 过滤显示可以使用 `:match` 和 `:2match`，过滤整行使用 `\%20l.*\|\%24l.*\|\%72l.*`。
+    exec 'match xprojectFilter /' . highlight_pattern . '/'
 endfunction "}}}
-
 function! s:extract_xproject_dates(item) "{{{
     let start_str = matchlist(a:item, '@start(\([-0123456789]\+\))', 0)
     if start_str != []
@@ -239,10 +236,12 @@ function! FilterToday() "{{{
 endfunction "}}}
 call FilterToday()
 
-function! MarkMainItems()
+" Combine the OverdueAndSoon and FilterToday
+function! MarkMainItems() "{{{
     call OverdueAndSoon()
     call FilterToday()
 endfunction
+" }}}
 nmap <buffer> <Leader>pm :call MarkMainItems()<CR>
 
 " matchadd({group}, {pattern}[, {priority}[, {id}[, {dict}]]])
