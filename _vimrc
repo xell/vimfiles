@@ -345,7 +345,7 @@ endfunction
 
 " }}}
 
-colorscheme xell
+colorscheme evening
 
 " }}}
 
