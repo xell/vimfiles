@@ -361,7 +361,8 @@ set macmeta
 
 " Movements {{{2
 
-map - $
+nmap - $
+vmap - $h
 
 " For navigate in visible lines
 " nmap \ gj
@@ -1115,6 +1116,8 @@ nnoremap gcl :let g:tcommentOptions = {'col': 1}<CR>:normal gcc<CR>:let g:tcomme
 let g:tcommentOptions = {}
 let g:tcommentBlockXML = "<!--%s-->\n"
 let g:tcomment_types = {'pandoc': "<!-- %s -->", 'pandoc_inline': "<!-- %s -->", 'pandoc_block': "<!-- %s -->\n  ", 'proxylist': '#%s', 'conf': '#%s', 'hostslist': '#%s', 'mdindex': '# %s'}
+nmap <D-/> gcc
+vmap <D-/> gc
 " }}}
 " Thesaurus {{{2
 " mac or unix must use '/usr/share/myspell/dicts/th_en_US_v2.idx'
