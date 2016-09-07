@@ -153,10 +153,9 @@ set expandtab
 " Deal with large file
 "autocmd BufWinEnter * if line2byte(line("$") + 1) > 200000 | syntax clear | echomsg "Large File" | endif
 
-" Breakindent patch
-if exists("+breakindent")
-	set breakindent
-endif
+set breakindent
+
+set iskeyword+=-
 
 " When editing a file, always jump to the last known cursor position.
 " Don't do it when the position is invalid or when inside an event handler
@@ -705,6 +704,9 @@ function! s:difftwowindows()
     diffthis
 endfunction
 
+" Use \d on top of a word to look it up in Dictionary.app
+nmap <silent> <Leader>d :!open dict://<cword><CR><CR>
+
 " }}}
 
 " }}}
@@ -740,7 +742,7 @@ let g:xell_notes_ex_root = glob('~/Documents/notes/notes_preview')
 let g:xell_notes_default_ext = 'md'
 let g:xell_notes_temp_ext = 'tempnote'
 nmap <Leader>rj :exec 'e /Users/xell/Documents/notes/rj.md'<CR>
-nmap <Leader>p :exec 'e /Users/xell/Documents/notes/projects/main.xproject'<CR>
+nmap <Leader>pr :exec 'e /Users/xell/Documents/notes/projects/main.xproject'<CR>
 " }}}
 
 " Blockdiff {{{2
@@ -1044,6 +1046,7 @@ nmap <Leader>b :NERDTreeFromBookmark
 " Open or yank web url
 nmap <Leader>Y :call Open()<CR>
 nmap <expr> <Leader>y xelltoolkit#get_copy(xelltoolkit#get_word_at_cursor(g:urlpattern))
+nmap <C-A-o> :OpenInBrowser<CR>
 command! -bang -nargs=? OpenInBrowser call OpenInBrowser(<bang>1, '<args>')
 command! -nargs=0 OpenInDefaultPrg call xelltoolkit#run('', expand("%:p"))
 command! -nargs=1 Es call xelltoolkit#edit_samename_file('<args>')
@@ -1122,6 +1125,7 @@ vmap <D-/> gc
 " Thesaurus {{{2
 " mac or unix must use '/usr/share/myspell/dicts/th_en_US_v2.idx'
 " or assign g:thesaurus_file
+let g:thesaurus_file = '/Applications/LibreOffice.app/Contents/Resources/extensions/dict-en/th_en_US_v2'
 imap <c-t> <Esc>bl:Thesaurus<CR>
 " }}}
 " VOoM {{{2
