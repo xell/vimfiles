@@ -188,7 +188,7 @@ endif
 " ===============================================
 " Highlights {{{1
 
-hi default link pdcHTMLComment Comment
+hi default link pdcHTMLComment Ignore
 
 hi default link pdcTitleBlock String
 hi default link pdcAtxHeader Title

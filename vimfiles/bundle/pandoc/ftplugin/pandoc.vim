@@ -71,6 +71,7 @@ vnoremap <buffer> <M-[> "zc{=<C-R>Z}<Esc>
 
 nnoremap <buffer> j gj
 nnoremap <buffer> k gk
+nmap <buffer> <Leader>pp :Pandoc<CR>
 
 call xelltoolkit#imap('**', '*<++>*<++>', 1)
 call xelltoolkit#imap('``', '`<++>`<++>', 1)
