@@ -37,18 +37,6 @@ function! ListsFakeMatches(findstart, base) " {{{1
             let tagword = substitute(t:keyword, '`', '\\`', 'g')
             let res += split(system('mdfind -onlyin ' . t:ffs_start_path . ' "kMDItemOMUserTags == ' . "'" . tagword . "'" . '"'), '\n')
         else
-            " ack 2.x
-            " let res += split(system("ack --text -g '" . t:keyword . "' " . t:ffs_start_path), '\n')
-            " let res += split(system("ack --text -l '" . t:keyword . "' " . t:ffs_start_path), '\n')
-
-            " it will cause the file with the name equal to t:keyword is empty file name.
-            " let res += split(system("ack --text -g '" . t:keyword . "'"), '\n')
-            " let res += split(system("ack --text -l '" . t:keyword . "'"), '\n')
-
-            " ack 1.x
-            " let res += split(system("ack -g '" . t:keyword . "' " . t:ffs_start_path), '\n')
-            " let res += split(system("ack -l '" . t:keyword . "' " . t:ffs_start_path), '\n')
-
             " ag
             " https://github.com/ggreer/the_silver_searcher
             " http://betterthanack.com/
@@ -103,9 +91,9 @@ function! s:generate_filelist() " {{{1
         let tagword = substitute(t:keyword, '`', '\\`', 'g')
         let res += split(system('mdfind -onlyin ' . t:ffs_start_path . ' "kMDItemOMUserTags == ' . "'" . tagword . "'" . '"'), '\n')
     else
-        " ack 2.x
-        let res += split(system("ack --text -g '" . t:keyword . "' " . t:ffs_start_path), '\n')
-        let res += split(system("ack --text -l '" . t:keyword . "' " . t:ffs_start_path), '\n')
+        " ag
+        let res += split(system("/usr/local/bin/ag -S -g '" . t:keyword . "' " . t:ffs_start_path), '\n')
+        let res += split(system("/usr/local/bin/ag -S -l '" . t:keyword . "' " . t:ffs_start_path), '\n')
     endif
 
     let pathlen = len(getcwd()) + 1
