@@ -14,9 +14,9 @@ let g:colors_name = "xell"
  highlight Comment       guifg=#808080     guibg=bg          ctermfg=0  ctermbg=8
  highlight Constant      guifg=#5f85aa     guibg=bg          ctermfg=4  ctermbg=8
  highlight Identifier    guifg=#00c0c0     guibg=bg          ctermfg=14 ctermbg=8
- highlight Statement     guifg=#f0e68c     guibg=bg          ctermfg=11 ctermbg=8
+ highlight Statement     guifg=#f0e68c     guibg=bg          ctermfg=11 ctermbg=8 gui=NONE
  highlight PreProc       guifg=#00ff00     guibg=bg          ctermfg=10 ctermbg=8
- highlight Type          guifg=#60ff60     guibg=bg          ctermfg=2  ctermbg=8
+ highlight Type          guifg=#60ff60     guibg=bg          ctermfg=2  ctermbg=8 gui=NONE
  highlight Special       guifg=#ffa0a0     guibg=bg          ctermfg=1  ctermbg=8
  highlight Underlined    guifg=#80a0ff     guibg=bg          ctermfg=12 ctermbg=8 gui=Underline cterm=Underline
  highlight Ignore        guifg=#494949     guibg=bg          ctermfg=0  ctermbg=8

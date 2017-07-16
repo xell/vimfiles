@@ -18,7 +18,7 @@ if exists("syntax_on")
 endif
 let g:colors_name = "xell_light2"
 
- highlight Normal        guifg=#333c44     guibg=#f1f3f5     ctermfg=15 ctermbg=8
+ highlight Normal        guifg=#3F2A18     guibg=#F5EFDC     ctermfg=15 ctermbg=8
  highlight Comment       guifg=#737e91     guibg=bg          ctermfg=0  ctermbg=8
  highlight Constant      guifg=#6b8d87     guibg=bg          ctermfg=4  ctermbg=8
  highlight Identifier    guifg=#446685     guibg=bg          ctermfg=14 ctermbg=8 gui=Bold
