@@ -11,6 +11,7 @@ let g:loaded_xell_ffs = 1
 
 function! FFS()
 	let t:ffs_start_path = expand("%:p:h")
+    let t:cur_winnr = winnr()
 	for forbiden_path in g:ffs_forbiden_path
 		if t:ffs_start_path ==? forbiden_path
 			call xelltoolkit#echo_msg("You cannot perform recursive, non-restrict search in " . forbiden_path)

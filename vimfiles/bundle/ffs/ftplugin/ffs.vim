@@ -11,7 +11,7 @@ setlocal omnifunc=ListsFakeMatches
 " setlocal omnifunc=TestLFM
 
 let t:keyword = ''
-let t:bufnr = bufnr('%')
+let t:ffs_bufnr = bufnr('%')
 
 nnoremap <buffer> <Esc> :bd!<CR>
 inoremap <buffer> <S-Return> <Esc>:call <SID>generate_filelist()<CR>
@@ -40,8 +40,8 @@ function! ListsFakeMatches(findstart, base) " {{{1
             " ag
             " https://github.com/ggreer/the_silver_searcher
             " http://betterthanack.com/
-            let res += split(system("/usr/local/bin/ag -S -g '" . t:keyword . "' " . t:ffs_start_path), '\n')
-            let res += split(system("/usr/local/bin/ag -S -l '" . t:keyword . "' " . t:ffs_start_path), '\n')
+            let res += split(system("/usr/local/bin/ag -S -f -g '" . t:keyword . "' " . t:ffs_start_path), '\n')
+            let res += split(system("/usr/local/bin/ag -S -f -l '" . t:keyword . "' " . t:ffs_start_path), '\n')
             " TODO dirty fix for single line result disappered in the omni complete popup menu
             let res += ["-- END --"]
 
@@ -74,10 +74,11 @@ function! s:openfile() " {{{1
         let filename = substitute(filename, ' ', '\\ ', 'g')
 	endif
 
+    " wincmd p
 	botright new
 	exec 'silent! edit! ' . filename
-	exec 'silent! bdelete! ' . t:bufnr
-	augroup! ffs
+	exec 'silent! bdelete! ' . t:ffs_bufnr
+	silent augroup! ffs
 	normal gg
 	let @/ = t:keyword
 
@@ -92,8 +93,8 @@ function! s:generate_filelist() " {{{1
         let res += split(system('mdfind -onlyin ' . t:ffs_start_path . ' "kMDItemOMUserTags == ' . "'" . tagword . "'" . '"'), '\n')
     else
         " ag
-        let res += split(system("/usr/local/bin/ag -S -g '" . t:keyword . "' " . t:ffs_start_path), '\n')
-        let res += split(system("/usr/local/bin/ag -S -l '" . t:keyword . "' " . t:ffs_start_path), '\n')
+        let res += split(system("/usr/local/bin/ag -S -f -g '" . t:keyword . "' " . t:ffs_start_path), '\n')
+        let res += split(system("/usr/local/bin/ag -S -f -l '" . t:keyword . "' " . t:ffs_start_path), '\n')
     endif
 
     let pathlen = len(getcwd()) + 1

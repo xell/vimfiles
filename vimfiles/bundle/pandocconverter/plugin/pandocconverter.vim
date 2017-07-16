@@ -199,8 +199,8 @@ endfunction
 " }}}
 
 "=================================================================
-" Preview the generated HTML of whole of partly selected current buffer
-" in browser's popup window
+" Preview the generated HTML of whole of partly selected current buffer in
+" Marked FIXME use system wide tmp directory instead of %:p:h
 function! PandocPreviewBuffer(normal_mode) range " {{{1
     " check if it's supported
     if &ft == '' || match(g:pandoc_support_filetypes, &ft) == -1
