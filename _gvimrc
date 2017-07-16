@@ -26,6 +26,21 @@ endif
 "let g:zenburn_color_also_Ignore = 1
 "colorscheme zenburn
 colorscheme xell
+let g:colorschemes = ['xell', 'xell_light', 'xell_light2']
+function! s:switch_colorschemes()
+    let i = 0
+    let l = len(g:colorschemes)
+    for c_name in g:colorschemes
+        let i = i + 1
+        if c_name == g:colors_name
+            exec 'colorscheme ' . g:colorschemes[i == l ? 0 : i]
+            return
+        endif
+    endfor
+endfunction
+
+command! -nargs=0 SwitchColorschemes call <SID>switch_colorschemes()
+nmap <F6> :SwitchColorschemes<CR>
 " }}}
 
 " Guioptions {{{1
@@ -35,6 +50,7 @@ colorscheme xell
 " a auto yank visuals into regester *
 " T toolbar
 set guioptions=egtm
+set guicursor=n-v-c:block-Cursor/lCursor-blinkwait700-blinkon1200-blinkoff250,ve:ver35-Cursor,o:hor50-Cursor,i-ci:ver25-Cursor/lCursor,r-cr:hor20-Cursor/lCursor,sm:block-Cursor-blinkwait175-blinkoff150-blinkon175
 "}}}
 
 " Screen size settings {{{1
@@ -72,9 +88,8 @@ nmap <C-A-Right> :call ChangeWindowSizeV(g:increments, "right")<CR>
 
 " Toggle between two sets of window sizes F1 F2 {{{2
 " toggle between two window size, see F1
-nmap <silent> <F1> :call <SID>sizeAndPositionOfWindowSmall()<CR>
-nmap <silent> <F2> :call <SID>sizeAndPositionOfWindow()<CR>
-if !exists("s:sizeandpositionofwindow")
+nmap <silent> <F2> :call <SID>sizeAndPositionOfWindowSmall()<CR>
+if !exists("s:sizeandpositionofwindowsmall")
     let s:sizeandpositionofwindowsmall = 0
 endif
 function! s:sizeAndPositionOfWindowSmall()
@@ -90,30 +105,12 @@ function! s:sizeAndPositionOfWindowSmall()
         let s:sizeandpositionofwindowsmall = !s:sizeandpositionofwindowsmall
     endif
 endfunction
-
-" toggle between two window size, see F2
-if !exists("s:sizeandpositionofwindow")
-    let s:sizeandpositionofwindow = 0
-endif
-function! s:sizeAndPositionOfWindow()
-    if s:sizeandpositionofwindow
-        set lines=40
-        set columns=169
-        "winpos 50 60
-        let s:sizeandpositionofwindow = !s:sizeandpositionofwindow
-    else
-        set lines=68
-        set columns=259
-        "winpos 66 103
-        let s:sizeandpositionofwindow = !s:sizeandpositionofwindow
-    endif
-endfunction
 " }}}
 " }}}
 
 " Set the guitablabel {{{1
 set guitablabel=%{GuiTabLabel()}
-" see :h tabpage
+" see :h tabpage guitablabel
 function! GuiTabLabel()
     let label = ''
     let bufnrlist = tabpagebuflist(v:lnum)
@@ -144,31 +141,57 @@ endfunction
 
 " Font setup {{{1
 "---------------------------------------
-" TODO
-set linespace=4
-set guifont=Consolas:h15
-" useless {{{2
-"set guifont=Menlo_Regular:h14
-"set guifont=YaHei_Consolas_Hybrid:h14
-"set guifont=Input:h14
-"set guifont=Megatops_ProCoder_1.0:h12
-"set guifont=Andale_Mono:h12
-"set guifont=Courier\ New:h14
-"set guifont=DejaVu_LGC_Sans_Mono:h13
-"set guifont=Monaco:h13
-"set guifont=WenQuanYi\ Micro\ Hei\ Mono
-"
-" guifontwide will disable the function of changing font size in Edit
-"set guifontwide=Yahei_Mono:h14
-"set guifontwide=Microsoft\ YaHei:h14
-"set guifontwide=Source\ Han\ Sans\ CN\ ExtraLight:h14
-"set guifontwide=TextMate
-"set guifontwide=Arial\ Unicode MS
-"set guifontwide=Heiti\ SC
-"set guifontwide=STHeiti:h14
-"set guifontwide=Megatops_ProCoder_1.0:h12 
-"}}}
+"Andale\ Mono "Chinese spaces too wide
+"Courier "Chinese spaces too wide
+"Courier\ New "Chinese spaces too wide
+"Hack "Chinese spaces too wide
+"Menlo "Chinese spaces too wide
+"Monaco "Chinese spaces too wide
+"Osaka "Chinese spaces too wide
+"PT\ Mono "Chinese spaces too wide
+"Input " Only compressed suitable for Chinese
+"Source\ Code\ Pro "Chinese spaces too wide
 
+set linespace=6
+nmap <C-D--> :call ChangeLinespace(0)<CR>
+nmap <C-D-=> :call ChangeLinespace(1)<CR>
+function! ChangeLinespace(increase)
+    let cur_lsp = &lsp
+    if a:increase
+        let &lsp = cur_lsp + 1
+    else
+        let &lsp = cur_lsp - 1
+    endif
+endfunction
+
+let g:guifonts = ["Consolas", 
+            \ "Inconsolata",
+            \ "mononoki",
+            \ "YaHei\\ Mono",
+            \ "M+\\ 1m\\ light"]
+let g:guifontwides = ["PingFang\\ SC",
+            \ "PingFang\\ SC\\ Light",
+            \ "STSong",
+            \ "Songti\\ SC"]
+
+function! Setfont(gf_index, gfw_index, size, lsp)
+    exec 'set guifont=' . g:guifonts[a:gf_index] . ':h' . a:size
+    exec 'set guifontwide=' . g:guifontwides[a:gfw_index] . ':h' . a:size
+    let &linespace=a:lsp
+endfunction
+function! s:setfont_defaults(default)
+    if a:default == 1
+        call Setfont(1, 1, 15, 6)
+    elseif a:default == 2
+        call Setfont(1, 3, 19, 10)
+    elseif a:default == 3
+        call Setfont(4,3, 19, 10)
+    endif
+endfunction
+command! -nargs=1 SetFont call <SID>setfont_defaults(<args>)
+
+call Setfont(1, 1, 15, 6)
+command! -nargs=0 ResetFont call Setfont(1, 1, 15, 6)
 " }}}
 
 " Xell Fullscreen and Writeroom {{{1

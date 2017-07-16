@@ -129,7 +129,7 @@ set autoindent
 "set smartindent
 
 " In utf-8 files, use twice the width of ASCII characters
-" set ambiwidth=double
+set ambiwidth=double
 
 " Set tab page max
 set tabpagemax=100
@@ -215,7 +215,7 @@ set visualbell
 " Xell Global Variables {{{1
 
 " URL {{{2
-let g:urlpattern = '\%(\([a-z-]\+\):\/\{2}[^ ">\])]\+\)'
+let g:urlpattern = '[a-z]\w\+:\/\/[^ "' . "'>\\])]\\+"
 " let g:webbrowser = 'Google Chrome.app'
 let g:webbrowser = ''
 let g:webserver_host = 'http://localhost:80/~xell'
@@ -424,7 +424,8 @@ noremap <C-L> gt
 function! s:mapleadernumber()
 	for i in range(1, 9)
 		exec 'nmap <Leader>' . i . ' :' . i . 'wincmd w<CR>'
-		exec 'nmap <M-' . i . '> ' . i . 'gt'
+        " Work with BetterTouchTool corresponding setting
+		exec 'nmap <S-F' . i . '> ' . i . 'gt'
 	endfor
 endfunction
 call <SID>mapleadernumber()
@@ -598,8 +599,8 @@ nmap <C-Down> ddp
 " The latency of IMAP from latex-suite is too long to use.
 let g:Imap_FreezeImap = 1
 " Remap the jumpforward to other, originally <C-j>
-imap <D-C-J> <Plug>IMAP_JumpForward
-nmap <D-C-Y> <Plug>IMAP_JumpForward
+imap <D-C-j> <Plug>IMAP_JumpForward
+nmap <D-C-y> <Plug>IMAP_JumpForward
 function! s:imap_jump()
     let isfound = search('<++>', 'cW')
     if isfound
@@ -704,8 +705,8 @@ function! s:difftwowindows()
     diffthis
 endfunction
 
-" Use \d on top of a word to look it up in Dictionary.app
-nmap <silent> <Leader>d :!open dict://<cword><CR><CR>
+" Look up the word under the cursor in Dictionary.app
+nmap <silent> <D-k> :silent !open "dict://<cword>"<CR>
 
 " }}}
 
@@ -824,9 +825,14 @@ function! s:getAllCommands()
 endfunction
 
 " All user vimfiles
-nmap <Leader>fg :call <SID>fuf_test()<CR>
-function! s:fuf_test()
+nmap <Leader>fg :call <SID>fuf_vimfiles()<CR>
+function! s:fuf_vimfiles()
 	exec "call fuf#givenfile#launch('', 0, '>', split(glob('" . g:myvimfiles . "/**/*'), \"\\n\"))"
+endfunction
+
+nmap <Leader>fn :call <SID>fuf_notes()<CR>
+function! s:fuf_notes()
+	exec "call fuf#givenfile#launch('', 0, '>', split(glob('" . g:xell_notes_root . "/**/*'), \"\\n\"))"
 endfunction
 
 " }}}
@@ -843,8 +849,8 @@ nnoremap <F5> :GundoToggle<CR>
 let g:hosts_list = '/Users/xell/Code/pac/xell.hostslist'
 " }}}
 " LanguageTool {{{2
-let g:languagetool_jar = '/usr/local/Cellar/languagetool/2.7/libexec/languagetool-commandline.jar'
-nmap <F7> :LanguageToolCheck<CR>
+let g:languagetool_jar = '/usr/local/Cellar/languagetool/3.7/libexec/languagetool-commandline.jar'
+nmap <M-D-l> :LanguageToolCheck<CR>
 " }}}
 " LaTeX {{{2
 " OPTIONAL: Starting with Vim 7, the filetype of empty .tex files defaults to
@@ -1193,7 +1199,7 @@ endfunction
 nnoremap <C-Enter> :WinFullScreen<CR>
 " }}}
 " WordCount {{{2
-nmap <silent> <S-F6> :call ShowLiveWordCount()<CR>
+nmap <silent> <F3> :call ShowLiveWordCount()<CR>
 " }}}
 
 " Xell Other {{{2
@@ -1298,6 +1304,8 @@ command! -nargs=0 Capitalize s/\v^\a|\:\s\a|<%(a>|an>|and>|as>|at>|but>|by>|for>
 
 " }}}
 
+set termguicolors
+colorscheme xell
 " }}}
 
 " Modelines {{{1
