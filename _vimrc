@@ -157,6 +157,9 @@ set breakindent
 
 set iskeyword+=-
 
+" Set the swap file directory with flat structure
+set directory^=$HOME/.vimtmp//
+
 " When editing a file, always jump to the last known cursor position.
 " Don't do it when the position is invalid or when inside an event handler
 " (happens when dropping a file on gvim). g`
@@ -198,6 +201,8 @@ exec 'set dictionary=' . g:myvimfiles . '/dictionary.txt'
 
 " set imd
 " set noimd
+" set ims=1
+
 autocmd GUIEnter * set noimd
 
 " http://www.v2ex.com/t/40375
@@ -572,11 +577,18 @@ endfunction
 " Find the word under the cursor and jump to location list
 "nmap <Leader>l :lv /<c-r>=expand("<cword>")<cr>/ %<cr>:lw<cr>
 vmap <Leader>l "zy:lv /<C-R>z/ %<CR>:lw<CR>
+vmap <Leader>L "zy:call xelltoolkit#grep_in_lcd_r('','',"<C-R>z")<CR>:cw<CR>
 " Display the search items in location list 
 "nmap <Leader>l :call <SID>showsearchiteminlocationlist()<CR>
 "function! s:showsearchiteminlocationlist()
 "	execute 'lv /' . @/ . '/ % | lw'
 "endfunction
+
+" Look up the visual selection in Google
+vmap <D-k> "zy:silent !open "https://www.google.com/?q=<C-R>z"<CR>
+" Look up the word under the cursor in Dictionary.app
+nmap <silent> <D-k> :silent !open "dict://<cword>"<CR>
+
 
 " Move to url
 nmap <Tab> :call xelltoolkit#goto_next_word(g:urlpattern)<CR>
@@ -705,9 +717,6 @@ function! s:difftwowindows()
     diffthis
 endfunction
 
-" Look up the word under the cursor in Dictionary.app
-nmap <silent> <D-k> :silent !open "dict://<cword>"<CR>
-
 " }}}
 
 " }}}
@@ -720,6 +729,7 @@ cab xhost e /etc/hosts<CR>
 cab xbp e ~/.bash_profile
 " Must in /etc/sudoers set username ALL=(ALL) NOPASSWD:ALL
 cab sudow silent w !sudo tee %
+cmap w!! w !sudo tee % >/dev/null
 
 cab xfn echo expand("%:p")
 "Insert date and time
@@ -736,7 +746,7 @@ cab xasa .s/\(\a\<bar>[<>_-]\)\([^\x00-\xff]\&[^（），、：。“”；]\)/\
 """"""""""""""""""""""""""""""""""""""""""""""""""""" 
 
 " XellNotes {{{2
-let g:xell_notes_root = glob('~/Documents/notes/notes')
+let g:xell_notes_root = glob('~/Documents/notes/notes/notes')
 let g:xell_notes_ex_root = glob('~/Documents/notes/notes_preview')
 " TODO it should not be connected with ffs
 " i.e. ffs should be more general, not focusing with notes
@@ -843,13 +853,15 @@ vmap <leader>gv :Gitv! --all<cr>
 " }}}
 " Gundo {{{2
 "let g:gundo_disable=1
+" https://github.com/sjl/gundo.vim/pull/35
+let g:gundo_prefer_python3 = 1
 nnoremap <F5> :GundoToggle<CR>
 " }}}
 " Hostslist {{{2
 let g:hosts_list = '/Users/xell/Code/pac/xell.hostslist'
 " }}}
 " LanguageTool {{{2
-let g:languagetool_jar = '/usr/local/Cellar/languagetool/3.7/libexec/languagetool-commandline.jar'
+let g:languagetool_jar = '/usr/local/Cellar/languagetool/4.1/libexec/languagetool-commandline.jar'
 nmap <M-D-l> :LanguageToolCheck<CR>
 " }}}
 " LaTeX {{{2
@@ -1288,6 +1300,10 @@ command! -nargs=0 -bar WhatSyntax echomsg synIDattr(synID(line("."),col("."),0),
 " https://taptoe.wordpress.com/2013/02/06/vim-capitalize-every-first-character-of-every-word-in-a-sentence/
 command! -nargs=0 Capitalize s/\v^\a|\:\s\a|<%(a>|an>|and>|as>|at>|but>|by>|for>|in>|nor>|of>|on>|or>|the>|to>|up>)@!\a/\U&/g
 
+" 解决crontab -e时，提示crontab: temp file must be edited in place
+" https://blog.csdn.net/xuyaqun/article/details/44458987
+autocmd filetype crontab setlocal nobackup nowritebackup
+
 " NFO view {{{2
 " 能够漂亮地显示.NFO文件
 " function! s:setFileEncodings(encodings)
@@ -1305,7 +1321,18 @@ command! -nargs=0 Capitalize s/\v^\a|\:\s\a|<%(a>|an>|and>|as>|at>|but>|by>|for>
 " }}}
 
 set termguicolors
+
+" https://superuser.com/a/713335
+" if exists('$TMUX')
+"     let &t_SI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=0\x7\<Esc>\\"
+"     let &t_EI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=0\x7\<Esc>\\"
+" else
+"     let &t_SI = "\<Esc>]50;CursorShape=0\x7"
+"     let &t_EI = "\<Esc>]50;CursorShape=0\x7"
+" endif
+
 colorscheme xell
+" nmap <Leader>k :set noimd<CR>
 " }}}
 
 " Modelines {{{1

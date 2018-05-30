@@ -109,21 +109,24 @@ endfunction
 " }}}
 
 " Set the guitablabel {{{1
-set guitablabel=%{GuiTabLabel()}
+set guitablabel=%{GuiTabLabel()}-%<%t
+" set guitablabel=%{tabpagenr()}-%<%t
+	  " %-0{minwid}.{maxwid}{item}
 " see :h tabpage guitablabel
 function! GuiTabLabel()
     let label = ''
-    let bufnrlist = tabpagebuflist(v:lnum)
-
-    let label .= tabpagenr().'_'
 
     " Add '+' if one of the buffers in the tab page is modified
+    let bufnrlist = tabpagebuflist(v:lnum)
     for bufnr in bufnrlist
         if getbufvar(bufnr, "&modified")
-            let label .= '+'
+            " *✦★✷✸✹ 
+            let label .= '✦ '
             break
         endif
     endfor
+
+    let label .= tabpagenr()
 
     " Append the number of windows in the tab page if more than one
     "" let wincount = tabpagewinnr(v:lnum, '$')
@@ -135,7 +138,8 @@ function! GuiTabLabel()
     "" endif
 
     " Append the buffer name
-    return label . bufname(bufnrlist[tabpagewinnr(v:lnum) - 1])
+    " return label . bufname(bufnrlist[tabpagewinnr(v:lnum) - 1])
+    return label
 endfunction
 " }}}
 

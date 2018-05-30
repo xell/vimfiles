@@ -8,7 +8,7 @@ if exists("b:did_ftplugin")
 endif
 
 command! -buffer -nargs=0 PandocIndex :call PandocConverterIndex()
-nmap <buffer> <Leader>/ :PandocIndex<CR>
+nmap <buffer> <Leader>pp :PandocIndex<CR>
 
 function! PandocConverterIndex()
     let file_head = expand('%:p:h')

@@ -13,7 +13,7 @@ set cpo&vim
 " }}}
 
 command! -nargs=* Pandoc :call PandocConverterBuffer(<f-args>)
-nmap <Leader>/ :Pandoc<CR>
+" nmap <Leader>pp :Pandoc<CR>
 nmap <Leader>mp :call PandocPreviewBuffer(1)<CR>
 vmap <Leader>mp :call PandocPreviewBuffer(0)<CR>
 noremap <Leader>mP :silent !open -a Marked\ 2.app '%:p'<CR>
