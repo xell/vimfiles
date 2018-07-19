@@ -272,7 +272,7 @@ endfunction
 
 " Delete file from disk
 " c.f. http://vim.wikia.com/wiki/Delete_files_with_a_Vim_command
-function xelltoolkit#delete_file(...) "{{{1
+function! xelltoolkit#delete_file(...) "{{{1
   if(exists('a:1'))
     let theFile=a:1
   elseif ( &ft == 'help' )

@@ -1,5 +1,3 @@
-viminfo
-dictionary.txt
 .netrwhist
 tags
 tags-*
@@ -7,4 +5,5 @@ tags-*
 .DS_Store
 .com.apple.*
 *.sw[ponm]
+*.add.spl
 xell_test.vim

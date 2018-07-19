@@ -5,6 +5,7 @@
 "   /\   |--  |    |
 "  /  \  |--  |--  |--
 "
+" New: New!
 " Maintainer: Xell Liu <xell DOT liu AT gmail.com>
 
 
@@ -18,13 +19,9 @@
 
 set nocompatible
 
-" TODO delete this?
-let g:myvimfiles = glob('~/.vim')
-
-" Pathogen {{{2
-" call :Helptags after install/copy plugins into bundle
-execute pathogen#infect()
-" }}}
+" TODO temporary rtp pp
+" set runtimepath=$HOME/Temp/20180719vim/runtime,$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after,$HOME/Temp/20180719vim/runtime/after
+" set packpath=$HOME/Temp/20180719vim/runtime,$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after,$HOME/Temp/20180719vim/runtime/after
 
 " }}}
 
@@ -175,9 +172,6 @@ autocmd BufReadPost *
 " search in a singe file. This will confuse Latex-Suite. Set your grep
 " program to always generate a file-name.
 set grepprg=grep\ -nH\ $*
-
-" TODO Dictionary file
-exec 'set dictionary=' . g:myvimfiles . '/dictionary.txt'
 
 " }}}
 
@@ -607,47 +601,6 @@ imap <S-Tab> <BS>
 nmap <C-Up> ddkP
 nmap <C-Down> ddp
 
-" Auto close pairs IMAP {{{3
-" The latency of IMAP from latex-suite is too long to use.
-let g:Imap_FreezeImap = 1
-" Remap the jumpforward to other, originally <C-j>
-imap <D-C-j> <Plug>IMAP_JumpForward
-nmap <D-C-y> <Plug>IMAP_JumpForward
-function! s:imap_jump()
-    let isfound = search('<++>', 'cW')
-    if isfound
-        if col('.') == col('$') - 4
-            normal 4x
-            startinsert!
-        else
-            normal 4x
-            startinsert
-        endif
-    endif
-endfunction
-inoremap <D-j> <C-O>:call <SID>imap_jump()<CR>
-
-call xelltoolkit#imap('()', '(<++>)<++>', 0)
-call xelltoolkit#imap('[]', '[<++>]<++>', 0)
-call xelltoolkit#imap('{}', '{<++>}<++>', 0)
-call xelltoolkit#imap('<>', '<<++>><++>', 0)
-call xelltoolkit#imap('""', '"<++>"<++>', 0)
-call xelltoolkit#imap("''", "'<++>'<++>", 0)
-" call xelltoolkit#imap('%%', '%<++>%<++>', 0)
-
-" for reference in windows TODO
-" augroup MyIMAPs
-" 	autocmd!
-" 	autocmd VimEnter * call IMAP('()', '(<++>)<++>', '')
-" 	autocmd VimEnter * call IMAP('[]', '[<++>]<++>', '')
-" 	autocmd VimEnter * call IMAP('{}', '{<++>}<++>', '')
-" 	autocmd VimEnter * call IMAP('<>', '<<++>><++>', '')
-" 	autocmd VimEnter * call IMAP('""', '"<++>"<++>', '')
-" 	autocmd VimEnter * call IMAP("''", "'<++>'<++>", '')
-" 	autocmd VimEnter * call IMAP('%%', '%<++>%<++>', '')
-" augroup END
-" }}}
-
 " }}}
 
 " Dispaly {{{2
@@ -676,10 +629,14 @@ endfunction
 " }}}
 
 " Completions {{{2
+" c.f. https://gist.github.com/xge/2422950
+set dictionary=/usr/share/dict/words
+set complete+=k
+set infercase
 " Complete tags
 inoremap <C-]> <C-x><C-]>
-" Complete definition or macros
-inoremap <C-D> <C-x><C-D>
+" Complete dictionary
+inoremap <C-D> <C-x><C-K>
 " Complete file names
 inoremap <C-F> <C-x><C-F>
 " Complete dictionary
@@ -715,6 +672,14 @@ function! s:difftwowindows()
     diffthis
     exec "normal \<C-w>w"
     diffthis
+endfunction
+
+" Spell cjk
+command! -nargs=0 Spell call <SID>spell_check()
+function! s:spell_check()
+    setlocal spell spelllang=en_us,cjk
+    " https://stackoverflow.com/questions/18196399/exclude-capitalized-words-from-vim-spell-check
+    syn match myExCapitalWords +\<\w*[A-Z]\K*\>\|'s+ contains=@NoSpell
 endfunction
 
 " }}}
@@ -778,11 +743,7 @@ let g:user_emmet_install_global = 0
 autocmd FileType html,css EmmetInstall
 " }}}
 " Edit Existing {{{2
-" Can not use the following because mvim will warning 
-" Error detected while processing /Applications/MacVim.app/Contents/Resources/vim/runtime/macros/editexisting.vim:
-" line   71:
-" E122: Function <SNR>12_EditElsewhere already exists, add ! to replace it
-" runtime macros/editexisting.vim
+packadd! editexisting
 " }}}
 " FFS {{{2
 nmap <Leader><Leader><Leader> :call FFS()<CR>
@@ -835,7 +796,7 @@ endfunction
 " All user vimfiles
 nmap <Leader>fg :call <SID>fuf_vimfiles()<CR>
 function! s:fuf_vimfiles()
-	exec "call fuf#givenfile#launch('', 0, '>', split(glob('" . g:myvimfiles . "/**/*'), \"\\n\"))"
+	exec "call fuf#givenfile#launch('', 0, '>', split(glob('" . split(&rtp, ',')[0] . "/**/*'), \"\\n\"))"
 endfunction
 
 nmap <Leader>fn :call <SID>fuf_notes()<CR>
@@ -926,13 +887,18 @@ endif
 " Change the default <F7>->FastCommandInsert to <C-F7>
 nmap <C-F7> <Plug>Tex_FastCommandInsert
 
+" Remap the jumpforward to other, originally <C-j>
+let g:Imap_FreezeImap = 1
+imap <D-C-j> <Plug>IMAP_JumpForward
+nmap <D-C-y> <Plug>IMAP_JumpForward
+
 " }}}
 " local_vimrc {{{2
 let g:local_vimrc = ".exrc"
 " }}}
 " Matchit {{{2
 " TODO define some new block
-runtime macros/matchit.vim
+packadd matchit
 " }}}
 " MarksBrowser {{{2
 "let g:marksCloseWhenSelected = 0
