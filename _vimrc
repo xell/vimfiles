@@ -725,8 +725,6 @@ endfunction
 """"""""""""""""""""""""""""""""""""""""""""""""""""" 
 ca xs mks! ~/Documents/xs1.vim
 ca xl so ~/Documents/xs1.vim
-cab xhost e /etc/hosts<CR>
-cab xbp e ~/.bash_profile
 " Must in /etc/sudoers set username ALL=(ALL) NOPASSWD:ALL
 cab sudow silent w !sudo tee %
 cmap w!! w !sudo tee % >/dev/null
@@ -736,7 +734,7 @@ cab xfn echo expand("%:p")
 iab xdate <C-r>=strftime("%Y-%m-%d %H:%M:%S")<CR>
 
 " XXX temp
-cab xe e ftp://xell@ftp.gowall1.veeserve.com:21/public_html/
+" add space between
 cab xasb .s/\([^\x00-\xff]\&[^（），、：。“”；]\)\(\a\<bar>[<>_-]\)/\1 \2/g
 cab xasa .s/\(\a\<bar>[<>_-]\)\([^\x00-\xff]\&[^（），、：。“”；]\)/\1 \2/g
 

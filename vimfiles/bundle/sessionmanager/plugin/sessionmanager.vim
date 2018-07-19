@@ -10,7 +10,7 @@ function! s:makesession()
 
 	if v:this_session == '' ||
 			\ (v:this_session != '' &&
-			\ input(v:this_session . "\nAre you sure overriding? (Y/n)") =~? '^n')
+			\ input(v:this_session . "\nAre you sure overriding? (Y/n)\n") =~? '^n')
 		let session_name = input("Session name: ")
 		if session_name != ''
 			let v:this_session = g:session_path . '/' . session_name . '.vim'
