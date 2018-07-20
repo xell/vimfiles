@@ -5,7 +5,7 @@
 "   /\   |--  |    |
 "  /  \  |--  |--  |--
 "
-" New: New!
+" New: V8
 " Maintainer: Xell Liu <xell DOT liu AT gmail.com>
 
 
@@ -18,10 +18,6 @@
 " }}}
 
 set nocompatible
-
-" TODO temporary rtp pp
-" set runtimepath=$HOME/Temp/20180719vim/runtime,$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after,$HOME/Temp/20180719vim/runtime/after
-" set packpath=$HOME/Temp/20180719vim/runtime,$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after,$HOME/Temp/20180719vim/runtime/after
 
 " }}}
 
@@ -121,6 +117,8 @@ set autochdir
 set nobackup
 set writebackup
 
+set nrformats+=alpha
+
 " Always set autoindenting on
 set autoindent
 "set smartindent
@@ -157,14 +155,19 @@ set iskeyword+=-
 " Set the swap file directory with flat structure
 set directory^=$HOME/.vimtmp//
 
-" When editing a file, always jump to the last known cursor position.
-" Don't do it when the position is invalid or when inside an event handler
-" (happens when dropping a file on gvim). g`
-" vimrcEx
-autocmd BufReadPost *
-			\ if line("'\"") > 0 && line("'\"") <= line("$") |
-			\   exe "normal! g`\"" |
-			\ endif
+augroup vimStartup
+    au!
+
+    " When editing a file, always jump to the last known cursor position.
+    " Don't do it when the position is invalid, when inside an event handler
+    " (happens when dropping a file on gvim) and for a commit message (it's
+    " likely a different one than last time).
+    autocmd BufReadPost *
+                \ if line("'\"") >= 1 && line("'\"") <= line("$") && &ft !~# 'commit'
+                \ |   exe "normal! g`\""
+                \ | endif
+
+augroup END
 
 " Special settings {{{2
 
@@ -677,9 +680,13 @@ endfunction
 " Spell cjk
 command! -nargs=0 Spell call <SID>spell_check()
 function! s:spell_check()
-    setlocal spell spelllang=en_us,cjk
-    " https://stackoverflow.com/questions/18196399/exclude-capitalized-words-from-vim-spell-check
-    syn match myExCapitalWords +\<\w*[A-Z]\K*\>\|'s+ contains=@NoSpell
+    if &spell
+        setlocal nospell
+    else
+        setlocal spell spelllang=en_us,cjk
+        " https://stackoverflow.com/questions/18196399/exclude-capitalized-words-from-vim-spell-check
+        syn match myExCapitalWords +\<\w*[A-Z]\K*\>\|'s+ contains=@NoSpell
+    endif
 endfunction
 
 " }}}
@@ -1103,73 +1110,6 @@ let g:tcommentBlockXML = "<!--%s-->\n"
 let g:tcomment_types = {'pandoc': "<!-- %s -->", 'pandoc_inline': "<!-- %s -->", 'pandoc_block': "<!-- %s -->\n  ", 'proxylist': '#%s', 'conf': '#%s', 'hostslist': '#%s', 'mdindex': '# %s'}
 nmap <D-/> gcc
 vmap <D-/> gc
-" }}}
-" Thesaurus {{{2
-" mac or unix must use '/usr/share/myspell/dicts/th_en_US_v2.idx'
-" or assign g:thesaurus_file
-let g:thesaurus_file = '/Applications/LibreOffice.app/Contents/Resources/extensions/dict-en/th_en_US_v2'
-imap <c-t> <Esc>bl:Thesaurus<CR>
-" }}}
-" VOoM {{{2
-let g:voom_tree_placement="right"
-let g:voom_tree_width=30
-"let g:voom_user_command = "so $VIM/vimfiles/voom_addons/mediawiki.vim"
-let g:voom_tab_key = '<C-Tab>'
-let g:voom_return_key = '<C-Return>'
-
-nmap <silent> <Leader>; :call BuildVOoMTOC()<CR>
-" BuildVOoMTOC  {{{3
-function! BuildVOoMTOC()
-	if !exists('t:toc_enable')
-		" Open TOC
-		let t:toc_enable = 'enable'
-		let t:col_ori = &columns
-		" Change window size
-		if t:col_ori <= 100
-			let col = g:voom_tree_width + t:col_ori
-			exec 'set columns=' . col
-		endif
-		if &ft == 'txt2tags'
-			exec 'Voom txt2tags'
-			return
-		elseif &ft == 'autohotkey'
-			exec 'Voom ahk'
-			return
-		elseif &ft == 'python'
-			exec 'Voom python'
-			return
-		elseif &ft == 'rst'
-			exec 'Voom rest'
-			return
-		elseif &ft == 'markdown' || &ft == 'pandoc'
-			exec 'Voom markdown'
-			return
-		elseif &ft == 'mediawiki'
-			exec 'Voom wiki'
-			return
-		" Style {\{3}\d [\{3}\d
-		elseif search('\({\{3}\d\)\|\([\{3}\d\)','nw')
-			exec 'Voom'
-			return
-		" Style {\{3}$
-		else
-			exec 'TToC ^.*{\{3}$'
-			return
-		endif
-	else
-		" Close TOC
-		unlet t:toc_enable
-		let winnum = bufwinnr('*_VOOM*')
-		if winnum != -1
-			exec winnum . 'wincmd w'
-			exec 'wincmd c'
-		endif
-		exec 'set columns=' . t:col_ori
-		unlet t:col_ori
-		return
-endfunction
-" }}}
-
 " }}}
 " WinFullScreen {{{2
 nnoremap <C-Enter> :WinFullScreen<CR>
