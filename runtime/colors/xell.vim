@@ -25,6 +25,7 @@ let g:colors_name = "xell"
 
  highlight Conceal       guifg=fg          guibg=bg          ctermfg=15 ctermbg=8 gui=Undercurl guisp=fg cterm=Underline
  highlight Cursor        guifg=bg          guibg=LightGray
+ highlight CursorLine                      guibg=#333338
  highlight DiffAdd       guifg=#000000     guibg=#7cdede     ctermfg=8  ctermbg=4
  highlight DiffChange    guifg=#000000     guibg=#e493ff     ctermfg=8  ctermbg=5
  highlight DiffDelete    guifg=#000000     guibg=#ff9b9b     ctermfg=8  ctermbg=1
@@ -40,7 +41,7 @@ let g:colors_name = "xell"
  highlight PmenuSel      guifg=#ffffff     guibg=#5f85aa     ctermfg=15 ctermbg=4
  highlight PmenuSbar     guifg=fg          guibg=#888888     ctermfg=15 ctermbg=0
  highlight PmenuThumb    guifg=fg          guibg=#000000     ctermfg=15 ctermbg=8
- highlight Search        guifg=#000000     guibg=#ffff00     ctermfg=1  ctermbg=8 gui=Bold cterm=Bold
+ highlight Search        guifg=#000000     guibg=#1AA311     ctermfg=1  ctermbg=8 gui=NONE cterm=Bold
  highlight SignColumn                      guibg=bg
  highlight SpecialKey    guifg=#ffa0a0     guibg=bg          ctermfg=1  ctermbg=8
  highlight StatusLine    guifg=#e8e7e6     guibg=#777777     ctermfg=7  ctermbg=0

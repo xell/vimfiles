@@ -21,22 +21,34 @@ set nocompatible
 
 " }}}
 
-" General {{{1
+" Xell Global Variables {{{1
+
+" URL {{{2
+let g:urlpattern = '[a-z]\w\+:\/\/[^ "' . "'>\\])]\\+"
+let g:webbrowser = ''
+let g:webserver_host = 'http://localhost:80/~xell'
+let g:webserver_dir = glob('~/Sites')
+" }}}
+
+" TODO
+" Docs should not be here {{{2
+
+" Specify use what function to look for the output html of doc file
+let g:browser_open_rules = {'t2t': 'GetOutputHTML', 'md': 'GetOutputHTML', 'mkd': 'GetOutputHTML', 'markdown': 'GetOutputHTML', 'rst': 'GetOutputHTML', 'mdindex': 'GetOutputHTML'}
+
+" }}}
+
+" }}}
+
+" General Options {{{1
 """"""""""""""""""""""""""""""""""""""""""""""""""""" 
+
+" General {{{2
 
 " Enable file type detection and indent
 filetype plugin indent on
 
-" Enable syntax hl
-syntax enable
-
-" Language
-set langmenu=none
-language messages en_US
-
 " Viminfo file
-" TODO set viminfo='50,<1000,s500,h,n$vim/vimfiles/_viminfo/viminfo
-"exec "set viminfo='50,<1000,c,s500,h,n" . g:MyRuntimePath . '/viminfo'
 exec "set viminfo='50,<1000,c,s500,h"
 
 " Allow backspacing over everything in insert mode
@@ -61,53 +73,8 @@ set autoread
 " Set the number of history of : commands and search.
 set history=500
 
-" Set file encode originally by xell
-set encoding=utf-8
-set fileencodings=utf-8,cp936
-" Multi-encoding setting {{{2
-" see http://www.newsmth.net/bbscon.php?bid=731&id=20845&ftype=11
-"if has("multi_byte")
-"  "set bomb 
-"  set fileencodings=utf-8,cp936,gb18030,big5,euc-jp,sjis,euc-kr,ucs-2le,latin1 
-"  " CJK environment detection and corresponding setting 
-"  if v:lang =~ "^zh_CN" 
-"    " Use cp936 to support GBK, euc-cn == gb2312 
-"    "set encoding=cp936 
-"    "set termencoding=cp936 
-"    "set fileencoding=cp936 
-"    set encoding=utf-8 
-"    set termencoding=utf-8 
-"    set fileencoding=utf-8 
-"  elseif v:lang =~ "^zh_TW" 
-"    " cp950, big5 or euc-tw 
-"    " Are they equal to each other? 
-"    set encoding=big5 
-"    set termencoding=big5 
-"    set fileencoding=big5 
-"  elseif v:lang =~ "^ko" 
-"    " Copied from someone's dotfile, untested 
-"    set encoding=euc-kr 
-"    set termencoding=euc-kr 
-"    set fileencoding=euc-kr 
-"  elseif v:lang =~ "^ja_JP" 
-"    " Copied from someone's dotfile, untested 
-"    set encoding=euc-jp 
-"    set termencoding=euc-jp 
-"    set fileencoding=euc-jp 
-"  endif 
-"  " Detect UTF-8 locale, and replace CJK setting if needed 
-"  if v:lang =~ "utf8$" || v:lang =~ "UTF-8$" 
-"    set encoding=utf-8 
-"    set termencoding=utf-8 
-"    set fileencoding=utf-8 
-"  endif 
-"else 
-"  echoerr "Sorry, this version of (g)vim was not compiled with multi_byte" 
-"endif 
-"}}}
-
 " Options in sessions
-" set sessionoptions=buffers,folds,globals,localoptions,options,resize,slash,tabpages,winpos,winsize
+" TODO consider localoptions,options
 set sessionoptions=buffers,curdir,folds,globals,help,resize,slash,tabpages,winpos,winsize
 
 " Set local current directory
@@ -117,14 +84,11 @@ set autochdir
 set nobackup
 set writebackup
 
+" Set ctrl-a and ctrl-x target
 set nrformats+=alpha
 
 " Always set autoindenting on
 set autoindent
-"set smartindent
-
-" In utf-8 files, use twice the width of ASCII characters
-set ambiwidth=double
 
 " Set tab page max
 set tabpagemax=100
@@ -145,42 +109,22 @@ set wildignore=*.o,*.ojb,*.pyc,*.DS_Store,*.db,*.dll,*.exe,*.a
 " Expand tab to spaces
 set expandtab
 
-" Deal with large file
-"autocmd BufWinEnter * if line2byte(line("$") + 1) > 200000 | syntax clear | echomsg "Large File" | endif
-
-set breakindent
-
 set iskeyword+=-
 
 " Set the swap file directory with flat structure
 set directory^=$HOME/.vimtmp//
 
-augroup vimStartup
-    au!
+" Use vim internal help when press K
+set keywordprg=
 
-    " When editing a file, always jump to the last known cursor position.
-    " Don't do it when the position is invalid, when inside an event handler
-    " (happens when dropping a file on gvim) and for a commit message (it's
-    " likely a different one than last time).
-    autocmd BufReadPost *
-                \ if line("'\"") >= 1 && line("'\"") <= line("$") && &ft !~# 'commit'
-                \ |   exe "normal! g`\""
-                \ | endif
-
-augroup END
-
-" Special settings {{{2
-
-" IMPORTANT: grep will sometimes skip displaying the file name if you
-" search in a singe file. This will confuse Latex-Suite. Set your grep
-" program to always generate a file-name.
-set grepprg=grep\ -nH\ $*
+" c.f. https://gist.github.com/xge/2422950
+set dictionary=/usr/share/dict/words
+set complete+=k
+set infercase
 
 " }}}
 
-" Special settings for Mac {{{2
-
-" IME setting {{{3
+" IME setting {{{2
 
 " function! s:setim()
 " 	if &imd
@@ -205,36 +149,29 @@ autocmd GUIEnter * set noimd
 " http://www.v2ex.com/t/40375
 " }}}
 
-" Use vim internal help when press K
-set keywordprg=
+" }}}
+
+" Display and Interface {{{1
+
+" General {{{2
+
+" Enable syntax hl
+syntax enable
+
+" Language
+set langmenu=none
+language messages en_US
+
+" Set file encode
+set encoding=utf-8
+set fileencodings=utf-8,cp936
+
+" In utf-8 files, use twice the width of ASCII characters
+set ambiwidth=double
+
+set breakindent
 
 set visualbell
-
-" }}}
-
-" }}}
-
-" Xell Global Variables {{{1
-
-" URL {{{2
-let g:urlpattern = '[a-z]\w\+:\/\/[^ "' . "'>\\])]\\+"
-" let g:webbrowser = 'Google Chrome.app'
-let g:webbrowser = ''
-let g:webserver_host = 'http://localhost:80/~xell'
-let g:webserver_dir = glob('~/Sites')
-" }}}
-
-" TODO
-" Docs should not be here {{{2
-
-" Specify use what function to look for the output html of doc file
-let g:browser_open_rules = {'t2t': 'GetOutputHTML', 'md': 'GetOutputHTML', 'mkd': 'GetOutputHTML', 'markdown': 'GetOutputHTML', 'rst': 'GetOutputHTML', 'mdindex': 'GetOutputHTML'}
-
-" }}}
-
-" }}}
-
-" UI and Display {{{1
 
 " Invoke enhanced completion mode in command line
 set wildmenu
@@ -282,11 +219,15 @@ set mouse=a
 " No hide mouse
 set nomousehide
 
+" Use symbols to fill the blank of tab and eol
+set listchars=tab:▸\ ,eol:¬
+
+" }}}
+
 " Foldtext  {{{2
 " http://www.gregsexton.org/2011/03/improving-the-text-displayed-in-a-fold/
 set foldtext=CustomFoldText(0)
-fu! CustomFoldText(n) 
-
+function! CustomFoldText(n) 
     "get first non-blank line
     let fs = v:foldstart
     while getline(fs) =~ '^\s*$' | let fs = nextnonblank(fs + 1)
@@ -307,11 +248,8 @@ fu! CustomFoldText(n)
     let expansionString = repeat(".", w - strwidth(foldSizeStr.line.foldLevelStr.foldPercentage))
     "return line . expansionString . foldSizeStr . foldPercentage . foldLevelStr
     return foldLevelStr . line . expansionString . foldSizeStr . foldPercentage
-endf
+endfunction
 "}}}
-
-" Use symbols to fill the blank of tab and eol
-set listchars=tab:▸\ ,eol:¬
 
 " Statusline customization {{{2
 set laststatus=2
@@ -485,6 +423,14 @@ else
 	map <M-L> <C-W>L
 endif
 
+" Jump among windows clockwise
+if &term =~? 'xterm'
+	noremap ø <C-W>w
+else
+	noremap <A-o> <C-W>w
+endif
+
+
 " For changing the size of split windows
 if &term =~? 'xterm'
 	" “‘≤≥≠ [],.=
@@ -504,13 +450,6 @@ else
 	nmap <M-=> <C-W>=
 endif
 
-" }}}
-
-" GUI Windows {{{2
-" see gvimrc
-" Move (Win)   Alt+→←↑↓
-" Change size  Ctrl+Alt+→←↑↓
-" Toggle size  F1 F2
 " }}}
 
 " Visual block, yank, paste {{{2
@@ -573,19 +512,16 @@ endfunction
 
 " Find the word under the cursor and jump to location list
 "nmap <Leader>l :lv /<c-r>=expand("<cword>")<cr>/ %<cr>:lw<cr>
-vmap <Leader>l "zy:lv /<C-R>z/ %<CR>:lw<CR>
-vmap <Leader>L "zy:call xelltoolkit#grep_in_lcd_r('','',"<C-R>z")<CR>:cw<CR>
-" Display the search items in location list 
-"nmap <Leader>l :call <SID>showsearchiteminlocationlist()<CR>
-"function! s:showsearchiteminlocationlist()
-"	execute 'lv /' . @/ . '/ % | lw'
-"endfunction
+nmap <Leader>l viw"zy:lv /<C-R>z/ %<CR>:lw<CR>/\c<C-R>z<CR>
+vmap <Leader>l "zy:lv /<C-R>z/ %<CR>:lw<CR>/\c<C-R>z<CR>
+" TODO use ag
+nmap <Leader>L viw"zy:call xelltoolkit#grep_in_lcd_r('','',"<C-R>z")<CR>:cw<CR>/\c<C-R>z<CR>
+vmap <Leader>L "zy:call xelltoolkit#grep_in_lcd_r('','',"<C-R>z")<CR>:cw<CR>/\c<C-R>z<CR>
 
 " Look up the visual selection in Google
 vmap <D-k> "zy:silent !open "https://www.google.com/?q=<C-R>z"<CR>
 " Look up the word under the cursor in Dictionary.app
 nmap <silent> <D-k> :silent !open "dict://<cword>"<CR>
-
 
 " Move to url
 nmap <Tab> :call xelltoolkit#goto_next_word(g:urlpattern)<CR>
@@ -618,7 +554,7 @@ endfunction
 
 nnoremap <Space> @=((foldclosed(line('.')) < 0)?'zc':'zo')<CR>
 
-map ,hc :call SetColorColumn()<CR>
+map <Leader>hc :call SetColorColumn()<CR>
 function! SetColorColumn()
     let col_num = virtcol(".")
     let cc_list = split(&cc, ',')
@@ -632,20 +568,14 @@ endfunction
 " }}}
 
 " Completions {{{2
-" c.f. https://gist.github.com/xge/2422950
-set dictionary=/usr/share/dict/words
-set complete+=k
-set infercase
 " Complete tags
 inoremap <C-]> <C-x><C-]>
 " Complete dictionary
 inoremap <C-D> <C-x><C-K>
 " Complete file names
 inoremap <C-F> <C-x><C-F>
-" Complete dictionary
-" inoremap <C-K> <C-x><C-K>
 " Complete whole lines
-" inoremap <C-L> <C-x><C-L>
+inoremap <C-L> <C-x><C-L>
 
 " }}}
 
@@ -662,12 +592,11 @@ nmap <Leader>rcge :exec 'e ' . substitute(system('readlink ' . $MYGVIMRC), '\(\s
 " Reload gvimrc
 nmap <Leader>rcgl :so $MYGVIMRC<CR>
 
-" Jump among windows noremap
-if &term =~? 'xterm'
-	noremap ø <Tab>
-else
-	noremap <A-o> <Tab>
-endif
+" }}}
+
+" }}}
+
+" Commands and Others {{{1
 
 " diff two windows
 command! -nargs=0 Diffthis call <SID>difftwowindows()
@@ -689,7 +618,20 @@ function! s:spell_check()
     endif
 endfunction
 
-" }}}
+augroup vimStartup
+    au!
+
+    " When editing a file, always jump to the last known cursor position.
+    " Don't do it when the position is invalid, when inside an event handler
+    " (happens when dropping a file on gvim) and for a commit message (it's
+    " likely a different one than last time).
+    autocmd BufReadPost *
+                \ if line("'\"") >= 1 && line("'\"") <= line("$") && &ft !~# 'commit'
+                \ |   exe "normal! g`\""
+                \ | endif
+
+augroup END
+
 
 " }}}
 
@@ -723,7 +665,7 @@ let g:xell_notes_ex_root = glob('~/Documents/notes/notes_preview')
 let g:xell_notes_default_ext = 'md'
 let g:xell_notes_temp_ext = 'tempnote'
 nmap <Leader>rj :exec 'e /Users/xell/Documents/notes/rj.md'<CR>
-nmap <Leader>pr :exec 'e /Users/xell/Documents/notes/projects/main.xproject'<CR>
+" nmap <Leader>pr :exec 'e /Users/xell/Documents/notes/projects/main.xproject'<CR>
 " }}}
 
 " Blockdiff {{{2
@@ -734,7 +676,7 @@ vmap ,d2 :call BlockDiff_GetBlock2()<CR>
 let g:bufExplorerShowUnlisted=1
 " }}}
 " Colorizer {{{2
-nmap <silent> <F6> <Plug>Colorizer
+nmap <silent> <S-F6> <Plug>Colorizer
 let g:colorizer_startup = 0
 " }}}
 " CtrlP {{{2
@@ -753,6 +695,7 @@ autocmd FileType html,css EmmetInstall
 packadd! editexisting
 " }}}
 " FFS {{{2
+" TODO
 nmap <Leader><Leader><Leader> :call FFS()<CR>
 let g:ffs_forbiden_path = ['/Users/xell', '/Users/xell/Library', '/Users/xell/Codes', '/Users/xell/Documents', '/Applications', '/Library']
 " }}}
@@ -816,12 +759,6 @@ endfunction
 nnoremap <Leader>gV :Gitv --all<CR>
 nnoremap <Leader>gv :Gitv! --all<CR>
 vmap <leader>gv :Gitv! --all<cr>
-" }}}
-" Gundo {{{2
-"let g:gundo_disable=1
-" https://github.com/sjl/gundo.vim/pull/35
-let g:gundo_prefer_python3 = 1
-nnoremap <F5> :GundoToggle<CR>
 " }}}
 " Hostslist {{{2
 let g:hosts_list = '/Users/xell/Code/pac/xell.hostslist'
@@ -898,6 +835,11 @@ nmap <C-F7> <Plug>Tex_FastCommandInsert
 let g:Imap_FreezeImap = 1
 imap <D-C-j> <Plug>IMAP_JumpForward
 nmap <D-C-y> <Plug>IMAP_JumpForward
+
+" IMPORTANT: grep will sometimes skip displaying the file name if you
+" search in a singe file. This will confuse Latex-Suite. Set your grep
+" program to always generate a file-name.
+set grepprg=grep\ -nH\ $*
 
 " }}}
 " local_vimrc {{{2
@@ -1055,7 +997,7 @@ let g:filteringDefaultAutoFollow = 1
 
 " After / search, use this to show the search result window
 " just like quickfix list, but with sync scroll
-nnoremap ,l :call FilteringNew().addToParameter('alt', @/).run()<CR>
+nnoremap ,S :call FilteringNew().addToParameter('alt', @/).run()<CR>
 " After / search, use this to enter a keword filtering the search
 " i.e. do a second search in the first search result
 nnoremap ,F :call FilteringNew().parseQuery(input('>'), '<Bar>').run()<CR>
@@ -1182,6 +1124,9 @@ endfunction
 " Others {{{1
 
 " Test
+
+" Deal with large file
+"autocmd BufWinEnter * if line2byte(line("$") + 1) > 200000 | syntax clear | echomsg "Large File" | endif
 
 " autocmd BufRead *.md ToggleFoldMethod
 cab mmm match Temp /\~\~../
