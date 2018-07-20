@@ -543,7 +543,7 @@ nmap <C-Down> ddp
 " }}}
 
 " Dispaly {{{2
-nmap <Leader><Leader>n :call <SID>changenumberdisplay()<CR>
+nmap <Leader>nn :call <SID>changenumberdisplay()<CR>
 function! s:changenumberdisplay()
 	if &relativenumber
 		set norelativenumber
@@ -696,7 +696,7 @@ packadd! editexisting
 " }}}
 " FFS {{{2
 " TODO
-nmap <Leader><Leader><Leader> :call FFS()<CR>
+" nmap <Leader><Leader><Leader> :call FFS()<CR>
 let g:ffs_forbiden_path = ['/Users/xell', '/Users/xell/Library', '/Users/xell/Codes', '/Users/xell/Documents', '/Applications', '/Library']
 " }}}
 " Fugitive {{{2
@@ -721,20 +721,20 @@ let g:fuf_keyPreview = '<C-H>'
 let g:fuf_keyOpenTabpage = '<C-Return>'
 
 " Usage : ,fe n:
-nmap <Leader>fe :FufFile<CR>
+" nmap <Leader>fe :FufFile<CR>
 let g:fuf_abbrevMap = {
             \ "^v:" : ['$VIM/**/',],
             \ "^n:" : [g:xell_notes_root . '/'],
             \ }
 
-nmap <Leader>ff :FufMruFile<CR>
+" nmap <Leader>ff :FufMruFile<CR>
 " All file in current directory recursively
-nmap <Leader>fd :FufCoverageFile<CR>
-nmap <Leader>ft :FufTag<CR>
-nmap <Leader>fh :FufHelp<CR><C-E>
-nmap <Leader>fb :FufBuffer<CR>
+" nmap <Leader>fd :FufCoverageFile<CR>
+" nmap <Leader>ft :FufTag<CR>
+" nmap <Leader>fh :FufHelp<CR><C-E>
+" nmap <Leader>fb :FufBuffer<CR>
 
-nmap <Leader>fc :call fuf#givencmd#launch('', 0, '>', <SID>getAllCommands())<CR>
+" nmap <Leader>fc :call fuf#givencmd#launch('', 0, '>', <SID>getAllCommands())<CR>
 function! s:getAllCommands()
   redir => commands
   silent command
@@ -744,15 +744,37 @@ function! s:getAllCommands()
 endfunction
 
 " All user vimfiles
-nmap <Leader>fg :call <SID>fuf_vimfiles()<CR>
+" nmap <Leader>fg :call <SID>fuf_vimfiles()<CR>
 function! s:fuf_vimfiles()
 	exec "call fuf#givenfile#launch('', 0, '>', split(glob('" . split(&rtp, ',')[0] . "/**/*'), \"\\n\"))"
 endfunction
 
-nmap <Leader>fn :call <SID>fuf_notes()<CR>
+" nmap <Leader>fn :call <SID>fuf_notes()<CR>
 function! s:fuf_notes()
 	exec "call fuf#givenfile#launch('', 0, '>', split(glob('" . g:xell_notes_root . "/**/*'), \"\\n\"))"
 endfunction
+
+" }}}
+" fzf {{{2
+" https://github.com/junegunn/fzf#as-vim-plugin
+" https://github.com/junegunn/fzf/blob/master/README-VIM.md
+set rtp+=/usr/local/opt/fzf
+let g:fzf_buffers_jump = 1
+let g:fzf_layout = { 'up': '~20%' }
+nmap <Leader>fe :Files<CR>
+nmap <Leader>ff :History<CR>
+nmap <Leader>ft :Tags<CR>
+nmap <Leader>fh :Helptags<CR>
+nmap <Leader>fb :Buffers<CR>
+nmap <Leader>fc :Commands<CR>
+nmap <Leader>fl :BLines<CR>
+nmap <Leader>fL :Lines<CR>
+nmap <Leader>fm :Marks<CR>
+nmap <Leader>fw :Windows<CR>
+nmap <Leader>fv :Files ~/.vim<CR>
+nmap <Leader>fn :Files <C-R>=g:xell_notes_root<CR><CR>
+
+nmap <Leader><Leader><Leader> :Ag<CR>
 
 " }}}
 " Gitv {{{2
@@ -842,19 +864,9 @@ nmap <D-C-y> <Plug>IMAP_JumpForward
 set grepprg=grep\ -nH\ $*
 
 " }}}
-" local_vimrc {{{2
-let g:local_vimrc = ".exrc"
-" }}}
 " Matchit {{{2
 " TODO define some new block
 packadd matchit
-" }}}
-" MarksBrowser {{{2
-"let g:marksCloseWhenSelected = 0
-let g:marksShowTypes = "abcdefghijklmnopqrstuvwxyz" . "ABCDEFGHIJKLMNOPQRSTUVWXYZ" . "0123456789.'`^<>\""
-nmap <Leader>mb :MarksBrowser<cr><cr>
-" Default
-"let s:all_marks = "abcdefghijklmnopqrstuvwxyz.'`^<>\""
 " }}}
 " Neocomplete {{{2
 if $SUDO_USER == ''
