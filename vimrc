@@ -122,6 +122,28 @@ set dictionary=/usr/share/dict/words
 set complete+=k
 set infercase
 
+set exrc
+
+" }}}
+
+" Filetypes {{{2
+
+" autocmd BufRead *.md ToggleFoldMethod
+
+" Deal with large file
+"autocmd BufWinEnter * if line2byte(line("$") + 1) > 200000 | syntax clear | echomsg "Large File" | endif
+
+" Mathematica filetype
+let filetype_m = "mma"
+
+" SH filetype, see *sh.vim*
+let g:is_bash=1
+let g:sh_fold_enabled=3
+
+" 解决crontab -e时，提示crontab: temp file must be edited in place
+" https://blog.csdn.net/xuyaqun/article/details/44458987
+autocmd filetype crontab setlocal nobackup nowritebackup
+
 " }}}
 
 " IME setting {{{2
@@ -222,6 +244,8 @@ set nomousehide
 " Use symbols to fill the blank of tab and eol
 set listchars=tab:▸\ ,eol:¬
 
+set termguicolors
+
 " }}}
 
 " Foldtext  {{{2
@@ -284,7 +308,7 @@ endfunction
 
 " }}}
 
-colorscheme evening
+colorscheme xell
 
 " }}}
 
@@ -568,14 +592,15 @@ endfunction
 " }}}
 
 " Completions {{{2
+
 " Complete tags
 inoremap <C-]> <C-x><C-]>
 " Complete dictionary
-inoremap <C-D> <C-x><C-K>
+imap <D-d> <C-x><C-K>
 " Complete file names
-inoremap <C-F> <C-x><C-F>
+imap <D-f> <C-x><C-F>
 " Complete whole lines
-inoremap <C-L> <C-x><C-L>
+imap <D-l> <C-x><C-L>
 
 " }}}
 
@@ -632,13 +657,83 @@ augroup vimStartup
 
 augroup END
 
+" Xell Other
+" TODO https://github.com/tpope/vim-eunuch
+"delete the current file
+com! Rm call xelltoolkit#delete_file()
+"delete the file and quit the buffer (quits vim if this was the last file)
+com! RM call xelltoolkit#delete_file() <Bar> bd!
 
+com! URL call xelltoolkit#get_copy(xelltoolkit#get_file_url())
+
+" Define command WhatSyntax for looking up syntax
+command! -nargs=0 -bar WhatSyntax echomsg synIDattr(synID(line("."),col("."),0),"name") synIDattr(synIDtrans(synID(line("."),col("."),0)),"name") synIDattr(synID(line("."),col("."),1),"name") synIDattr(synIDtrans(synID(line("."),col("."),1)),"name")
+
+" Capitalization of the current line
+" Capitalize all words in titles of publications and documents, except a, an, the, at, by, for, in, of, on, to, up, and, as, but, or, and nor.
+" https://taptoe.wordpress.com/2013/02/06/vim-capitalize-every-first-character-of-every-word-in-a-sentence/
+command! -nargs=0 Capitalize s/\v^\a|\:\s\a|<%(a>|an>|and>|as>|at>|but>|by>|for>|in>|nor>|of>|on>|or>|the>|to>|up>)@!\a/\U&/g
+
+
+" Bonly {{{2
+" https://github.com/schickling/vim-bufonly
+command! -nargs=? -complete=buffer -bang Bonly
+    \ :call BufOnly('<args>', '<bang>')
+function! BufOnly(buffer, bang)
+	if a:buffer == ''
+		" No buffer provided, use the current buffer.
+		let buffer = bufnr('%')
+	elseif (a:buffer + 0) > 0
+		" A buffer number was provided.
+		let buffer = bufnr(a:buffer + 0)
+	else
+		" A buffer name was provided.
+		let buffer = bufnr(a:buffer)
+	endif
+
+	if buffer == -1
+		echohl ErrorMsg
+		echomsg "No matching buffer for" a:buffer
+		echohl None
+		return
+	endif
+
+	let last_buffer = bufnr('$')
+
+	let delete_count = 0
+	let n = 1
+	while n <= last_buffer
+		if n != buffer && buflisted(n)
+			if a:bang == '' && getbufvar(n, '&modified')
+				echohl ErrorMsg
+				echomsg 'No write since last change for buffer'
+							\ n '(add ! to override)'
+				echohl None
+			else
+				silent exe 'bdel' . a:bang . ' ' . n
+				if ! buflisted(n)
+					let delete_count = delete_count+1
+				endif
+			endif
+		endif
+		let n = n+1
+	endwhile
+
+	if delete_count == 1
+		echomsg delete_count "buffer deleted"
+	elseif delete_count > 1
+		echomsg delete_count "buffers deleted"
+	endif
+
+endfunction
+" }}}
 " }}}
 
 " Abbrevs {{{1
 """"""""""""""""""""""""""""""""""""""""""""""""""""" 
 ca xs mks! ~/Documents/xs1.vim
 ca xl so ~/Documents/xs1.vim
+
 " Must in /etc/sudoers set username ALL=(ALL) NOPASSWD:ALL
 cab sudow silent w !sudo tee %
 cmap w!! w !sudo tee % >/dev/null
@@ -646,11 +741,6 @@ cmap w!! w !sudo tee % >/dev/null
 cab xfn echo expand("%:p")
 "Insert date and time
 iab xdate <C-r>=strftime("%Y-%m-%d %H:%M:%S")<CR>
-
-" XXX temp
-" add space between
-cab xasb .s/\([^\x00-\xff]\&[^（），、：。“”；]\)\(\a\<bar>[<>_-]\)/\1 \2/g
-cab xasa .s/\(\a\<bar>[<>_-]\)\([^\x00-\xff]\&[^（），、：。“”；]\)/\1 \2/g
 
 " }}}
 
@@ -774,7 +864,25 @@ nmap <Leader>fw :Windows<CR>
 nmap <Leader>fv :Files ~/.vim<CR>
 nmap <Leader>fn :Files <C-R>=g:xell_notes_root<CR><CR>
 
-nmap <Leader><Leader><Leader> :Ag<CR>
+" https://github.com/junegunn/fzf.vim/issues/54
+" https://github.com/junegunn/fzf.vim/issues/228
+" https://github.com/junegunn/fzf.vim/commit/8ea2e872d7ac7492b86bcca16ccd5d5021663efb
+command! -bang -nargs=* AG call fzf#vim#ag(<q-args>, '-S', {'options': '--bind ctrl-a:select-all,ctrl-d:deselect-all'}, <bang>0)
+nmap <Leader><Leader><Leader> :AG<CR>
+
+" Mapping selecting mappings
+nmap <leader><tab> <plug>(fzf-maps-n)
+xmap <leader><tab> <plug>(fzf-maps-x)
+omap <leader><tab> <plug>(fzf-maps-o)
+
+" Insert mode completion
+imap <c-x><c-k> <plug>(fzf-complete-word)
+imap <c-x><c-f> <plug>(fzf-complete-path)
+imap <c-x><c-j> <plug>(fzf-complete-file-ag)
+imap <c-x><c-l> <plug>(fzf-complete-line)
+
+" Advanced customization using autoload functions
+" inoremap <expr> <c-x><c-k> fzf#vim#complete#word({'left': '20'})
 
 " }}}
 " Gitv {{{2
@@ -786,6 +894,7 @@ vmap <leader>gv :Gitv! --all<cr>
 let g:hosts_list = '/Users/xell/Code/pac/xell.hostslist'
 " }}}
 " LanguageTool {{{2
+" TODO FIXME
 let g:languagetool_jar = '/usr/local/Cellar/languagetool/4.1/libexec/languagetool-commandline.jar'
 nmap <M-D-l> :LanguageToolCheck<CR>
 " }}}
@@ -869,6 +978,7 @@ set grepprg=grep\ -nH\ $*
 packadd matchit
 " }}}
 " Neocomplete {{{2
+" TODO
 if $SUDO_USER == ''
 " Disable AutoComplPop.
 let g:acp_enableAtStartup = 0
@@ -1072,98 +1182,17 @@ nnoremap <C-Enter> :WinFullScreen<CR>
 nmap <silent> <F3> :call ShowLiveWordCount()<CR>
 " }}}
 
-" Xell Other {{{2
-"delete the current file
-com! Rm call xelltoolkit#delete_file()
-"delete the file and quit the buffer (quits vim if this was the last file)
-com! RM call xelltoolkit#delete_file() <Bar> bd!
-com! URL call xelltoolkit#get_copy(xelltoolkit#get_file_url())
-
-" https://github.com/schickling/vim-bufonly
-command! -nargs=? -complete=buffer -bang Bonly
-    \ :call BufOnly('<args>', '<bang>')
-function! BufOnly(buffer, bang) "{{{3
-	if a:buffer == ''
-		" No buffer provided, use the current buffer.
-		let buffer = bufnr('%')
-	elseif (a:buffer + 0) > 0
-		" A buffer number was provided.
-		let buffer = bufnr(a:buffer + 0)
-	else
-		" A buffer name was provided.
-		let buffer = bufnr(a:buffer)
-	endif
-
-	if buffer == -1
-		echohl ErrorMsg
-		echomsg "No matching buffer for" a:buffer
-		echohl None
-		return
-	endif
-
-	let last_buffer = bufnr('$')
-
-	let delete_count = 0
-	let n = 1
-	while n <= last_buffer
-		if n != buffer && buflisted(n)
-			if a:bang == '' && getbufvar(n, '&modified')
-				echohl ErrorMsg
-				echomsg 'No write since last change for buffer'
-							\ n '(add ! to override)'
-				echohl None
-			else
-				silent exe 'bdel' . a:bang . ' ' . n
-				if ! buflisted(n)
-					let delete_count = delete_count+1
-				endif
-			endif
-		endif
-		let n = n+1
-	endwhile
-
-	if delete_count == 1
-		echomsg delete_count "buffer deleted"
-	elseif delete_count > 1
-		echomsg delete_count "buffers deleted"
-	endif
-
-endfunction
-" }}}3
-" }}}
 " }}}
 
-" Others {{{1
+" Test {{{1
 
-" Test
-
-" Deal with large file
-"autocmd BufWinEnter * if line2byte(line("$") + 1) > 200000 | syntax clear | echomsg "Large File" | endif
-
-" autocmd BufRead *.md ToggleFoldMethod
 cab mmm match Temp /\~\~../
-cab xxc bd book.log <bar> ccl
 
-set exrc
+" TODO temp
+" add space between
+cab xasb .s/\([^\x00-\xff]\&[^（），、：。“”；]\)\(\a\<bar>[<>_-]\)/\1 \2/g
+cab xasa .s/\(\a\<bar>[<>_-]\)\([^\x00-\xff]\&[^（），、：。“”；]\)/\1 \2/g
 
-" Mathematica filetype
-let filetype_m = "mma"
-
-" SH filetype, see *sh.vim*
-let g:is_bash=1
-let g:sh_fold_enabled=3
-
-" Define command WhatSyntax for looking up syntax
-command! -nargs=0 -bar WhatSyntax echomsg synIDattr(synID(line("."),col("."),0),"name") synIDattr(synIDtrans(synID(line("."),col("."),0)),"name") synIDattr(synID(line("."),col("."),1),"name") synIDattr(synIDtrans(synID(line("."),col("."),1)),"name")
-
-" Capitalization of the current line
-" Capitalize all words in titles of publications and documents, except a, an, the, at, by, for, in, of, on, to, up, and, as, but, or, and nor.
-" https://taptoe.wordpress.com/2013/02/06/vim-capitalize-every-first-character-of-every-word-in-a-sentence/
-command! -nargs=0 Capitalize s/\v^\a|\:\s\a|<%(a>|an>|and>|as>|at>|but>|by>|for>|in>|nor>|of>|on>|or>|the>|to>|up>)@!\a/\U&/g
-
-" 解决crontab -e时，提示crontab: temp file must be edited in place
-" https://blog.csdn.net/xuyaqun/article/details/44458987
-autocmd filetype crontab setlocal nobackup nowritebackup
 
 " NFO view {{{2
 " 能够漂亮地显示.NFO文件
@@ -1181,8 +1210,6 @@ autocmd filetype crontab setlocal nobackup nowritebackup
 
 " }}}
 
-set termguicolors
-
 " https://superuser.com/a/713335
 " if exists('$TMUX')
 "     let &t_SI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=0\x7\<Esc>\\"
@@ -1192,8 +1219,6 @@ set termguicolors
 "     let &t_EI = "\<Esc>]50;CursorShape=0\x7"
 " endif
 
-colorscheme xell
-" nmap <Leader>k :set noimd<CR>
 " }}}
 
 " Modelines {{{1

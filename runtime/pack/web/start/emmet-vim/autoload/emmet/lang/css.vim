@@ -31,7 +31,7 @@ function! emmet#lang#css#parseIntoTree(abbr, type) abort
   else
     for n in range(len(tokens))
       let token = tokens[n]
-      let prop = matchlist(token, '^\(-\{0,1}[a-zA-Z]\+\|[a-zA-Z0-9]\++\{0,1}\|([a-zA-Z0-9]\++\{0,1})\)\(\%([0-9.-]\+[pe]\{0,1}-\{0,1}\|-auto\)*\)$')
+      let prop = matchlist(token, '^\(-\{0,1}[a-zA-Z]\+\|[a-zA-Z0-9]\++\{0,1}\|([a-zA-Z0-9]\++\{0,1})\)\(\%([0-9.-]\+\%(p\|e\|em\|vh\|vw\|re\|rem\|%\)\{0,1}-\{0,1}\|-auto\)*\)$')
       if len(prop)
         let token = substitute(prop[1], '^(\(.*\))', '\1', '')
         if token =~# '^-'
@@ -48,8 +48,20 @@ function! emmet#lang#css#parseIntoTree(abbr, type) abort
             let value .= substitute(v, '[^0-9.]*$', '', '')
           elseif v =~# 'p$'
             let value .= substitute(v, 'p$', '%', '')
+          elseif v =~# '%$'
+            let value .= v
           elseif v =~# 'e$'
             let value .= substitute(v, 'e$', 'em', '')
+          elseif v =~# 'em$'
+            let value .= v
+          elseif v =~# 'vh$'
+            let value .= v
+          elseif v =~# 'vw$'
+            let value .= v
+          elseif v =~# 're$'
+            let value .= substitute(v, 're$', 'rem', '')
+          elseif v =~# 'rem$'
+            let value .= v
           elseif v =~# '\.'
             let value .= v . 'em'
           elseif v ==# 'auto'
@@ -85,6 +97,9 @@ function! emmet#lang#css#parseIntoTree(abbr, type) abort
         if !has_key(snippets, snippet_name)
           let pat = '^' . join(split(tag_name, '\zs'), '\%(\|[^:-]\+-\)')
           let vv = filter(sort(keys(snippets)), 'snippets[v:val] =~ pat')
+          if len(vv) == 0
+            let vv = filter(sort(keys(snippets)), 'substitute(v:val, ":", "", "g") == snippet_name')
+          endif
           if len(vv) > 0
             let snippet_name = vv[0]
           else
@@ -152,6 +167,10 @@ function! emmet#lang#css#parseIntoTree(abbr, type) abort
         let current.snippet = '-webkit-' . snippet . "\n"
         call add(root.child, deepcopy(current))
         let current.snippet = '-moz-' . snippet . "\n"
+        call add(root.child, deepcopy(current))
+        let current.snippet = '-o-' . snippet . "\n"
+        call add(root.child, deepcopy(current))
+        let current.snippet = '-ms-' . snippet . "\n"
         call add(root.child, deepcopy(current))
         let current.snippet = snippet
         call add(root.child, current)
