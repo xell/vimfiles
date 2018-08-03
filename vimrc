@@ -124,6 +124,8 @@ set infercase
 
 set exrc
 
+set updatetime=500
+
 " }}}
 
 " Filetypes {{{2
@@ -283,7 +285,6 @@ let g:mystatusline2 = '%=%-14.(%l,%c%V%)\ %L\ %P\ '
 exec 'set statusline=' . g:mystatusline1 . g:mystatusline2
 
 " Highlight statusbar according to the type of buffer {{{3
-" TODO make colors compatible with other colorscheme
 let g:aug_vimsb_enable = 1
 augroup vimSB
 	autocmd!
@@ -294,14 +295,12 @@ augroup END
 function! s:XellBufferStatuslineHighlight()
 	let buffername = bufname("%")
 	if empty(buffername)
-		highlight StatusLine guifg=White guibg=#047BC1
-		"highlight StatusLineNC guifg=LightGreen guibg=White
+        highlight! link StatusLine Visual
 	elseif buffername =~ '\%(\.tmp\|0\)$' || expand("%:p") =~ '^\/private\/var' || expand("%:e") =~ g:xell_notes_temp_ext
-		highlight StatusLine guifg=White guibg=#DA4C4D
-		"highlight StatusLineNC guifg=White guibg=LightRed
+        highlight! link StatusLine WarningMsg
 	else
-		highlight StatusLine ctermfg=11 ctermbg=12 cterm=none guifg=#E8E7E6 guibg=#777777 gui=none
-		highlight StatusLineNC ctermfg=12 ctermbg=11 cterm=none guifg=#D3CFCD guibg=#444444 gui=none
+        highlight! link StatusLine StatusLine
+        highlight! link StatusLineNC StatusLineNC
 	endif
 endfunction
 " }}}
@@ -320,6 +319,7 @@ colorscheme xell
 " Set map leader  b de gHiIJK   pq  tu wxy 
 let mapleader=","
 set macmeta
+nnoremap Q q:
 " }}}
 
 " Movements {{{2
@@ -791,6 +791,8 @@ let g:ffs_forbiden_path = ['/Users/xell', '/Users/xell/Library', '/Users/xell/Co
 " }}}
 " Fugitive {{{2
 nmap <Leader>gs :Gstatus<CR>
+nmap <Leader>gd :Gvdiff<CR>
+nmap <Leader>gD :Gdiff<CR>
 let g:fugitive_summary_format = '(%ci) %s'
 if &loadplugins
 	let g:mystatusline_fugitive = '\ %{Fugitive_statusline_mod()}'
@@ -852,7 +854,6 @@ set rtp+=/usr/local/opt/fzf
 let g:fzf_buffers_jump = 1
 let g:fzf_layout = { 'up': '~20%' }
 nmap <Leader>fe :Files<CR>
-nmap <Leader>ff :History<CR>
 nmap <Leader>ft :Tags<CR>
 nmap <Leader>fh :Helptags<CR>
 nmap <Leader>fb :Buffers<CR>
@@ -870,12 +871,15 @@ nmap <Leader>fn :Files <C-R>=g:xell_notes_root<CR><CR>
 command! -bang -nargs=* AG call fzf#vim#ag(<q-args>, '-S', {'options': '--bind ctrl-a:select-all,ctrl-d:deselect-all'}, <bang>0)
 nmap <Leader><Leader><Leader> :AG<CR>
 
+nmap <Leader>ff :FZFMru<CR>
+
 " Mapping selecting mappings
 nmap <leader><tab> <plug>(fzf-maps-n)
 xmap <leader><tab> <plug>(fzf-maps-x)
 omap <leader><tab> <plug>(fzf-maps-o)
 
 " Insert mode completion
+" TODO supertab
 imap <c-x><c-k> <plug>(fzf-complete-word)
 imap <c-x><c-f> <plug>(fzf-complete-path)
 imap <c-x><c-j> <plug>(fzf-complete-file-ag)
@@ -1099,7 +1103,7 @@ nmap <Leader>b :NERDTreeFromBookmark
 " Open or yank web url
 nmap <Leader>Y :call Open()<CR>
 nmap <expr> <Leader>y xelltoolkit#get_copy(xelltoolkit#get_word_at_cursor(g:urlpattern))
-nmap <C-A-o> :OpenInBrowser<CR>
+nmap <Leader>O :OpenInBrowser<CR>
 command! -bang -nargs=? OpenInBrowser call OpenInBrowser(<bang>1, '<args>')
 command! -nargs=0 OpenInDefaultPrg call xelltoolkit#run('', expand("%:p"))
 command! -nargs=1 Es call xelltoolkit#edit_samename_file('<args>')
@@ -1113,23 +1117,6 @@ let g:pandoc_fold_level = 2
 " Proxylist {{{2
 let g:proxy_list = '/Users/xell/Code/pac/xell.proxylist'
 let g:proxy_pac = '/Users/xell/Sites/proxylist.pac'
-" }}}
-" Quich Filter {{{2
-let g:filteringDefaultAutoFollow = 1
-
-" After / search, use this to show the search result window
-" just like quickfix list, but with sync scroll
-nnoremap ,S :call FilteringNew().addToParameter('alt', @/).run()<CR>
-" After / search, use this to enter a keword filtering the search
-" i.e. do a second search in the first search result
-nnoremap ,F :call FilteringNew().parseQuery(input('>'), '<Bar>').run()<CR>
-" Re-open previous "look" windows selectively
-nnoremap ,g :call FilteringGetForSource().return()<CR>
-
-" Old settings, name are more intuitive to understand
-" nmap <Leader>F :call Gather(input("Filter on term: "), 0)<CR>
-" nmap <Leader>l :call Gather(@/, 0)<CR>:echo<CR>
-" nmap <Leader>g :call GotoOpenSearchBuffer()<CR>
 " }}}
 " SessionManager {{{2
 let g:session_path = glob('~/.vimsession')

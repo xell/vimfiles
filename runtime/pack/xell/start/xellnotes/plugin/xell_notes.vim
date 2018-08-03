@@ -78,7 +78,7 @@ function! s:note_taking()
     call setline(1, ':' . g:xell_notes_root)
     call append(1, '')
     call append(2, notes)
-    call feedkeys(',,,')
+    AG
 
     return
 endfunction
