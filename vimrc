@@ -1146,24 +1146,10 @@ let g:table_mode_delimiter = '|'
 let g:tagbar_iconchars = ['▸', '▾']
 let g:tagbar_sort = 0
 let g:tagbar_autofocus = 1
-" let g:tagbar_iconchars = ['▶', '▼']  (default on Linux and Mac OS X)
+let g:tagbar_map_togglefold = '<Space>'
 
 nmap <F10> :TagbarToggle<CR>
 highlight link TagbarType Ignore
-
-" }}}
-" Taglist {{{2
-let g:Tlist_Show_One_File=1
-let Tlist_Sort_Type = "order"
-highlight link MyTagListFileName Identifier
-highlight link MyTagListTagName Type
-
-" c.f. https://github.com/majutsushi/tagbar/wiki#markdown
-let tlist_pandoc_settings = "markdown;h:Contents"
-
-" For toggle the Tlist windows
-" nmap <F10> :TlistToggle<CR>
-" imap <F10> <ESC><F10>i
 " }}}
 " tComment {{{2
 " While gcc respects indent blank, I defined gcl to put comment character
