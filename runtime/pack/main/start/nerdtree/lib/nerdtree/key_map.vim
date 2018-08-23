@@ -2,38 +2,28 @@
 "============================================================
 let s:KeyMap = {}
 let g:NERDTreeKeyMap = s:KeyMap
-let s:keyMaps = {}
 
 "FUNCTION: KeyMap.All() {{{1
 function! s:KeyMap.All()
-    let sortedKeyMaps = values(s:keyMaps)
-    call sort(sortedKeyMaps, s:KeyMap.Compare, s:KeyMap)
-
-    return sortedKeyMaps
-endfunction
-
-"FUNCTION: KeyMap.Compare(keyMap1, keyMap2) {{{1
-function! s:KeyMap.Compare(keyMap1, keyMap2)
-
-    if a:keyMap1.key >? a:keyMap2.key
-        return 1
+    if !exists("s:keyMaps")
+        let s:keyMaps = []
     endif
-
-    if a:keyMap1.key <? a:keyMap2.key
-        return -1
-    endif
-
-    return 0
+    return s:keyMaps
 endfunction
 
 "FUNCTION: KeyMap.FindFor(key, scope) {{{1
 function! s:KeyMap.FindFor(key, scope)
-    return get(s:keyMaps, a:key . a:scope, {})
+    for i in s:KeyMap.All()
+         if i.key ==# a:key && i.scope ==# a:scope
+            return i
+        endif
+    endfor
+    return {}
 endfunction
 
 "FUNCTION: KeyMap.BindAll() {{{1
 function! s:KeyMap.BindAll()
-    for i in values(s:keyMaps)
+    for i in s:KeyMap.All()
         call i.bind()
     endfor
 endfunction
@@ -59,7 +49,12 @@ endfunction
 
 "FUNCTION: KeyMap.Remove(key, scope) {{{1
 function! s:KeyMap.Remove(key, scope)
-    return remove(s:keyMaps, a:key . a:scope)
+    let maps = s:KeyMap.All()
+    for i in range(len(maps))
+         if maps[i].key ==# a:key && maps[i].scope ==# a:scope
+            return remove(maps, i)
+        endif
+    endfor
 endfunction
 
 "FUNCTION: KeyMap.invoke() {{{1
@@ -157,7 +152,8 @@ endfunction
 
 "FUNCTION: KeyMap.Add(keymap) {{{1
 function! s:KeyMap.Add(keymap)
-    let s:keyMaps[a:keymap.key . a:keymap.scope] = a:keymap
+    call s:KeyMap.Remove(a:keymap.key, a:keymap.scope)
+    call add(s:KeyMap.All(), a:keymap)
 endfunction
 
 " vim: set sw=4 sts=4 et fdm=marker:

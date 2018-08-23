@@ -1,19 +1,11 @@
-" ============================================================================
-" CLASS: Bookmark
-"
-" The Bookmark class serves two purposes:
-"   (1) It is the top-level prototype for new, concrete Bookmark objects.
-"   (2) It provides an interface for client code to query and manipulate the
-"       global list of Bookmark objects within the current Vim session.
-" ============================================================================
-
-
+"CLASS: Bookmark
+"============================================================
 let s:Bookmark = {}
 let g:NERDTreeBookmark = s:Bookmark
 
-" FUNCTION: Bookmark.activate(nerdtree) {{{1
-function! s:Bookmark.activate(nerdtree, ...)
-    call self.open(a:nerdtree, a:0 ? a:1 : {})
+" FUNCTION: Bookmark.activate() {{{1
+function! s:Bookmark.activate(...)
+    call self.open(a:0 ? a:1 : {})
 endfunction
 
 " FUNCTION: Bookmark.AddBookmark(name, path) {{{1
@@ -27,9 +19,12 @@ function! s:Bookmark.AddBookmark(name, path)
         endif
     endfor
     call add(s:Bookmark.Bookmarks(), s:Bookmark.New(a:name, a:path))
+    if g:NERDTreeBookmarksSort ==# 1
+        call s:Bookmark.Sort()
+    endif
 endfunction
 
-" FUNCTION: Bookmark.Bookmarks() {{{1
+" FUNCTION: Bookmark.Bookmarks()   {{{1
 " Class method to get all bookmarks. Lazily initializes the bookmarks global
 " variable
 function! s:Bookmark.Bookmarks()
@@ -39,7 +34,7 @@ function! s:Bookmark.Bookmarks()
     return g:NERDTreeBookmarks
 endfunction
 
-" FUNCTION: Bookmark.BookmarkExistsFor(name) {{{1
+" FUNCTION: Bookmark.BookmarkExistsFor(name)   {{{1
 " class method that returns 1 if a bookmark with the given name is found, 0
 " otherwise
 function! s:Bookmark.BookmarkExistsFor(name)
@@ -51,24 +46,19 @@ function! s:Bookmark.BookmarkExistsFor(name)
     endtry
 endfunction
 
-" FUNCTION: Bookmark.BookmarkFor(name) {{{1
-" Class method that returns the Bookmark object having the specified name.
-" Throws "NERDTree.BookmarkNotFoundError" if no Bookmark is found.
+" FUNCTION: Bookmark.BookmarkFor(name)   {{{1
+" Class method to get the bookmark that has the given name. {} is return if no
+" bookmark is found
 function! s:Bookmark.BookmarkFor(name)
-    let l:result = {}
-    for l:bookmark in s:Bookmark.Bookmarks()
-        if l:bookmark.name ==# a:name
-            let l:result = l:bookmark
-            break
+    for i in s:Bookmark.Bookmarks()
+        if i.name ==# a:name
+            return i
         endif
     endfor
-    if empty(l:result)
-        throw 'NERDTree.BookmarkNotFoundError: "' . a:name  . '" not found'
-    endif
-    return l:result
+    throw "NERDTree.BookmarkNotFoundError: no bookmark found for name: \"". a:name  .'"'
 endfunction
 
-" FUNCTION: Bookmark.BookmarkNames() {{{1
+" FUNCTION: Bookmark.BookmarkNames()   {{{1
 " Class method to return an array of all bookmark names
 function! s:Bookmark.BookmarkNames()
     let names = []
@@ -97,7 +87,6 @@ function! s:Bookmark.CacheBookmarks(silent)
 
                 let name = substitute(i, '^\(.\{-}\) .*$', '\1', '')
                 let path = substitute(i, '^.\{-} \(.*\)$', '\1', '')
-                let path = fnamemodify(path, ':p')
 
                 try
                     let bookmark = s:Bookmark.New(name, g:NERDTreePath.New(path))
@@ -114,31 +103,17 @@ function! s:Bookmark.CacheBookmarks(silent)
                 call nerdtree#echo(invalidBookmarksFound . " invalid bookmarks were read. See :help NERDTreeInvalidBookmarks for info.")
             endif
         endif
+        if g:NERDTreeBookmarksSort ==# 1
+            call s:Bookmark.Sort()
+        endif
     endif
 endfunction
 
-" FUNCTION: Bookmark.CompareBookmarksByName(firstBookmark, secondBookmark) {{{1
-" Class method that indicates the relative position of two bookmarks when
-" placed in alphabetical order by name. Case-sensitivity is determined by an
-" option. Supports the "s:Bookmark.SortBookmarksList()" method.
-function! s:Bookmark.CompareBookmarksByName(firstBookmark, secondBookmark)
-    let l:result = 0
-    if g:NERDTreeBookmarksSort == 1
-        if a:firstBookmark.name <? a:secondBookmark.name
-            let l:result = -1
-        elseif a:firstBookmark.name >? a:secondBookmark.name
-            let l:result = 1
-        endif
-    elseif g:NERDTreeBookmarksSort == 2
-        if a:firstBookmark.name <# a:secondBookmark.name
-            let l:result = -1
-        elseif a:firstBookmark.name ># a:secondBookmark.name
-            let l:result = 1
-        endif
-    endif
-    return l:result
+" FUNCTION: Bookmark.compareTo(otherbookmark) {{{1
+" Compare these two bookmarks for sorting purposes
+function! s:Bookmark.compareTo(otherbookmark)
+    return a:otherbookmark.name < self.name
 endfunction
-
 " FUNCTION: Bookmark.ClearAll() {{{1
 " Class method to delete all bookmarks.
 function! s:Bookmark.ClearAll()
@@ -152,38 +127,39 @@ endfunction
 " Delete this bookmark. If the node for this bookmark is under the current
 " root, then recache bookmarks for its Path object
 function! s:Bookmark.delete()
+    let node = {}
+    try
+        let node = self.getNode(1)
+    catch /^NERDTree.BookmarkedNodeNotFoundError/
+    endtry
     call remove(s:Bookmark.Bookmarks(), index(s:Bookmark.Bookmarks(), self))
+    if !empty(node)
+        call node.path.cacheDisplayString()
+    endif
     call s:Bookmark.Write()
 endfunction
 
-" FUNCTION: Bookmark.getNode(nerdtree, searchFromAbsoluteRoot) {{{1
-" Returns the tree node object associated with this Bookmark.
-" Throws "NERDTree.BookmarkedNodeNotFoundError" if the node is not found.
+" FUNCTION: Bookmark.getNode(searchFromAbsoluteRoot) {{{1
+" Gets the treenode for this bookmark
 "
 " Args:
-" searchFromAbsoluteRoot: boolean flag, search from the highest cached node
-"   if true and from the current tree root if false
-function! s:Bookmark.getNode(nerdtree, searchFromAbsoluteRoot)
-    if a:searchFromAbsoluteRoot
-        let l:searchRoot = a:nerdtree.root.AbsoluteTreeRoot()
-    else
-        let l:searchRoot = a:nerdtree.root
+" searchFromAbsoluteRoot: specifies whether we should search from the current
+" tree root, or the highest cached node
+function! s:Bookmark.getNode(searchFromAbsoluteRoot)
+    let searchRoot = a:searchFromAbsoluteRoot ? g:NERDTreeDirNode.AbsoluteTreeRoot() : b:NERDTreeRoot
+    let targetNode = searchRoot.findNode(self.path)
+    if empty(targetNode)
+        throw "NERDTree.BookmarkedNodeNotFoundError: no node was found for bookmark: " . self.name
     endif
-    let l:targetNode = l:searchRoot.findNode(self.path)
-    if empty(l:targetNode)
-        throw 'NERDTree.BookmarkedNodeNotFoundError: node for bookmark "' . self.name . '" not found'
-    endif
-    return l:targetNode
+    return targetNode
 endfunction
 
-" FUNCTION: Bookmark.GetNodeForName(name, searchFromAbsoluteRoot, nerdtree) {{{1
-" Class method that returns the tree node object for the Bookmark with the
-" given name. Throws "NERDTree.BookmarkNotFoundError" if a Bookmark with the
-" name does not exist. Throws "NERDTree.BookmarkedNodeNotFoundError" if a
-" tree node for the named Bookmark could not be found.
-function! s:Bookmark.GetNodeForName(name, searchFromAbsoluteRoot, nerdtree)
-    let l:bookmark = s:Bookmark.BookmarkFor(a:name)
-    return l:bookmark.getNode(a:nerdtree, a:searchFromAbsoluteRoot)
+" FUNCTION: Bookmark.GetNodeForName(name, searchFromAbsoluteRoot) {{{1
+" Class method that finds the bookmark with the given name and returns the
+" treenode for it.
+function! s:Bookmark.GetNodeForName(name, searchFromAbsoluteRoot)
+    let bookmark = s:Bookmark.BookmarkFor(a:name)
+    return bookmark.getNode(a:searchFromAbsoluteRoot)
 endfunction
 
 " FUNCTION: Bookmark.GetSelected() {{{1
@@ -201,7 +177,7 @@ function! s:Bookmark.GetSelected()
     return {}
 endfunction
 
-" FUNCTION: Bookmark.InvalidBookmarks() {{{1
+" FUNCTION: Bookmark.InvalidBookmarks()   {{{1
 " Class method to get all invalid bookmark strings read from the bookmarks
 " file
 function! s:Bookmark.InvalidBookmarks()
@@ -233,11 +209,8 @@ function! s:Bookmark.New(name, path)
     return newBookmark
 endfunction
 
-" FUNCTION: Bookmark.open(nerdtree, [options]) {{{1
+" FUNCTION: Bookmark.open([options]) {{{1
 "Args:
-"
-"nerdtree: the tree to load open the bookmark in
-"
 "A dictionary containing the following keys (all optional):
 "  'where': Specifies whether the node should be opened in new split/tab or in
 "           the previous window. Can be either 'v' (vertical split), 'h'
@@ -246,11 +219,11 @@ endfunction
 "  'keepopen': dont close the tree window
 "  'stay': open the file, but keep the cursor in the tree win
 "
-function! s:Bookmark.open(nerdtree, ...)
+function! s:Bookmark.open(...)
     let opts = a:0 ? a:1 : {}
 
     if self.path.isDirectory && !has_key(opts, 'where')
-        call self.toRoot(a:nerdtree)
+        call self.toRoot()
     else
         let opener = g:NERDTreeOpener.New(self.path, opts)
         call opener.open(self)
@@ -264,58 +237,54 @@ function! s:Bookmark.openInNewTab(options)
     call self.open(a:options)
 endfunction
 
-" FUNCTION: Bookmark.setPath(path) {{{1
+" FUNCTION: Bookmark.setPath(path)   {{{1
 " makes this bookmark point to the given path
 function! s:Bookmark.setPath(path)
     let self.path = a:path
 endfunction
 
-" FUNCTION: Bookmark.SortBookmarksList() {{{1
-" Class method that sorts the global list of bookmarks alphabetically by name.
-" Note that case-sensitivity is determined by a user option.
-function! s:Bookmark.SortBookmarksList()
-    call sort(s:Bookmark.Bookmarks(), s:Bookmark.CompareBookmarksByName, s:Bookmark)
+" FUNCTION: Bookmark.Sort()   {{{1
+" Class method that sorts all bookmarks
+function! s:Bookmark.Sort()
+    let CompareFunc = function("nerdtree#compareBookmarks")
+    call sort(s:Bookmark.Bookmarks(), CompareFunc)
 endfunction
 
-" FUNCTION: Bookmark.str() {{{1
+" FUNCTION: Bookmark.str()   {{{1
 " Get the string that should be rendered in the view for this bookmark
 function! s:Bookmark.str()
-    let pathStrMaxLen = winwidth(g:NERDTree.GetWinNum()) - 4 - strdisplaywidth(self.name)
+    let pathStrMaxLen = winwidth(nerdtree#getTreeWinNum()) - 4 - len(self.name)
     if &nu
         let pathStrMaxLen = pathStrMaxLen - &numberwidth
     endif
 
     let pathStr = self.path.str({'format': 'UI'})
-    if strdisplaywidth(pathStr) > pathStrMaxLen
-        while strdisplaywidth(pathStr) > pathStrMaxLen && strchars(pathStr) > 0
-            let pathStr = substitute(pathStr, '^.', '', '')
-        endwhile
-        let pathStr = '<' . pathStr
+    if len(pathStr) > pathStrMaxLen
+        let pathStr = '<' . strpart(pathStr, len(pathStr) - pathStrMaxLen)
     endif
     return '>' . self.name . ' ' . pathStr
 endfunction
 
-" FUNCTION: Bookmark.toRoot(nerdtree) {{{1
-" Set the root of the given NERDTree to the node for this Bookmark. If a node
-" for this Bookmark does not exist, a new one is initialized.
-function! s:Bookmark.toRoot(nerdtree)
+" FUNCTION: Bookmark.toRoot() {{{1
+" Make the node for this bookmark the new tree root
+function! s:Bookmark.toRoot()
     if self.validate()
         try
-            let l:targetNode = self.getNode(a:nerdtree, 1)
-            call l:targetNode.closeChildren()
+            let targetNode = self.getNode(1)
         catch /^NERDTree.BookmarkedNodeNotFoundError/
-            let l:targetNode = g:NERDTreeFileNode.New(s:Bookmark.BookmarkFor(self.name).path, a:nerdtree)
+            let targetNode = g:NERDTreeFileNode.New(s:Bookmark.BookmarkFor(self.name).path)
         endtry
-        call a:nerdtree.changeRoot(l:targetNode)
+        call targetNode.makeRoot()
+        call b:NERDTree.render()
+        call targetNode.putCursorHere(0, 0)
     endif
 endfunction
 
-" FUNCTION: Bookmark.ToRoot(name, nerdtree) {{{1
-" Class method that makes the Bookmark with the given name the root of
-" specified NERDTree.
-function! s:Bookmark.ToRoot(name, nerdtree)
-    let l:bookmark = s:Bookmark.BookmarkFor(a:name)
-    call l:bookmark.toRoot(a:nerdtree)
+" FUNCTION: Bookmark.ToRoot(name) {{{1
+" Make the node for this bookmark the new tree root
+function! s:Bookmark.ToRoot(name)
+    let bookmark = s:Bookmark.BookmarkFor(a:name)
+    call bookmark.toRoot()
 endfunction
 
 " FUNCTION: Bookmark.validate() {{{1
@@ -324,17 +293,18 @@ function! s:Bookmark.validate()
         return 1
     else
         call s:Bookmark.CacheBookmarks(1)
+        call b:NERDTree.render()
         call nerdtree#echo(self.name . "now points to an invalid location. See :help NERDTreeInvalidBookmarks for info.")
         return 0
     endif
 endfunction
 
-" FUNCTION: Bookmark.Write() {{{1
+" FUNCTION: Bookmark.Write()   {{{1
 " Class method to write all bookmarks to the bookmarks file
 function! s:Bookmark.Write()
     let bookmarkStrings = []
     for i in s:Bookmark.Bookmarks()
-        call add(bookmarkStrings, i.name . ' ' . fnamemodify(i.path.str(), ':~'))
+        call add(bookmarkStrings, i.name . ' ' . i.path.str())
     endfor
 
     "add a blank line before the invalid ones

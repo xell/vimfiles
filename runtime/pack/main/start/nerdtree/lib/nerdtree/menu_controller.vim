@@ -15,35 +15,29 @@ function! s:MenuController.New(menuItems)
     return newMenuController
 endfunction
 
-" FUNCTION: MenuController.showMenu() {{{1
-" Enter the main loop of the NERDTree menu, prompting the user to select
-" a menu item.
+"FUNCTION: MenuController.showMenu() {{{1
+"start the main loop of the menu and get the user to choose/execute a menu
+"item
 function! s:MenuController.showMenu()
     call self._saveOptions()
 
     try
         let self.selection = 0
-        let l:done = 0
 
-        while !l:done
+        let done = 0
+        while !done
             redraw!
             call self._echoPrompt()
-
-            let l:key = nr2char(getchar())
-            let l:done = self._handleKeypress(l:key)
+            let key = nr2char(getchar())
+            let done = self._handleKeypress(key)
         endwhile
     finally
         call self._restoreOptions()
-
-        " Redraw when "Ctrl-C" or "Esc" is received.
-        if !l:done || self.selection == -1
-            redraw!
-        endif
     endtry
 
     if self.selection != -1
-        let l:m = self._current()
-        call l:m.execute()
+        let m = self._current()
+        call m.execute()
     endif
 endfunction
 
