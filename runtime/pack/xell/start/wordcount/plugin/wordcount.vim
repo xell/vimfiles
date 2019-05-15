@@ -179,6 +179,9 @@ function! ShowLiveWordCount()
 		else
 			exec 'set statusline=' . g:mystatusline1 . g:mystatusline2
 		endif
+        augroup wordcount
+            autocmd!
+        augroup END
 		let s:livewordcount = s:livewordcount + 1
 	else
 		if exists('g:mystatusline_fugitive')
@@ -189,6 +192,13 @@ function! ShowLiveWordCount()
 		if s:livewordcount != 0
 			call UpdateWordCount()
 		endif
+        augroup wordcount
+            autocmd!
+            " https://gist.github.com/millermedeiros/1356471
+            autocmd CursorHold,CursorHoldI,FileChangedShellPost,InsertLeave * call UpdateWordCount()
+            " https://github.com/ChesleyTan/wordCount.vim
+            " autocmd InsertLeave,TextChanged,BufEnter * 
+        augroup END
 		let s:livewordcount = s:livewordcount + 1
 	endif
 endfunction
