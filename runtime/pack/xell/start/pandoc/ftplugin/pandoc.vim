@@ -456,7 +456,7 @@ endfunction "}}}
 " }}}
 
 " Create reference links {{{1
-imap <buffer> <c-l> <Esc>:call <SID>ref_links()<CR>
+imap <buffer> <C-D-l> <Esc>:call <SID>ref_links()<CR>
 function! s:ref_links()
 	let ori_col = col(".")
 	let ori_line = line(".")

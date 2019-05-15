@@ -224,7 +224,7 @@ hi default link pdcLinkRef Comment
 hi default link pdcFootnoteID Underlined
 hi default link pdcFootnoteDef Comment
 
-hi default link pdcBlockQuote Comment
+hi default link pdcBlockQuote Constant
 hi default link pdcHRule Underlined
 hi default link pdcNewLine Pmenu
 

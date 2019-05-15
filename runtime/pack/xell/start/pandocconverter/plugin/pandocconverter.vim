@@ -214,8 +214,12 @@ function! PandocPreviewBuffer(normal_mode) range " {{{1
     " generate the preview md file
     let file_content = []
     if a:normal_mode
+        " if there's no title block in the very first line TODO
+        if readfile(input_fname_full, '', 1)[0] !~# '^%'
+            call extend(file_content, ['% Temporary Preview', '% Xell', '% %date', ''])
+        endif
         " copy the whole current buffer
-        let file_content = readfile(input_fname_full)
+        call extend(file_content, readfile(input_fname_full))
     else
         " use the selection in visual mode
         call extend(file_content, ['% Temporary Preview', '% Xell', '% %date', ''])
@@ -232,7 +236,7 @@ function! PandocPreviewBuffer(normal_mode) range " {{{1
     let target_profile = 'preview.html'
     let preview_html_fname_full = PandocConverter(preview_md_fname_full, target_profile)[0]
     
-    let preview_cmd = 'open "x-marked://open?file=' . preview_html_fname_full . '"'
+    let preview_cmd = 'open -g "x-marked://open?file=' . preview_html_fname_full . '"'
     call xelltoolkit#system(preview_cmd)
 
     return
