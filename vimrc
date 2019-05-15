@@ -248,6 +248,46 @@ set listchars=tab:▸\ ,eol:¬
 
 set termguicolors
 
+" Non-GUI tabline
+" http://vim.wikia.com/wiki/Show_tab_number_in_your_tab_line
+function MyTabLine() "{{{
+    let s = ''
+    let t = tabpagenr()
+    let i = 1
+    while i <= tabpagenr('$')
+        let buflist = tabpagebuflist(i)
+        let winnr = tabpagewinnr(i)
+        let s .= '%' . i . 'T'
+        let s .= (i == t ? '%1*' : '%2*')
+        let s .= '%#Constant#'
+        let s .= ' '
+        let s .= i . ' '
+        let s .= '%#TabLine#'
+        let s .= winnr . '/' . tabpagewinnr(i,'$')
+        let s .= ' %*'
+        let s .= (i == t ? '%#TabLineSel#' : '%#TabLine#')
+        let bufnr = buflist[winnr - 1]
+        let file = bufname(bufnr)
+        let buftype = getbufvar(bufnr, 'buftype')
+        if buftype == 'nofile'
+            if file =~ '\/.'
+                let file = substitute(file, '.*\/\ze.', '', '')
+            endif
+        else
+            let file = fnamemodify(file, ':p:t')
+        endif
+        if file == ''
+            let file = '[No Name]'
+        endif
+        let s .= file
+        let i = i + 1
+    endwhile
+    let s .= '%T%#TabLineFill#%='
+    let s .= (tabpagenr('$') > 1 ? '%999XX' : 'X')
+    return s
+endfunction "}}}
+set tabline=%!MyTabLine()
+
 " }}}
 
 " Foldtext  {{{2
@@ -342,10 +382,8 @@ if &term =~? 'xterm'
 	imap § <Home>
 	imap ¢ <End>
 else
-	imap <A-h> <Left>
-	imap <A-j> <Down>
-	imap <A-k> <Up>
-	imap <A-l> <Right>
+	inoremap <C-h> <Left>
+	inoremap <C-l> <Right>
 	imap <A--> <PageDown>
 	imap <A-=> <PageUp>
 	imap <A-6> <Home>
@@ -425,9 +463,9 @@ noremap <Backspace> <C-W>p
 noremap ` <C-W>w
 
 " For switch to split windows
+" GUI keys are set up by BetterTouchTool due to the conflict of :terminal
 if &term =~? 'xterm'
-	"∆˚˙¬ jkhl
-	"ÔÓÒ JKHL
+	" equal to map <M-j> <C-W>j ...
 	map ∆ <C-W>j
 	map ˚ <C-W>k
 	map ˙ <C-W>h
@@ -436,22 +474,11 @@ if &term =~? 'xterm'
 	map  <C-W>K
 	map Ó <C-W>H
 	map Ò <C-W>L
-else
-	map <M-j> <C-W>j
-	map <M-k> <C-W>k
-	map <M-h> <C-W>h
-	map <M-l> <C-W>l
-	map <M-J> <C-W>J
-	map <M-K> <C-W>K
-	map <M-H> <C-W>H
-	map <M-L> <C-W>L
 endif
 
 " Jump among windows clockwise
 if &term =~? 'xterm'
 	noremap ø <C-W>w
-else
-	noremap <A-o> <C-W>w
 endif
 
 
@@ -623,6 +650,18 @@ nmap <Leader>rcgl :so $MYGVIMRC<CR>
 
 " Commands and Others {{{1
 
+" Wipe out designated named registers
+function! WipeDesignatedNamedRegisters()
+    registers abcdefghijklmnopqrstuvwxyz
+    let to_be_wiped_out = input("Please enter the named registers to be wiped out\n")
+    echo to_be_wiped_out
+    for c in split(to_be_wiped_out, '\zs')
+        silent! call setreg(c, '')
+    endfor
+    echo "Done!\n"
+    registers abcdefghijklmnopqrstuvwxyz
+endfunction
+
 " diff two windows
 command! -nargs=0 Diffthis call <SID>difftwowindows()
 function! s:difftwowindows()
@@ -766,7 +805,7 @@ vmap ,d2 :call BlockDiff_GetBlock2()<CR>
 let g:bufExplorerShowUnlisted=1
 " }}}
 " Colorizer {{{2
-nmap <silent> <S-F6> <Plug>Colorizer
+nmap <silent> <S-D-F6> <Plug>Colorizer
 let g:colorizer_startup = 0
 " }}}
 " CtrlP {{{2
@@ -896,6 +935,17 @@ vmap <leader>gv :Gitv! --all<cr>
 " }}}
 " Hostslist {{{2
 let g:hosts_list = '/Users/xell/Code/pac/xell.hostslist'
+" }}}
+" Julia {{{2
+let g:latex_to_unicode_tab = 0
+let g:latex_to_unicode_auto = 1
+let g:default_julia_version = "devel"
+
+let g:tagbar_type_julia = {
+    \ 'ctagstype' : 'julia',
+    \ 'kinds'     : [
+        \ 't:struct', 'f:function', 'm:macro', 'c:const']
+    \ }
 " }}}
 " LanguageTool {{{2
 " TODO FIXME
@@ -1036,7 +1086,7 @@ inoremap <expr><TAB>  pumvisible() ? "\<C-n>" :
 " old cache: inoremap <expr><TAB>  strpart(getline('.'), col('.') - 2, 1) =~? '\S' ? pumvisible() ? "\<C-n>" : "\<C-X>\<C-U>" : "\<Tab>"
 " inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 " <C-h>, <BS>: close popup and delete backword char.
-inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
+" inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
 inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
 inoremap <expr><C-y>  neocomplete#close_popup()
 inoremap <expr><C-e>  neocomplete#cancel_popup()
@@ -1155,9 +1205,9 @@ highlight link TagbarType Ignore
 " While gcc respects indent blank, I defined gcl to put comment character
 " right in the first column.
 nnoremap gcl :let g:tcommentOptions = {'col': 1}<CR>:normal gcc<CR>:let g:tcommentOptions = {}<CR>
-let g:tcommentOptions = {}
-let g:tcommentBlockXML = "<!--%s-->\n"
-let g:tcomment_types = {'pandoc': "<!-- %s -->", 'pandoc_inline': "<!-- %s -->", 'pandoc_block': "<!-- %s -->\n  ", 'proxylist': '#%s', 'conf': '#%s', 'hostslist': '#%s', 'mdindex': '# %s'}
+let g:tcomment#options = {}
+let g:tcomment#block_fmt_xml = "<!--%s-->\n"
+let g:tcomment_types = {'julia': "#= %s =#", 'julia_inline': "# %s", 'pandoc': "<!-- %s -->", 'pandoc_inline': "<!-- %s -->", 'pandoc_block': "<!-- %s -->\n  ", 'proxylist': '#%s', 'conf': '#%s', 'hostslist': '#%s', 'mdindex': '# %s'}
 nmap <D-/> gcc
 vmap <D-/> gc
 " }}}
@@ -1178,7 +1228,6 @@ cab mmm match Temp /\~\~../
 " add space between
 cab xasb .s/\([^\x00-\xff]\&[^（），、：。“”；]\)\(\a\<bar>[<>_-]\)/\1 \2/g
 cab xasa .s/\(\a\<bar>[<>_-]\)\([^\x00-\xff]\&[^（），、：。“”；]\)/\1 \2/g
-
 
 " NFO view {{{2
 " 能够漂亮地显示.NFO文件
