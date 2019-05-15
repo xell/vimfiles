@@ -16,7 +16,7 @@ let s:scrolloff_ori = &scrolloff
 let s:statusline_ori = &statusline
 let s:winheight_ori = &winheight
 let s:winwidth_ori = &winwidth
-let s:guioptions_ori = 'egtm'
+let s:guioptions_ori = 'gtm'
 "egmrLtT
 
 function! WriteRoomStart(...) "{{{1
@@ -72,7 +72,6 @@ function! s:startwriteroom(edit_current) "{{{1
 	let g:aug_vimsb_enable = 0
 
 	" setup highlights
-	highlight StatusLine    guifg=fg          guibg=bg          gui=none
 	highlight StatusLineNC  guifg=bg          guibg=bg
 	highlight VertSplit     guifg=bg          guibg=bg
 	highlight NonText       guifg=bg          guibg=bg
@@ -84,10 +83,12 @@ function! s:startwriteroom(edit_current) "{{{1
 		highlight Cursor        guifg=#222222     guibg=#888888
 		highlight LineNr        guifg=#555555     guibg=bg
 		highlight FoldColumn    guifg=#555555     guibg=bg
+        highlight StatusLine    guifg=#555555     guibg=bg          gui=none
 	else
 		highlight Cursor        guifg=#888888     guibg=#222222
 		highlight LineNr        guifg=#AAAAAA     guibg=bg
 		highlight FoldColumn    guifg=#AAAAAA     guibg=bg
+        highlight StatusLine    guifg=#AAAAAA     guibg=bg          gui=none
 	endif
 
 	" setup
@@ -101,7 +102,7 @@ function! s:startwriteroom(edit_current) "{{{1
 	" FIXME
 	wincmd =
 	
-	nmap <silent> <S-F6> :call <SID>writeroom_wordcount()<CR>
+	nmap <silent> <F3> :call <SID>writeroom_wordcount()<CR>
 	let b:Current_Line_Number = line(".")
 	let b:Current_Line_Number_zh = line(".")
 	let b:Current_Line_Word_Count = 0
