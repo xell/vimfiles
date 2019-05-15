@@ -808,10 +808,6 @@ let g:bufExplorerShowUnlisted=1
 nmap <silent> <S-D-F6> <Plug>Colorizer
 let g:colorizer_startup = 0
 " }}}
-" CtrlP {{{2
-let g:ctrlp_match_window_bottom = 0
-let g:ctrlp_reuse_window = 'netrw\|quickfix'
-" }}}
 " Emmet {{{2
 let g:user_emmet_leader_key = '<D-e>'
 " If you want to complete tags using |omnifunc| then add this.
@@ -946,11 +942,6 @@ let g:tagbar_type_julia = {
     \ 'kinds'     : [
         \ 't:struct', 'f:function', 'm:macro', 'c:const']
     \ }
-" }}}
-" LanguageTool {{{2
-" TODO FIXME
-let g:languagetool_jar = '/usr/local/Cellar/languagetool/4.1/libexec/languagetool-commandline.jar'
-nmap <M-D-l> :LanguageToolCheck<CR>
 " }}}
 " LaTeX {{{2
 " OPTIONAL: Starting with Vim 7, the filetype of empty .tex files defaults to
