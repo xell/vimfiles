@@ -41,13 +41,16 @@ let g:colors_name = "xell"
  highlight PmenuSel      guifg=#ffffff     guibg=#5f85aa     ctermfg=15 ctermbg=4
  highlight PmenuSbar     guifg=fg          guibg=#888888     ctermfg=15 ctermbg=0
  highlight PmenuThumb    guifg=fg          guibg=#000000     ctermfg=15 ctermbg=8
- highlight Search        guifg=#000000     guibg=#1AA311     ctermfg=1  ctermbg=8 gui=NONE cterm=Bold
+"highlight Search        guifg=#000000     guibg=#1AA311     ctermfg=1  ctermbg=8 gui=NONE cterm=Bold
+ highlight Search        guifg=#000000     guibg=#f56f2a     ctermfg=1  ctermbg=8 gui=BOLD cterm=BOLD
  highlight SignColumn                      guibg=bg
  highlight SpecialKey    guifg=#ffa0a0     guibg=bg          ctermfg=1  ctermbg=8
- highlight StatusLine    guifg=#e8e7e6     guibg=#777777     ctermfg=7  ctermbg=0
- highlight StatusLineNC  guifg=#d3cfcd     guibg=#444444     ctermfg=7  ctermbg=8
+"highlight StatusLine    guifg=#e8e7e6     guibg=#777777     ctermfg=7  ctermbg=0
+ highlight StatusLine    guifg=#e8e7e6     guibg=#777777     ctermfg=11 ctermbg=12 cterm=NONE gui=NONE
+"highlight StatusLineNC  guifg=#d3cfcd     guibg=#444444     ctermfg=7  ctermbg=8
+ highlight StatusLineNC  guifg=#d3cfcd     guibg=#444444     ctermfg=12 ctermbg=11 cterm=NONE gui=NONE
+ highlight VertSplit     guifg=#444444     guibg=#444444     ctermfg=7  ctermbg=0
  highlight Title         guifg=#9acd32     guibg=bg          ctermfg=10 ctermbg=8
- highlight VertSplit     guifg=#d3cfcd     guibg=#444444     ctermfg=7  ctermbg=0
  highlight Visual        guifg=#000000     guibg=#90ee90     ctermfg=8  ctermbg=2
 
  highlight DiffAdd       guifg=#ff0000     guibg=#fce6e6
@@ -55,5 +58,9 @@ let g:colors_name = "xell"
  highlight DiffChange    guifg=#ff0000     guibg=#fce6e6
 
  highlight Temp          guifg=#ff9b37     guibg=bg          ctermfg=1  ctermbg=8
+
+ highlight TabLineSel    guibg=#413F3D     guifg=#ffffff     gui=bold
+ highlight TabLineFill   guibg=#262626     guifg=#000000     gui=NONE
+ highlight TabLine       guibg=#262626     guifg=#999999
 
 " vim:cc=26,44,62 tw=0 ts=4 sw=4

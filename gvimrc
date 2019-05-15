@@ -18,7 +18,7 @@ set confirm
 
 " Transparency only for MacVim GUI
 if &term == 'builtin_gui'
-    set transparency=4
+    set transparency=2
 endif
 
 " Set colorscheme {{{1
@@ -26,17 +26,14 @@ endif
 "let g:zenburn_color_also_Ignore = 1
 "colorscheme zenburn
 colorscheme xell
-let g:colorschemes = ['xell', 'xell_light', 'xell_light2']
+let g:colorschemes = ['xell', 'xell_light', 'xell_light2', 'xell_light3']
+let g:colorschemes_index = 0
 function! s:switch_colorschemes()
-    let i = 0
-    let l = len(g:colorschemes)
-    for c_name in g:colorschemes
-        let i = i + 1
-        if c_name == g:colors_name
-            exec 'colorscheme ' . g:colorschemes[i == l ? 0 : i]
-            return
-        endif
-    endfor
+    let g:colorschemes_index += 1
+    if g:colorschemes_index == len(g:colorschemes)
+        let g:colorschemes_index = 0
+    endif
+    exec 'colorscheme ' . g:colorschemes[g:colorschemes_index]
 endfunction
 
 command! -nargs=0 SwitchColorschemes call <SID>switch_colorschemes()
@@ -51,6 +48,7 @@ nmap <F6> :SwitchColorschemes<CR>
 " T toolbar
 set guioptions=egtm
 set guicursor=n-v-c:block-Cursor/lCursor-blinkwait700-blinkon1200-blinkoff250,ve:ver35-Cursor,o:hor50-Cursor,i-ci:ver25-Cursor/lCursor,r-cr:hor20-Cursor/lCursor,sm:block-Cursor-blinkwait175-blinkoff150-blinkon175
+set macthinstrokes
 "}}}
 
 " Screen size settings {{{1
@@ -116,12 +114,12 @@ set guitablabel=%{GuiTabLabel()}-%<%t
 function! GuiTabLabel()
     let label = ''
 
-    " Add '+' if one of the buffers in the tab page is modified
+    " Add a symble if one of the buffers in the tab page is modified
     let bufnrlist = tabpagebuflist(v:lnum)
     for bufnr in bufnrlist
         if getbufvar(bufnr, "&modified")
-            " *✦★✷✸✹ 
-            let label .= '✦ '
+            " *✦★✷✸✹✍︎✎✎✍︎⚑⚐ 
+            let label .= '⚑ '
             break
         endif
     endfor
@@ -145,44 +143,56 @@ endfunction
 
 " Font setup {{{1
 "---------------------------------------
-"Andale\ Mono "Chinese spaces too wide
-"Courier "Chinese spaces too wide
-"Courier\ New "Chinese spaces too wide
-"Hack "Chinese spaces too wide
-"Menlo "Chinese spaces too wide
-"Monaco "Chinese spaces too wide
-"Osaka "Chinese spaces too wide
-"PT\ Mono "Chinese spaces too wide
-"Input " Only compressed suitable for Chinese
-"Source\ Code\ Pro "Chinese spaces too wide
-
-set linespace=6
-nmap <C-D--> :call ChangeLinespace(0)<CR>
-nmap <C-D-=> :call ChangeLinespace(1)<CR>
-function! ChangeLinespace(increase)
-    let cur_lsp = &lsp
-    if a:increase
-        let &lsp = cur_lsp + 1
-    else
-        let &lsp = cur_lsp - 1
-    endif
-endfunction
-
-let g:guifonts = ["Consolas", 
+let g:guifontsize=16
+let g:guifontsindex = 0
+let g:guifonts = [
             \ "Inconsolata",
+            \ "Consolas", 
+            \ "Roboto\\ Mono\\ Light",
+            \ "IBM\\ Plex\\ Mono\\ Light",
             \ "mononoki",
             \ "YaHei\\ Mono",
             \ "M+\\ 1m\\ light",
-            \ "Source\\ Code\\ Pro\\ Light"]
-let g:guifontwides = ["PingFang\\ SC",
+            \ "Source\\ Code\\ Variable\\ ExtraLight"]
+let g:guifontwidesindex = 0
+let g:guifontwides = [
             \ "PingFang\\ SC\\ Thin",
+            \ "Lantinghei\\ SC\\ Extralight",
             \ "STSong",
             \ "Songti\\ SC",
             \ "HYQiHeiX1-35W\\ Thin"]
 
+function! s:get_current_font_size()
+    return matchstr(&guifont, ':h\zs\d\+\ze')
+endfunction
+function! Set_current_font_size_and_lsp(size)
+    let [guifont_name, guifontwide_name] = s:get_font_names()
+    exec "set guifont=" . escape(guifont_name, ' ') . ":h" . a:size
+    if !empty(guifontwide_name)
+        exec "set guifontwide=" . escape(guifontwide_name, ' ') . ":h" . a:size
+    endif
+    let g:guifontsize = a:size
+    "TODO how to deal with customized lsp?
+    exe "set linespace=" . float2nr(floor(a:size / 2))
+endfunction
+nmap <D--> :call Set_current_font_size_and_lsp(g:guifontsize - 1)<CR>
+nmap <D-=> :call Set_current_font_size_and_lsp(g:guifontsize + 1)<CR>
+
+function! s:get_font_names()
+    let guifont_name = matchstr(getfontname(), '\zs[^:]\+\ze:h')
+    if !empty(&guifontwide)
+        return [guifont_name, matchstr(&guifontwide, '\zs[^:]\+\ze:h')]
+    else
+        return [guifont_name, '']
+    endif
+endfunction
+
 function! Setfont(gf_index, gfw_index, size, lsp)
     exec 'set guifont=' . g:guifonts[a:gf_index] . ':h' . a:size
     exec 'set guifontwide=' . g:guifontwides[a:gfw_index] . ':h' . a:size
+    let g:guifontsindex = a:gf_index
+    let g:guifontwidesindex = a:gfw_index
+    let g:guifontsize = a:size
     let &linespace=a:lsp
 endfunction
 function! s:setfont_defaults(default)
@@ -191,15 +201,29 @@ function! s:setfont_defaults(default)
     elseif a:default == 2
         call Setfont(1, 3, 19, 10)
     elseif a:default == 3
-        call Setfont(4,3, 19, 10)
+        call Setfont(4, 3, 19, 10)
     elseif a:default == 4
         call Setfont(4, 4, 15, 1)
+    elseif a:default == 5
+        call Setfont(1, 0, 15, 6)
     endif
 endfunction
-command! -nargs=1 SetFont call <SID>setfont_defaults(<args>)
+command! -nargs=1 SetFontDefaults call <SID>setfont_defaults(<args>)
 
-call Setfont(1, 1, 15, 6)
-command! -nargs=0 ResetFont call Setfont(1, 1, 15, 6)
+exe "set linespace=" . float2nr(floor(g:guifontsize / 2))
+call Setfont(6, 0, 15, 2)
+command! -nargs=0 ResetFontDefaults call Setfont(6, 0, 15, 2)
+
+function! ChangeLinespace(increase)
+    let cur_lsp = &lsp
+    if a:increase
+        let &lsp = cur_lsp + 1
+    else
+        let &lsp = cur_lsp - 1
+    endif
+endfunction
+nmap <C-D--> :call ChangeLinespace(0)<CR>
+nmap <C-D-=> :call ChangeLinespace(1)<CR>
 " }}}
 
 " Xell Fullscreen and Writeroom {{{1
@@ -214,6 +238,9 @@ command! -nargs=0 WRE call WriteRoomEnd()
 " }}}
 
 " GUI menu {{{1
+
+macm Edit.Font.Bigger key=<nop>
+macm Edit.Font.Smaller key=<nop>
 
 " Don't close the last tab with D-w {{{2
 macm File.Close key=<nop>
