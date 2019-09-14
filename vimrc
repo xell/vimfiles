@@ -966,6 +966,14 @@ nnoremap <Leader>gV :Gitv --all<CR>
 nnoremap <Leader>gv :Gitv! --all<CR>
 vmap <leader>gv :Gitv! --all<cr>
 " }}}
+" Grammarous LanguageTool {{{2
+let g:grammarous#use_vim_spelllang = 1
+let g:grammarous#languagetool_cmd = 'languagetool'
+let g:grammarous#show_first_error = 1
+" https://github.com/rhysd/vim-grammarous/issues/78
+command! -nargs=0 -bar GrammarousReopen call grammarous#create_update_info_window_of(b:grammarous_result)
+nmap <M-D-l> :GrammarousCheck<CR>
+" }}}
 " Hostslist {{{2
 let g:hosts_list = '/Users/xell/Code/pac/xell.hostslist'
 " }}}
