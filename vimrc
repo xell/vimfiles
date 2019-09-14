@@ -591,6 +591,43 @@ imap <S-Tab> <BS>
 nmap <C-Up> ddkP
 nmap <C-Down> ddp
 
+" Auto close pairs IMAP
+" The latency of IMAP from latex-suite is too long to use.
+function! s:imap_jump()
+    let isfound = search('<++>', 'cW')
+    if isfound
+        if col('.') == col('$') - 4
+            normal 4x
+            startinsert!
+        else
+            normal 4x
+            startinsert
+        endif
+    endif
+endfunction
+inoremap <D-j> <C-O>:call <SID>imap_jump()<CR>
+
+call xelltoolkit#imap('()', '(<++>)<++>', 0)
+call xelltoolkit#imap('[]', '[<++>]<++>', 0)
+call xelltoolkit#imap('{}', '{<++>}<++>', 0)
+call xelltoolkit#imap('<>', '<<++>><++>', 0)
+call xelltoolkit#imap('""', '"<++>"<++>', 0)
+call xelltoolkit#imap("''", "'<++>'<++>", 0)
+call xelltoolkit#imap('%%', '%<++>%<++>', 0)
+
+" for reference in windows TODO
+" augroup MyIMAPs
+" 	autocmd!
+" 	autocmd VimEnter * call IMAP('()', '(<++>)<++>', '')
+" 	autocmd VimEnter * call IMAP('[]', '[<++>]<++>', '')
+" 	autocmd VimEnter * call IMAP('{}', '{<++>}<++>', '')
+" 	autocmd VimEnter * call IMAP('<>', '<<++>><++>', '')
+" 	autocmd VimEnter * call IMAP('""', '"<++>"<++>', '')
+" 	autocmd VimEnter * call IMAP("''", "'<++>'<++>", '')
+" 	autocmd VimEnter * call IMAP('%%', '%<++>%<++>', '')
+" augroup END
+
+
 " }}}
 
 " Dispaly {{{2
@@ -1220,6 +1257,8 @@ cab mmm match Temp /\~\~../
 cab xasb .s/\([^\x00-\xff]\&[^（），、：。“”；]\)\(\a\<bar>[<>_-]\)/\1 \2/g
 cab xasa .s/\(\a\<bar>[<>_-]\)\([^\x00-\xff]\&[^（），、：。“”；]\)/\1 \2/g
 
+" au BufEnter * if &ft ==# 'xml' | commands | endif
+
 " NFO view {{{2
 " 能够漂亮地显示.NFO文件
 " function! s:setFileEncodings(encodings)
@@ -1236,6 +1275,7 @@ cab xasa .s/\(\a\<bar>[<>_-]\)\([^\x00-\xff]\&[^（），、：。“”；]\)/\
 
 " }}}
 
+" TMUX {{{2
 " https://superuser.com/a/713335
 " if exists('$TMUX')
 "     let &t_SI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=0\x7\<Esc>\\"
@@ -1244,6 +1284,7 @@ cab xasa .s/\(\a\<bar>[<>_-]\)\([^\x00-\xff]\&[^（），、：。“”；]\)/\
 "     let &t_SI = "\<Esc>]50;CursorShape=0\x7"
 "     let &t_EI = "\<Esc>]50;CursorShape=0\x7"
 " endif
+" }}}
 
 " }}}
 
