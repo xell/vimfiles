@@ -119,8 +119,8 @@ endfunction
 "
 " Taken from
 " http://stackoverflow.com/questions/3828606/vim-markdown-folding/4677454#4677454
-"
-command! -buffer -nargs=1 ChangeFoldMethod call <SID>change_fold_method(<args>)
+" 0 1 2 3
+command! -buffer -nargs=1 ChangeMDFoldMethod call <SID>change_fold_method(<args>)
 function! s:change_fold_method(level) " {{{2
     if a:level == 0
         setlocal foldmethod=manual
@@ -135,9 +135,70 @@ function! s:change_fold_method(level) " {{{2
 		setlocal foldmethod=expr
 		setlocal foldexpr=MarkdownLevel3()
     else
+        call xelltoolkit#echo_msg('Only support 0 1 2 3.')
     endif
 endfunction
 " }}}
+function! MarkdownLevel1() " {{{2
+    if getline(v:lnum) =~ '^# .*$'
+        return ">1"
+    endif
+    if getline(v:lnum) =~ '^## .*$'
+        return ">2"
+    endif
+    if getline(v:lnum) =~ '^### .*$'
+        return ">3"
+    endif
+    if getline(v:lnum) =~ '^#### .*$'
+        return ">4"
+    endif
+    if getline(v:lnum) =~ '^##### .*$'
+        return ">5"
+    endif
+    if getline(v:lnum) =~ '^###### .*$'
+        return ">6"
+    endif
+
+    return "="
+endfunction "}}}
+function! MarkdownLevel2() " {{{2
+    if getline(v:lnum) =~ '^# .*$'
+        return ">1"
+    endif
+    if getline(v:lnum) =~ '^## .*$'
+        return ">2"
+    endif
+    if getline(v:lnum) =~ '^### .*$'
+        return ">3"
+    endif
+    if getline(v:lnum) =~ '^#### .*$'
+        return ">4"
+    endif
+    if getline(v:lnum) =~ '^##### .*$'
+        return ">5"
+    endif
+    if getline(v:lnum) =~ '^###### .*$'
+        return ">6"
+    endif
+
+	if getline(v:lnum) =~ '^\s*$' 
+				\ && getline(v:lnum + 1) =~ '\%(^#\s\)\|\%(^<div\sclass="rst-rubric"\)'
+		return "0"
+	endif
+	if getline(v:lnum) =~ '^\s*$' && getline(v:lnum + 1) =~ '^##\s'
+		return "1"
+	endif
+	if getline(v:lnum) =~ '^\s*$' && getline(v:lnum + 1) =~ '^###\s'
+		return "2"
+	endif
+	if getline(v:lnum) =~ '^\s*$' && getline(v:lnum + 1) =~ '^####\s'
+		return "3"
+	endif
+	if getline(v:lnum) =~ '^\s*$' && getline(v:lnum + 1) =~ '^#####\s'
+		return "4"
+	endif
+    return "="
+endfunction "}}}
 function! MarkdownLevel3() " {{{2
     if getline(v:lnum) =~ '^# .*$'
         return ">1"
@@ -190,66 +251,6 @@ function! MarkdownLevel3() " {{{2
 	if getline(v:lnum) =~ '^\s*$' && getline(v:lnum + 1) =~ '^#####\s'
 		return "4"
 	endif
-    return "="
-endfunction "}}}
-function! MarkdownLevel2() " {{{2
-    if getline(v:lnum) =~ '^# .*$'
-        return ">1"
-    endif
-    if getline(v:lnum) =~ '^## .*$'
-        return ">2"
-    endif
-    if getline(v:lnum) =~ '^### .*$'
-        return ">3"
-    endif
-    if getline(v:lnum) =~ '^#### .*$'
-        return ">4"
-    endif
-    if getline(v:lnum) =~ '^##### .*$'
-        return ">5"
-    endif
-    if getline(v:lnum) =~ '^###### .*$'
-        return ">6"
-    endif
-
-	if getline(v:lnum) =~ '^\s*$' 
-				\ && getline(v:lnum + 1) =~ '\%(^#\s\)\|\%(^<div\sclass="rst-rubric"\)'
-		return "0"
-	endif
-	if getline(v:lnum) =~ '^\s*$' && getline(v:lnum + 1) =~ '^##\s'
-		return "1"
-	endif
-	if getline(v:lnum) =~ '^\s*$' && getline(v:lnum + 1) =~ '^###\s'
-		return "2"
-	endif
-	if getline(v:lnum) =~ '^\s*$' && getline(v:lnum + 1) =~ '^####\s'
-		return "3"
-	endif
-	if getline(v:lnum) =~ '^\s*$' && getline(v:lnum + 1) =~ '^#####\s'
-		return "4"
-	endif
-    return "="
-endfunction "}}}
-function! MarkdownLevel1() " {{{2
-    if getline(v:lnum) =~ '^# .*$'
-        return ">1"
-    endif
-    if getline(v:lnum) =~ '^## .*$'
-        return ">2"
-    endif
-    if getline(v:lnum) =~ '^### .*$'
-        return ">3"
-    endif
-    if getline(v:lnum) =~ '^#### .*$'
-        return ">4"
-    endif
-    if getline(v:lnum) =~ '^##### .*$'
-        return ">5"
-    endif
-    if getline(v:lnum) =~ '^###### .*$'
-        return ">6"
-    endif
-
     return "="
 endfunction "}}}
 if exists('g:pandoc_fold_level')
