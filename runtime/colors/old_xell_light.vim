@@ -51,6 +51,7 @@ let g:colors_name = "xell_light"
  highlight Title         guifg=#b14f32     guibg=bg          ctermfg=10 ctermbg=8
  highlight VertSplit     guifg=#d3cfcd     guibg=#444444     ctermfg=7  ctermbg=0
  highlight Visual        guifg=#000000     guibg=#90ee90     ctermfg=8  ctermbg=2
+ highlight SignColumn                      guibg=bg
 
  highlight Temp          guifg=#222222     guibg=#ff9b37     ctermfg=1  ctermbg=8
  

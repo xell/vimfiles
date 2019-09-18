@@ -1,7 +1,7 @@
 " local syntax file - set colors on a per-machine basis:
 " Vim color file
 " Maintainer: Xell Liu
-" Last Change: 2012.3
+" Last Change: 2019.9
 
 highlight clear
 set background=dark
@@ -10,7 +10,9 @@ if exists("syntax_on")
 endif
 let g:colors_name = "xell"
 
- highlight Normal        guifg=#f5f5f5     guibg=#262626     ctermfg=15 ctermbg=8
+"  highlight Normal        guifg=#f5f5f5     guibg=#262626     ctermfg=15 ctermbg=8
+"  Safari reader #b0b0b0 #121212
+ highlight Normal        guifg=#e6e4df     guibg=#303234     ctermfg=15 ctermbg=8
  highlight Comment       guifg=#808080     guibg=bg          ctermfg=0  ctermbg=8
  highlight Constant      guifg=#5f85aa     guibg=bg          ctermfg=4  ctermbg=8
  highlight Identifier    guifg=#00c0c0     guibg=bg          ctermfg=14 ctermbg=8
@@ -25,6 +27,7 @@ let g:colors_name = "xell"
 
  highlight Conceal       guifg=fg          guibg=bg          ctermfg=15 ctermbg=8 gui=Undercurl guisp=fg cterm=Underline
  highlight Cursor        guifg=bg          guibg=LightGray
+ highlight CursorIM      guibg=Purple
  highlight CursorLine                      guibg=#333338
  highlight DiffAdd       guifg=#000000     guibg=#7cdede     ctermfg=8  ctermbg=4
  highlight DiffChange    guifg=#000000     guibg=#e493ff     ctermfg=8  ctermbg=5
@@ -51,7 +54,8 @@ let g:colors_name = "xell"
  highlight StatusLineNC  guifg=#d3cfcd     guibg=#444444     ctermfg=12 ctermbg=11 cterm=NONE gui=NONE
  highlight VertSplit     guifg=#444444     guibg=#444444     ctermfg=7  ctermbg=0
  highlight Title         guifg=#9acd32     guibg=bg          ctermfg=10 ctermbg=8
- highlight Visual        guifg=#000000     guibg=#90ee90     ctermfg=8  ctermbg=2
+"  highlight Visual        guifg=#000000     guibg=#90ee90     ctermfg=8  ctermbg=2
+ highlight Visual        guifg=fg          guibg=MacSelectedTextBackgroundColor ctermfg=8  ctermbg=2
 
  highlight DiffAdd       guifg=#ff0000     guibg=#fce6e6
  highlight DiffDelete    guifg=#d5ffff     guibg=#d5ffff
