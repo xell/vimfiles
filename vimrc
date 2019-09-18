@@ -335,7 +335,7 @@ augroup END
 function! s:XellBufferStatuslineHighlight()
 	let buffername = bufname("%")
 	if empty(buffername)
-        highlight! link StatusLine Visual
+        highlight! link StatusLine Question
 	elseif buffername =~ '\%(\.tmp\|0\)$' || expand("%:p") =~ '^\/private\/var' || expand("%:e") =~ g:xell_notes_temp_ext
         highlight! link StatusLine WarningMsg
 	else
@@ -347,7 +347,7 @@ endfunction
 
 " }}}
 
-colorscheme xell
+colorscheme xell_dark
 
 " }}}
 

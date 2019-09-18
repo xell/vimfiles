@@ -188,45 +188,44 @@ endif
 " ===============================================
 " Highlights {{{1
 
-hi default link pdcHTMLComment Ignore
+hi default link pdcHTMLComment Comment
 
 hi default link pdcTitleBlock String
 hi default link pdcAtxHeader Title
 hi default link pdcSetexHeader Title
 
-
-hi default link cmHighlight Temp
-hi default link pdcStrike Temp
+hi default link cmHighlight MoreMsg
+hi default link pdcStrike Todo
+hi default link pdcEmphasis Identifier
 hi default link pdcStrong Special
-hi default link pdcEmphasis VisualNOS
 hi default link pdcSubscript Special
 hi default link pdcSuperscript Special
 
 if &background == 'dark'
-	hi pdcLeadingBlank guifg=#31465B gui=Underline
+	hi! default pdcLeadingBlank guifg=#31465B gui=Underline
 else
-	hi pdcLeadingBlank guifg=#bccfd7 gui=Underline
+	hi default pdcLeadingBlank guifg=#bccfd7 gui=Underline
 endif
 hi default link pdcCode PreProc
-hi default link pdcCodePre String
-hi default link pdcCodeBlock String
-hi default link pdcDelimitedCodeBlock String
+hi default link pdcCodePre PreProc
+hi default link pdcCodeBlock PreProc
+hi default link pdcDelimitedCodeBlock PreProc
 hi default link pdcDelimitedCodeBlockLanguage Comment
 
-hi default link pdcListItem Statement
+hi default link pdcListItem Type
 hi default link pdcDefinitionBlockTerm Identifier
 hi default link pdcDefinitionBlockMark Operator
 
 hi default link pdcLinkText Identifier
 hi default link pdcLinkTextInLine Identifier
 hi default link pdcFigure WildMenu
-hi default link pdcLinkRef Comment
+hi default link pdcLinkRef Identifier
 hi default link pdcFootnoteID Underlined
 hi default link pdcFootnoteDef Comment
 
-hi default link pdcBlockQuote Constant
+hi default link pdcBlockQuote PreProc
 hi default link pdcHRule Underlined
-hi default link pdcNewLine Pmenu
+hi default link pdcNewLine CursorLine
 
 hi default link pdcTableMultiStart Comment
 hi default link pdcTableMultiEnd Comment

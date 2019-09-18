@@ -16,18 +16,13 @@ set confirm
 " Don't hide mouse, or the cursor will flash in the title
 "set nomousehide
 
-" Transparency only for MacVim GUI
-if &term == 'builtin_gui'
-    set transparency=8
-    set blurradius=100
-endif
-
 " Set colorscheme {{{1
 "let g:zenburn_high_Contrast = 1
 "let g:zenburn_color_also_Ignore = 1
 "colorscheme zenburn
-colorscheme xell
-let g:colorschemes = ['xell', 'xell_light', 'xell_light2', 'xell_light3']
+colorscheme xell_dark
+" TODO
+let g:colorschemes = ['xell_dark', 'xell_light_white', 'xell_light_green']
 let g:colorschemes_index = 0
 function! s:switch_colorschemes()
     let g:colorschemes_index += 1
@@ -36,9 +31,24 @@ function! s:switch_colorschemes()
     endif
     exec 'colorscheme ' . g:colorschemes[g:colorschemes_index]
 endfunction
-
 command! -nargs=0 SwitchColorschemes call <SID>switch_colorschemes()
 nmap <F6> :SwitchColorschemes<CR>
+
+" https://github.com/macvim-dev/macvim/pull/929
+" TODO
+function! ChangeBackground()
+  if (v:os_appearance == 1)
+    set background=dark
+    colorscheme xell_dark
+  else 
+    set background=light
+    colorscheme xell_light_white
+  endif
+  redraw!
+endfunction
+
+au OSAppearanceChanged * call ChangeBackground()
+
 " }}}
 
 " Guioptions {{{1
