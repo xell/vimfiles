@@ -7,22 +7,13 @@
 " mine.
 
 " Initialization {{{1
-if version < 600
-	syntax clear
-elseif exists("b:current_syntax")
-	finish
-endif
+" if exists("b:current_syntax")
+" 	finish
+" endif
 
-syn case ignore
-syn spell toplevel
-if g:pandoc_syntax_accuracy
-	" syn sync linebreaks=1
-	" syn sync minlines=10
-	syn sync fromstart
-else
-	syn sync minlines=10
-	syn sync maxlines=50
-endif
+syntax case ignore
+syntax clear
+syntax spell toplevel
 " }}}
 
 " HTML and TeX {{{1
@@ -31,11 +22,9 @@ endif
 
 if exists('g:pandoc_syntax_full_html_tex') && g:pandoc_syntax_full_html_tex
 	" Set embedded HTML highlighting
-	syn include @HTML syntax/html.vim
-	syn match pdcHTML	/<\a[^>]\+>/	contains=@HTML
-	" Support HTML multi line comments XXX (dispaly?)
-	syn region pdcHTMLComment   start=/<!--/ end=/-->/ display
-	" 
+    syn include @HTML syntax/html.vim
+    syn match pandocHTML /<\/\?\a.\{-}>/ contains=@HTML
+
 	" Set embedded LaTex (pandoc extension) highlighting
 	" Unset current_syntax so the 2nd include will work
 	unlet b:current_syntax
@@ -45,20 +34,21 @@ if exists('g:pandoc_syntax_full_html_tex') && g:pandoc_syntax_full_html_tex
 	" Tex Block (begin-end)
 	syn region pdcLatex start=/\\begin{[^}]\+}\ze/ end=/\ze\\end{[^}]\+}/ contains=@LATEX
 	" Math Tex
-	syn match pdcLatex	/\$.\{-}\$/	   contains=@LATEX
+    syn region pdcLatex start=/\v\\@<!\$\S@=/ end=/\v\\@<!\$\d@!/ keepend contains=@LATEX
 else
-	" Xell HTML and TeX
-	syn match pdcHTMLTag '<\/\?[^+>]\+>'
+	" Simplified HTML and TeX
+	syn match pdcHTMLTag /<\/\?\a.\{-}>/
 	hi link pdcHTMLTag Directory
-
-	syn region pdcHTMLComment   start=/<!--/ end=/-->/ display
-
-	" syn match pdcTEXTag '\\\a\+{\a\+}'
-	syn region pdcTEXTag start='\\\a\+{' end='}' oneline display
-	hi link pdcTEXTag PreProc
-	syn match pdcTEXMath '\$[^$]\+\$'
-	hi link pdcTEXMath Special
+	syn region pdcTexTag start='\\\a\+{' end='}' oneline display
+	hi link pdcTexTag PreProc
+    syn region pdcTeXMath start=/\v\\@<!\$\S@=/ end=/\v\\@<!\$\d@!/ keepend
+	hi link pdcTexMath Special
 endif
+" Support HTML multi line comments
+syn region pdcHTMLComment start=/<!--\s\=/ end=/\s\=-->/ keepend
+" syn match pdcEscapedDollar /\\\$/ conceal cchar=$
+syn match pdcEscapedDollar /\\\$/ contains=pdcEscapedDollarSlash
+syn match pdcEscapedDollarSlash /\\/ contained conceal
 
 " }}}
 
@@ -76,9 +66,9 @@ syn match pdcSetexHeader /^.\+\n[-]\+$/ contains=@Spell
 
 " Inline {{{1
 " CriticMarkup
-syn match pdcTempPPP '{=[^=][^}]\{-}}' containedin=ALLBUT,cmHighlight,cmHighlightLeft,cmHighlightRight
-syn match   cmHighlight     '{==[^=].\{-}==}' contains=@Spell,cmHighlightLeft,cmHighlightRight
-syn match   cmHighlightLeft '{==' contained conceal
+syn match   pdcTempPPP      '{=[^=][^}]\{-}}' containedin=ALLBUT,cmHighlight,cmHighlightLeft,cmHighlightRight
+syn match   cmHighlight      '{==[^=].\{-}==}' contains=@Spell,cmHighlightLeft,cmHighlightRight
+syn match   cmHighlightLeft  '{==' contained conceal
 syn match   cmHighlightRight '==}' contained conceal
 " ~~strike~~
 syn match   pdcStrike       '\~\~[^\~ ]\([^\~]\|\~ \)*\~\~' contains=@Spell,pdcStrikeFix
@@ -148,6 +138,9 @@ syn match pdcLinkRef '^\s*\[.\{-}\]:\s\+\S.*$'
 " syn region pdcFootnoteDef matchgroup=pdcFootnoteID start=/\^\[/ matchgroup=pdcFootnoteID end=/\]/ oneline
 syn match pdcFootnoteID /\[\^[^\]]\+\]/
 syn match pdcFootnoteDef /\zs\^\[[^\]]\+\]\ze[^\^]/
+
+" https://github.com/vim-pandoc/vim-pandoc-syntax/blob/master/syntax/pandoc.vim:301
+syn match pdcAutomaticLink /<\(https\{0,1}.\{-}\|[A-Za-z0-9!#$%&'*+\-/=?^_`{|}~.]\{-}@[A-Za-z0-9\-]\{-}\(\.\w\{-}\)\{1,}\)>/ contains=NONE
 
 " }}}
 
@@ -222,6 +215,7 @@ hi default link pdcFigure WildMenu
 hi default link pdcLinkRef Identifier
 hi default link pdcFootnoteID Underlined
 hi default link pdcFootnoteDef Comment
+hi default link pdcAutomaticLink Underlined
 
 hi default link pdcBlockQuote PreProc
 hi default link pdcHRule Underlined
@@ -244,3 +238,13 @@ hi default link pdcTableCaptionCont Label
 hi default link pdcTempPPP MoreMsg
 
 let b:current_syntax = "pandoc"
+
+syntax sync clear
+if g:pandoc_syntax_accuracy
+	" syn sync linebreaks=1
+	" syn sync minlines=10
+	syntax sync fromstart
+else
+	syntax sync minlines=10
+	syntax sync maxlines=50
+endif
