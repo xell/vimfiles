@@ -120,8 +120,7 @@ call AddHighlight('ErrorMsg', red[0], bg)
 call AddHighlight('Todo', orange[0], bg, undercurl, orange[0])
 
 " Visual:
-" Change the selection color on focus change (but only if the "macvim"
-" colorscheme is active).
+" Change the selection color on focus change 
 call AddHighlight('Visual', none, 'MacSelectedTextBackgroundColor' )
 if has("gui_macvim") && !exists("s:augroups_defined")
   au FocusLost * if exists("colors_name") && colors_name == "xell_dark" | hi Visual guibg=MacSecondarySelectedControlColor | endif

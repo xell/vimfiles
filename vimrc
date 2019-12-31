@@ -126,6 +126,7 @@ set exrc
 
 set updatetime=500
 
+set modelineexpr
 " }}}
 
 " Filetypes {{{2
@@ -192,6 +193,7 @@ set fileencodings=utf-8,cp936
 
 " In utf-8 files, use twice the width of ASCII characters
 set ambiwidth=double
+set maxcombine=6
 
 set breakindent
 
@@ -348,6 +350,8 @@ endfunction
 " }}}
 
 colorscheme xell_dark
+
+command! ReloadColorscheme exe "colorscheme" split(execute('colorscheme', '\n'))[0]
 
 " }}}
 
@@ -732,6 +736,8 @@ augroup vimStartup
                 \ | endif
 
 augroup END
+
+com! Pwd exec 'cd' expand('%:p:h')
 
 " Xell Other
 " TODO https://github.com/tpope/vim-eunuch

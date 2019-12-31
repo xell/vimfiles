@@ -53,11 +53,7 @@ au OSAppearanceChanged * call ChangeBackground()
 
 " Guioptions {{{1
 " e gui tabs
-" g grey the inactive menu items 
-" t include tearoff menu items
-" a auto yank visuals into regester *
-" T toolbar
-set guioptions=egtm
+set guioptions=e
 set guicursor=n-v-c:block-Cursor/lCursor-blinkwait700-blinkon1200-blinkoff250,ve:ver35-Cursor,o:hor50-Cursor,i-ci:ver25-Cursor/lCursor,r-cr:hor20-Cursor/lCursor,sm:block-Cursor-blinkwait175-blinkoff150-blinkon175
 set macthinstrokes
 "}}}
