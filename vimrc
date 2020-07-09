@@ -362,7 +362,9 @@ command! ReloadColorscheme exe "colorscheme" split(execute('colorscheme', '\n'))
 
 " Set map leader  b de gHiIJK   pq  tu wxy 
 let mapleader=","
-set macmeta
+if exists('&macmeta')
+    set macmeta
+endif
 nnoremap Q q:
 " }}}
 
@@ -880,7 +882,7 @@ function! Fugitive_statusline_mod()
 	if exists("*fugitive#statusline")
 		return substitute(fugitive#statusline(), '\[Git\|\]', '', 'g')
 	else
-		return 'GIT'
+		return ''
 	endif
 endfunction
 
@@ -1069,6 +1071,13 @@ nmap <D-C-y> <Plug>IMAP_JumpForward
 set grepprg=grep\ -nH\ $*
 
 " }}}
+" LimeLight {{{2
+" Number of preceding/following paragraphs to include (default: 0)
+let g:limelight_paragraph_span = 0
+" Highlighting priority (default: 10)
+"   Set it to -1 not to overrule hlsearch
+let g:limelight_priority = -1
+" }}}
 " Matchit {{{2
 " TODO define some new block
 packadd matchit
@@ -1188,8 +1197,10 @@ endif
 " }}}
 " NERDTree {{{2
 let NERDTreeShowBookmarks = 1
-nmap <Leader>t :NERDTreeToggle<CR>
-nmap <Leader>b :NERDTreeFromBookmark 
+let NERDTreeMinimalUI = 1
+nnoremap <Leader>nt :NERDTreeToggle<CR>
+nnoremap <Leader>nf :NERDTreeFind<CR>
+nnoremap <Leader>nb :NERDTreeFromBookmark 
 " }}}
 " OpenURI {{{2
 " Open or yank web url
