@@ -38,10 +38,10 @@ nmap <F6> :SwitchColorschemes<CR>
 " TODO
 function! ChangeBackground()
   if (v:os_appearance == 1)
-    set background=dark
+    " set background=dark
     colorscheme xell_dark
   else 
-    set background=light
+    " set background=light
     colorscheme xell_light_white
   endif
   redraw!

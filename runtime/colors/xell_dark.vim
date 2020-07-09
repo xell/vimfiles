@@ -37,7 +37,7 @@ let bold = 'bold' | let italic = 'italic' | let reverse = 'reverse'
 let underline = 'underline' | let undercurl = 'undercurl'
 let white = 'White' | let black = 'Black'
 
-let fg = ['#B0B0B0', '#D7D7D8'][0]
+let fg = ['#B0B0B0', '#D7D7D8'][1]
 let bg = ['#121212', '#4A4A4D'][1]
 let bg = '#262626'
 let gray = ['#1C1C1E', '#2C2C2E', '#48484A', '#8E8E93', '#98989D']

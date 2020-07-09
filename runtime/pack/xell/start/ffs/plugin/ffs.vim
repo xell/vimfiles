@@ -10,6 +10,7 @@ let g:loaded_xell_ffs = 1
 " }}}
 
 function! FFS()
+    exec 'cd' expand('%:p:h')
 	let t:ffs_start_path = expand("%:p:h")
     let t:cur_winnr = winnr()
 	for forbiden_path in g:ffs_forbiden_path
