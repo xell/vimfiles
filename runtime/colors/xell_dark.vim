@@ -136,6 +136,6 @@ if &term == 'builtin_gui'
     set transparency=3
     set blurradius=100
 endif
-set guifont=Sarasa\ Mono\ T\ SC\ Extralight:h16
-set guifontwide=PingFang\ SC\ Thin:h16
+" set guifont=Sarasa\ Mono\ T\ SC\ Extralight:h16
+" set guifontwide=PingFang\ SC\ Thin:h16
 " }}}

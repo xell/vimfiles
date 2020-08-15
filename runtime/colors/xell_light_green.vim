@@ -137,6 +137,6 @@ if &term == 'builtin_gui'
     set transparency=0
     set blurradius=0
 endif
-set guifont=Inconsolata:h16
-set guifontwide=Songti\ SC:h16
+" set guifont=Inconsolata:h16
+" set guifontwide=Songti\ SC:h16
 " }}}
