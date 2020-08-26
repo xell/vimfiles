@@ -155,11 +155,11 @@ let g:guifontsize = 16
 let g:guifonts = [
             \ "Inconsolata",
             \ "Consolas",
-            \ "Sarasa\\ Mono\\ T\\ SC\\ Extralight"]
+            \ "Sarasa\\ Mono\\ T\\ SC"]
 let g:guifontwides = [
-            \ "PingFang\\ SC\\ Thin",
+            \ "PingFang\\ SC\\ Regular",
             \ "Songti\\ SC",
-            \ "Sarasa\\ Mono\\ T\\ SC\\ Extralight"]
+            \ "Sarasa\\ Mono\\ T\\ SC"]
 
 function! s:get_current_font_size() "{{{2
     return matchstr(&guifont, ':h\zs\d\+\ze')
