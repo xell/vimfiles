@@ -324,7 +324,7 @@ macm Edit.Find.Use\ Selection\ for\ Find  key=<Nop>
 " }}}
 
 " Find General {{{2
-macm Edit.Find.Find\.\.\. key=<Nop>
+macm Edit.Find.Find… key=<Nop>
 nmap <D-f> :call <SID>find_general()<CR>
 
 " Default -i; include only this filetype; no exclude TODO

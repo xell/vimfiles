@@ -576,7 +576,7 @@ nmap <Leader>L viw"zy:call xelltoolkit#grep_in_lcd_r('','',"<C-R>z")<CR>:cw<CR>/
 vmap <Leader>L "zy:call xelltoolkit#grep_in_lcd_r('','',"<C-R>z")<CR>:cw<CR>/\c<C-R>z<CR>
 
 " Look up the visual selection in Google
-vmap <D-k> "zy:silent !open "https://www.google.com/?q=<C-R>z"<CR>
+vmap <D-k> "zy:silent! !open "https://www.google.com/?q="$(php -r "echo rawurlencode('<C-R>z');")<CR>
 " Look up the word under the cursor in Dictionary.app
 nmap <silent> <D-k> :silent !open "dict://<cword>"<CR>
 
