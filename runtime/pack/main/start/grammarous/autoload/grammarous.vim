@@ -331,6 +331,8 @@ function! s:invoke_check(range_start, ...)
         let cmd = printf('%s -jar %s %s', g:grammarous#java_cmd, substitute(jar, '\\\s\@!', '\\\\', 'g'), cmdargs)
     endif
 
+    " echomsg 'Command: ' . cmd
+
     if s:job_is_available
         let job = job_start(cmd, {'close_cb' : s:SID . 'on_check_done_vim8', 'exit_cb' : s:SID . 'on_check_exit_vim8'})
         echo 'Grammar check has started with job(' . job . ')...'

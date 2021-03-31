@@ -975,12 +975,13 @@ nnoremap <Leader>gv :Gitv! --all<CR>
 vmap <leader>gv :Gitv! --all<cr>
 " }}}
 " Grammarous LanguageTool {{{2
-let g:grammarous#use_vim_spelllang = 1
+let g:grammarous#use_vim_spelllang = 0
 let g:grammarous#languagetool_cmd = 'languagetool'
 let g:grammarous#show_first_error = 1
 " https://github.com/rhysd/vim-grammarous/issues/78
 command! -nargs=0 -bar GrammarousReopen call grammarous#create_update_info_window_of(b:grammarous_result)
-nmap <M-D-l> :GrammarousCheck<CR>
+" nmap <M-D-l> :GrammarousCheck --lang=en-US,zh-CN<CR>
+nmap <M-D-l> :GrammarousCheck --lang=en-US --lang=zh-CN<CR>
 " }}}
 " Hostslist {{{2
 let g:hosts_list = '/Users/xell/Code/pac/xell.hostslist'
@@ -995,6 +996,10 @@ let g:tagbar_type_julia = {
     \ 'kinds'     : [
         \ 't:struct', 'f:function', 'm:macro', 'c:const']
     \ }
+" }}}
+" LanguageTool New {{{2
+let g:languagetool_cmd='/usr/local/bin/languagetool'
+let g:languagetool_lang='en-US'
 " }}}
 " LaTeX {{{2
 " OPTIONAL: Starting with Vim 7, the filetype of empty .tex files defaults to
