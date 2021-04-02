@@ -146,13 +146,11 @@ endif
 function! s:TempScript(...) abort
   let body = join(a:000, "\n")
   if !has_key(s:temp_scripts, body)
-    let s:temp_scripts[body] = tempname() . '.sh'
-  endif
-  let temp = s:temp_scripts[body]
-  if !filereadable(temp)
+    let temp = tempname() . '.sh'
     call writefile(['#!/bin/sh'] + a:000, temp)
+    let s:temp_scripts[body] = temp
   endif
-  return FugitiveGitPath(temp)
+  return FugitiveGitPath(s:temp_scripts[body])
 endfunction
 
 function! s:DoAutocmd(cmd) abort
@@ -553,9 +551,9 @@ function! fugitive#Config(...) abort
     let dir = a:1
   endif
   let name = substitute(name, '^[^.]\+\|[^.]\+$', '\L&', 'g')
-  let dir_key = len(dir) ? dir : '_'
-  if has_key(s:config, dir_key) && s:config[dir_key][0] ==# s:ConfigTimestamps(dir, s:config[dir_key][1])
-    let dict = s:config[dir_key][1]
+  let key = len(dir) ? dir : '_'
+  if has_key(s:config, key) && s:config[key][0] ==# s:ConfigTimestamps(dir, s:config[key][1])
+    let dict = s:config[key][1]
   else
     let dict = {}
     let [lines, message, exec_error] = s:NullError([dir, 'config', '--list', '-z'])
@@ -573,7 +571,7 @@ function! fugitive#Config(...) abort
         call add(dict[key], strpart(line, len(key) + 1))
       endif
     endfor
-    let s:config[dir_key] = [s:ConfigTimestamps(dir, dict), dict]
+    let s:config[dir] = [s:ConfigTimestamps(dir, dict), dict]
     lockvar! dict
   endif
   return len(name) ? get(get(dict, name, []), 0, '') : dict
@@ -1641,9 +1639,8 @@ function! s:ReplaceCmd(cmd) abort
   let temp = tempname()
   let [err, exec_error] = s:TempCmd(temp, a:cmd)
   if exec_error
-    call s:throw((len(err) ? err : 'unknown error running ' . a:cmd))
+    call s:throw((len(err) ? err : filereadable(temp) ? join(readfile(temp), ' ') : 'unknown error running ' . a:cmd))
   endif
-  setlocal noswapfile
   silent exe 'lockmarks keepalt 0read ++edit' s:fnameescape(temp)
   if &foldenable && foldlevel('$') > 0
     set nofoldenable
@@ -1941,10 +1938,6 @@ function! fugitive#BufReadStatus() abort
     if empty(s:Tree())
       call s:AddHeader('Bare', 'yes')
     endif
-    if get(FugitiveConfigGetAll('advice.statusHints', config), 0, 'true') !~# '^\%(false\|no|off\|0\|\)$'
-      call s:AddHeader('Help', 'g?')
-    endif
-
     call s:AddSection('Rebasing ' . rebasing_head, rebasing)
     call s:AddSection('Untracked', untracked)
     call s:AddSection('Unstaged', unstaged)
@@ -2163,13 +2156,13 @@ function! fugitive#BufReadCmd(...) abort
           keepjumps 1
           keepjumps call search('^parent ')
           if getline('.') ==# 'parent '
-            silent lockmarks keepjumps delete_
+            silent keepjumps delete_
           else
             silent exe (exists(':keeppatterns') ? 'keeppatterns' : '') 'keepjumps s/\m\C\%(^parent\)\@<! /\rparent /e' . (&gdefault ? '' : 'g')
           endif
           keepjumps let lnum = search('^encoding \%(<unknown>\)\=$','W',line('.')+3)
           if lnum
-            silent lockmarks keepjumps delete_
+            silent keepjumps delete_
           end
           silent exe (exists(':keeppatterns') ? 'keeppatterns' : '') 'keepjumps 1,/^diff --git\|\%$/s/\r$//e'
           keepjumps 1
@@ -2646,15 +2639,14 @@ endfunction
 
 let s:aliases = {}
 function! s:Aliases(dir) abort
-  let dir_key = len(a:dir) ? a:dir : '_'
-  if !has_key(s:aliases, dir_key)
-    let s:aliases[dir_key] = {}
+  if !has_key(s:aliases, a:dir)
+    let s:aliases[a:dir] = {}
     let lines = s:NullError([a:dir, 'config', '-z', '--get-regexp', '^alias[.]'])[0]
     for line in lines
-      let s:aliases[dir_key][matchstr(line, '\.\zs.\{-}\ze\n')] = matchstr(line, '\n\zs.*')
+      let s:aliases[a:dir][matchstr(line, '\.\zs.\{-}\ze\n')] = matchstr(line, '\n\zs.*')
     endfor
   endif
-  return s:aliases[dir_key]
+  return s:aliases[a:dir]
 endfunction
 
 function! fugitive#Complete(lead, ...) abort
@@ -4497,7 +4489,7 @@ function! s:OpenParse(args, wants_cmd) abort
   return [url, pre]
 endfunction
 
-function! fugitive#DiffClose() abort
+function! s:DiffClose() abort
   let mywinnr = winnr()
   for winnr in [winnr('#')] + range(winnr('$'),1,-1)
     if winnr != mywinnr && getwinvar(winnr,'&diff')
@@ -4520,7 +4512,7 @@ function! s:BlurStatus() abort
       belowright new
     endif
     if &diff
-      call fugitive#DiffClose()
+      call s:DiffClose()
     endif
   endif
 endfunction
@@ -4634,8 +4626,10 @@ endfunction
 " Section: :Gwrite, :Gwq
 
 function! fugitive#WriteCommand(line1, line2, range, bang, mods, arg, args) abort
-  if s:cpath(expand('%:p'), fugitive#Find('.git/COMMIT_EDITMSG'))
-    return (empty($GIT_INDEX_FILE) ? 'write|bdelete' : 'wq') . (a:bang ? '!' : '')
+  if exists('b:fugitive_commit_arguments')
+    return 'write|bdelete'
+  elseif expand('%:t') == 'COMMIT_EDITMSG' && $GIT_INDEX_FILE != ''
+    return 'wq'
   elseif get(b:, 'fugitive_type', '') ==# 'index'
     return 'Git commit'
   elseif &buftype ==# 'nowrite' && getline(4) =~# '^[+-]\{3\} '
@@ -4764,7 +4758,7 @@ endfunction
 
 function! fugitive#WqCommand(...) abort
   let bang = a:4 ? '!' : ''
-  if s:cpath(expand('%:p'), fugitive#Find('.git/COMMIT_EDITMSG'))
+  if exists('b:fugitive_commit_arguments')
     return 'wq'.bang
   endif
   let result = call('fugitive#WriteCommand', a:000)
@@ -4891,30 +4885,25 @@ function! s:diffthis() abort
 endfunction
 
 function! s:diffoff() abort
-  if exists('w:fugitive_diff_restore') && v:version < 704
+  if exists('w:fugitive_diff_restore')
     execute w:fugitive_diff_restore
+    unlet w:fugitive_diff_restore
+  else
+    diffoff
   endif
-  unlet! w:fugitive_diff_restore
-  diffoff
 endfunction
 
 function! s:diffoff_all(dir) abort
   let curwin = winnr()
   for nr in range(1,winnr('$'))
     if getwinvar(nr, '&diff') && !empty(getwinvar(nr, 'fugitive_diff_restore'))
-      if v:version < 704
-        if nr != winnr()
-          execute nr.'wincmd w'
-        endif
-        execute w:fugitive_diff_restore
+      if nr != winnr()
+        execute nr.'wincmd w'
       endif
-      call setwinvar(nr, 'fugitive_diff_restore', '')
+      call s:diffoff()
     endif
   endfor
-  if curwin != winnr()
-    execute curwin.'wincmd w'
-  endif
-  diffoff!
+  execute curwin.'wincmd w'
 endfunction
 
 function! s:CompareAge(mine, theirs) abort
@@ -5196,7 +5185,7 @@ endfunction
 function! s:BlameCommitFileLnum(...) abort
   let line = a:0 ? a:1 : getline('.')
   let state = a:0 ? a:2 : s:TempState()
-  let commit = matchstr(line, '^\^\=[?*]*\zs\x\+')
+  let commit = matchstr(line, '^\^\=\zs\x\+')
   if commit =~# '^0\+$'
     let commit = ''
   elseif has_key(state, 'blame_reverse_end')
@@ -5564,7 +5553,6 @@ let s:hash_colors = {}
 function! fugitive#BlameSyntax() abort
   let conceal = has('conceal') ? ' conceal' : ''
   let flags = get(s:TempState(), 'blame_flags', [])
-  syn spell notoplevel
   syn match FugitiveblameBlank                      "^\s\+\s\@=" nextgroup=FugitiveblameAnnotation,FugitiveblameScoreDebug,FugitiveblameOriginalFile,FugitiveblameOriginalLineNumber skipwhite
   syn match FugitiveblameHash       "\%(^\^\=[?*]*\)\@<=\<\x\{7,\}\>" nextgroup=FugitiveblameAnnotation,FugitiveblameScoreDebug,FugitiveblameOriginalLineNumber,FugitiveblameOriginalFile skipwhite
   syn match FugitiveblameUncommitted "\%(^\^\=\)\@<=\<0\{7,\}\>" nextgroup=FugitiveblameAnnotation,FugitiveblameScoreDebug,FugitiveblameOriginalLineNumber,FugitiveblameOriginalFile skipwhite
@@ -5575,7 +5563,7 @@ function! fugitive#BlameSyntax() abort
   endif
   syn match FugitiveblameScoreDebug        " *\d\+\s\+\d\+\s\@=" nextgroup=FugitiveblameAnnotation,FugitiveblameOriginalLineNumber,fugitiveblameOriginalFile contained skipwhite
   syn region FugitiveblameAnnotation matchgroup=FugitiveblameDelimiter start="(" end="\%(\s\d\+\)\@<=)" contained keepend oneline
-  syn match FugitiveblameTime "\<[0-9:/+-][0-9:/+ -]*[0-9:/+-]\%(\s\+\d\+)\)\@=" contained containedin=FugitiveblameAnnotation
+  syn match FugitiveblameTime "[0-9:/+-][0-9:/+ -]*[0-9:/+-]\%(\s\+\d\+)\)\@=" contained containedin=FugitiveblameAnnotation
   exec 'syn match FugitiveblameLineNumber         "\s*\d\+)\@=" contained containedin=FugitiveblameAnnotation' conceal
   exec 'syn match FugitiveblameOriginalFile       "\s\%(\f\+\D\@<=\|\D\@=\f\+\)\%(\%(\s\+\d\+\)\=\s\%((\|\s*\d\+)\)\)\@=" contained nextgroup=FugitiveblameOriginalLineNumber,FugitiveblameAnnotation skipwhite' (s:HasOpt(flags, '--show-name', '-f') ? '' : conceal)
   exec 'syn match FugitiveblameOriginalLineNumber "\s*\d\+\%(\s(\)\@=" contained nextgroup=FugitiveblameAnnotation skipwhite' (s:HasOpt(flags, '--show-number', '-n') ? '' : conceal)
@@ -5972,11 +5960,11 @@ function! fugitive#MapJumps(...) abort
       call s:Map('n', 'gO',   ':<C-U>0,4' . blame_map, '<silent>')
       call s:Map('n', 'O',    ':<C-U>0,5' . blame_map, '<silent>')
 
-      call s:Map('n', 'D',  ":<C-U>call fugitive#DiffClose()<Bar>Gdiffsplit!<Bar>redraw<Bar>echohl WarningMsg<Bar> echo ':Gstatus D is deprecated in favor of dd'<Bar>echohl NONE<CR>", '<silent>')
-      call s:Map('n', 'dd', ":<C-U>call fugitive#DiffClose()<Bar>Gdiffsplit!<CR>", '<silent>')
-      call s:Map('n', 'dh', ":<C-U>call fugitive#DiffClose()<Bar>Ghdiffsplit!<CR>", '<silent>')
-      call s:Map('n', 'ds', ":<C-U>call fugitive#DiffClose()<Bar>Ghdiffsplit!<CR>", '<silent>')
-      call s:Map('n', 'dv', ":<C-U>call fugitive#DiffClose()<Bar>Gvdiffsplit!<CR>", '<silent>')
+      call s:Map('n', 'D',  ":<C-U>call <SID>DiffClose()<Bar>Gdiffsplit!<Bar>redraw<Bar>echohl WarningMsg<Bar> echo ':Gstatus D is deprecated in favor of dd'<Bar>echohl NONE<CR>", '<silent>')
+      call s:Map('n', 'dd', ":<C-U>call <SID>DiffClose()<Bar>Gdiffsplit!<CR>", '<silent>')
+      call s:Map('n', 'dh', ":<C-U>call <SID>DiffClose()<Bar>Ghdiffsplit!<CR>", '<silent>')
+      call s:Map('n', 'ds', ":<C-U>call <SID>DiffClose()<Bar>Ghdiffsplit!<CR>", '<silent>')
+      call s:Map('n', 'dv', ":<C-U>call <SID>DiffClose()<Bar>Gvdiffsplit!<CR>", '<silent>')
       call s:Map('n', 'd?', ":<C-U>help fugitive_d<CR>", '<silent>')
 
     else
@@ -6013,7 +6001,7 @@ function! fugitive#MapJumps(...) abort
       call s:Map('nxo', '#', '<SID>PatchSearchExpr(1)', '<expr>')
     endif
     call s:Map('n', 'S',    ':<C-U>echoerr "Use gO"<CR>', '<silent>')
-    call s:Map('n', 'dq', ":<C-U>call fugitive#DiffClose()<CR>", '<silent>')
+    call s:Map('n', 'dq', ":<C-U>call <SID>DiffClose()<CR>", '<silent>')
     call s:Map('n', '-', ":<C-U>exe 'Gedit ' . <SID>fnameescape(<SID>NavigateUp(v:count1))<Bar> if getline(1) =~# '^tree \x\{40,\}$' && empty(getline(2))<Bar>call search('^'.escape(expand('#:t'),'.*[]~\').'/\=$','wc')<Bar>endif<CR>", '<silent>')
     call s:Map('n', 'P',     ":<C-U>exe 'Gedit ' . <SID>fnameescape(<SID>ContainingCommit().'^'.v:count1.<SID>Relative(':'))<CR>", '<silent>')
     call s:Map('n', '~',     ":<C-U>exe 'Gedit ' . <SID>fnameescape(<SID>ContainingCommit().'~'.v:count1.<SID>Relative(':'))<CR>", '<silent>')
