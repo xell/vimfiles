@@ -88,6 +88,7 @@ endf
 " Public {{{1
 fu! fzf_mru#mrufiles#refresh(...)
   let mrufs = s:mergelists()
+  cal filter(s:mrufs, '!empty(fzf_mru#utils#glob(v:val, 1)) && !s:excl(v:val)')
   cal filter(mrufs, '!empty(fzf_mru#utils#glob(v:val, 1)) && !s:excl(v:val)')
   if exists('+ssl')
     cal map(mrufs, 'tr(v:val, "/", "\\")')
@@ -138,6 +139,11 @@ fu! fzf_mru#mrufiles#cachefile()
   en
   retu s:cafile
 endf
+
+function! fzf_mru#mrufiles#source()
+  " remove current file from the list
+  return filter(copy(fzf_mru#mrufiles#list()), 'v:val != expand("%")')
+endfunction
 
 fu! fzf_mru#mrufiles#init()
   if !has('autocmd') | retu | en
