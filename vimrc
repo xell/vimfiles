@@ -495,15 +495,23 @@ if &term =~? 'xterm'
 	nmap ‘ <C-W>+
 	" ”’ {}
 	nmap ” <C-W>-
+	nmap º <C-W>-
 	nmap ’ <C-W>+
+	nmap Ð <C-W>+
 	nmap ≤ <C-W><
+	nmap û <C-W><
 	nmap ≥ <C-W>>
+	nmap ý <C-W>>
 	nmap ≠ <C-W>=
 else
 	nmap <M-[> <C-W>-
+	nmap <M-:> <C-W>-
 	nmap <M-]> <C-W>+
+	nmap <M-S-p> <C-W>+
 	nmap <M-,> <C-W><
+	nmap <M-{> <C-W><
 	nmap <M-.> <C-W>>
+	nmap <M-}> <C-W>>
 	nmap <M-=> <C-W>=
 endif
 
