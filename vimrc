@@ -537,6 +537,7 @@ inoremap <D-v> <C-R><C-O>+
 " For search highlight
 nmap <Leader>ns :let @/=""<CR>
 nmap <Leader>nh :nohlsearch<CR>
+vmap <Leader>/ y/<C-r>=@"<CR><CR>
 
 " For quickfix
 "nmap <Leader>a :cp<CR>
