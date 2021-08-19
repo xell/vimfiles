@@ -643,6 +643,185 @@ endfunction "}}}
 " map <buffer><silent> <LocalLeader>br :call pandoc_misc#Pandoc_Back_From_Ref()<cr>
 " }}}
 
+" Toc jumping {{{1
+" https://github.com/plasticboy/vim-markdown
+command! -buffer Toc call s:Toc()
+command! -buffer Toch call s:Toc('horizontal')
+command! -buffer Tocv call s:Toc('vertical')
+command! -buffer Toct call s:Toc('tab')
+
+let s:headersRegexp = '\v^(#|.+\n(\=+|-+)$)'
+
+let s:levelRegexpDict = {
+    \ 1: '\v^(#[^#]@=|.+\n\=+$)',
+    \ 2: '\v^(##[^#]@=|.+\n-+$)',
+    \ 3: '\v^###[^#]@=',
+    \ 4: '\v^####[^#]@=',
+    \ 5: '\v^#####[^#]@=',
+    \ 6: '\v^######[^#]@='
+\ }
+
+function! s:Toc(...)
+    if a:0 > 0
+        let l:window_type = a:1
+    else
+        let l:window_type = 'vertical'
+    endif
+
+
+    let l:cursor_line = line('.')
+    let l:cursor_header = 0
+    let l:header_list = s:GetHeaderList()
+    let l:indented_header_list = []
+    if len(l:header_list) == 0
+        echom "Toc: No headers."
+        return
+    endif
+    let l:header_max_len = 0
+    let l:vim_markdown_toc_autofit = get(g:, "vim_markdown_toc_autofit", 0)
+    for h in l:header_list
+        " set header number of the cursor position
+        if l:cursor_header == 0
+            let l:header_line = h.lnum
+            if l:header_line == l:cursor_line
+                let l:cursor_header = index(l:header_list, h) + 1
+            elseif l:header_line > l:cursor_line
+                let l:cursor_header = index(l:header_list, h)
+            endif
+        endif
+        " indent header based on level
+        let l:text = repeat('  ', h.level-1) . h.text
+        " keep track of the longest header size (heading level + title)
+        let l:total_len = strdisplaywidth(l:text)
+        if l:total_len > l:header_max_len
+            let l:header_max_len = l:total_len
+        endif
+        " append indented line to list
+        let l:item = {'lnum': h.lnum, 'text': l:text, 'valid': 1, 'bufnr': h.bufnr, 'col': 1}
+        let l:indented_header_list = l:indented_header_list + [l:item]
+    endfor
+    call setloclist(0, l:indented_header_list)
+
+    if l:window_type ==# 'horizontal'
+        lopen
+    elseif l:window_type ==# 'vertical'
+        vertical lopen
+        " auto-fit toc window when possible to shrink it
+        if (&columns/2) > l:header_max_len && l:vim_markdown_toc_autofit == 1
+            " header_max_len + 1 space for first header + 3 spaces for line numbers
+            execute 'vertical resize ' . (l:header_max_len + 1 + 3)
+        else
+            execute 'vertical resize ' . (&columns/2)
+        endif
+    elseif l:window_type ==# 'tab'
+        tab lopen
+    else
+        lopen
+    endif
+    setlocal modifiable
+    for i in range(1, line('$'))
+        " this is the location-list data for the current item
+        let d = getloclist(0)[i-1]
+        call setline(i, d.text)
+    endfor
+    setlocal nomodified
+    setlocal nomodifiable
+    execute 'normal! ' . l:cursor_header . 'G'
+endfunction
+
+function! s:GetHeaderList()
+    let l:bufnr = bufnr('%')
+    let l:fenced_block = 0
+    let l:front_matter = 0
+    let l:header_list = []
+    let l:vim_markdown_frontmatter = get(g:, "vim_markdown_frontmatter", 0)
+    for i in range(1, line('$'))
+        let l:lineraw = getline(i)
+        let l:l1 = getline(i+1)
+        let l:line = substitute(l:lineraw, "#", "\\\#", "g")
+        " exclude lines in fenced code blocks
+        if l:line =~ '````*' || l:line =~ '\~\~\~\~*'
+            if l:fenced_block == 0
+                let l:fenced_block = 1
+            elseif l:fenced_block == 1
+                let l:fenced_block = 0
+            endif
+        " exclude lines in frontmatters
+        elseif l:vim_markdown_frontmatter == 1
+            if l:front_matter == 1
+                if l:line == '---'
+                    let l:front_matter = 0
+                endif
+            elseif i == 1
+                if l:line == '---'
+                    let l:front_matter = 1
+                endif
+            endif
+        endif
+        " match line against header regex
+        if join(getline(i, i + 1), "\n") =~ s:headersRegexp && l:line =~ '^\S'
+            let l:is_header = 1
+        else
+            let l:is_header = 0
+        endif
+        if l:is_header == 1 && l:fenced_block == 0 && l:front_matter == 0
+            " remove hashes from atx headers
+            if match(l:line, "^#") > -1
+                let l:line = substitute(l:line, '\v^#*[ ]*', '', '')
+                let l:line = substitute(l:line, '\v[ ]*#*$', '', '')
+            endif
+            " append line to list
+            let l:level = s:GetHeaderLevel(i)
+            let l:item = {'level': l:level, 'text': l:line, 'lnum': i, 'bufnr': bufnr}
+            let l:header_list = l:header_list + [l:item]
+        endif
+    endfor
+    return l:header_list
+endfunction
+
+function! s:GetHeaderLevel(...)
+    if a:0 == 0
+        let l:line = line('.')
+    else
+        let l:line = a:1
+    endif
+    let l:linenum = s:GetHeaderLineNum(l:line)
+    if l:linenum != 0
+        return s:GetLevelOfHeaderAtLine(l:linenum)
+    else
+        return 0
+    endif
+endfunction
+
+function! s:GetHeaderLineNum(...)
+    if a:0 == 0
+        let l:l = line('.')
+    else
+        let l:l = a:1
+    endif
+    while(l:l > 0)
+        if join(getline(l:l, l:l + 1), "\n") =~ s:headersRegexp
+            return l:l
+        endif
+        let l:l -= 1
+    endwhile
+    return 0
+endfunction
+
+function! s:GetLevelOfHeaderAtLine(linenum)
+    let l:lines = join(getline(a:linenum, a:linenum + 1), "\n")
+    for l:key in keys(s:levelRegexpDict)
+        if l:lines =~ get(s:levelRegexpDict, l:key)
+            return l:key
+        endif
+    endfor
+    return 0
+endfunction
+
+
+
+" }}}
+
 " XXX Disabled {{{1
 " # Save folding between sessions
 "
