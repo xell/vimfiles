@@ -26,7 +26,8 @@ set nocompatible
 " URL {{{2
 let g:urlpattern = '[a-z]\w\+:\/\/[^ "' . "'>\\])]\\+"
 let g:webbrowser = ''
-let g:webserver_host = 'http://localhost:80/~xell'
+" let g:webserver_host = 'http://localhost:80/~xell'
+let g:webserver_host = 'http://localhost'
 let g:webserver_dir = glob('~/Sites')
 " }}}
 
@@ -65,7 +66,7 @@ set whichwrap+=<,>,[,],l,h
 " c auto format textwidth in comment
 " q allow formatting of comments with gq
 " t autowrap
-set formatoptions=mMlrocq
+set formatoptions=mBlrocq
 
 " While a file is changed outside Vim, automaitcally read it w/o warning
 set autoread
@@ -1229,7 +1230,7 @@ command! -nargs=1 Es call xelltoolkit#edit_samename_file('<args>')
 let g:pandoc_syntax_accuracy = 1
 let g:pandoc_syntax_full_html_tex = 1
 let g:pandoc_syntax_table = 0
-let g:pandoc_fold_level = 2
+let g:pandoc_fold_level = 1
 " }}}
 " Proxylist {{{2
 let g:proxy_list = '/Users/xell/Code/pac/xell.proxylist'

@@ -119,7 +119,9 @@ endfunction
 "
 " Taken from
 " http://stackoverflow.com/questions/3828606/vim-markdown-folding/4677454#4677454
-" 0 1 2 3
+" 1 仅考虑 #，没有额外考虑空行以产生美观的分隔
+" 2 有额外空行
+" 3
 command! -buffer -nargs=1 ChangeMDFoldMethod call <SID>change_fold_method(<args>)
 function! s:change_fold_method(level) " {{{2
     if a:level == 0
