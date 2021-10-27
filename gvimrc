@@ -151,7 +151,13 @@ endfunction
 " Font setup {{{1
 "---------------------------------------
 " TODO 切换暗、亮时自动改变字体
-let g:guifontsize = 16
+
+let g:computer_model_name = executable('system_profiler') ? trim(system("system_profiler SPHardwareDataType | awk '/Model Name/{print $0}'")) : 'macbook'
+if g:computer_model_name =~? 'macbook'
+    let g:guifontsize = 16
+else
+    let g:guifontsize = 18
+endif
 let g:guifonts = [
             \ "Inconsolata",
             \ "Consolas",
@@ -270,8 +276,8 @@ function! s:setfont_profile(default)
         call xelltoolkit#echo_msg("Wrong profile!")
     endif
 endfunction "}}}
-call Setfont(2, 0, 16, 4)
-command! -nargs=0 ResetFont call Setfont(2, 0, 16, 4)
+call Setfont(2, 0, g:guifontsize, 6)
+command! -nargs=0 ResetFont call Setfont(2, 0, g:guifontsize, 6)
 command! -nargs=1 SetFontProfile call <SID>setfont_profile(<args>)
 
 " Temp {{{
