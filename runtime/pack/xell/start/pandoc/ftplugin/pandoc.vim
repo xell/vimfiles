@@ -75,6 +75,7 @@ nmap <buffer> <Leader>pp :Pandoc<CR>
 
 call xelltoolkit#imap('**', '*<++>*<++>', 1)
 call xelltoolkit#imap('``', '`<++>`<++>', 1)
+call xelltoolkit#imap('··', '`<++>`<++>', 1)
 call xelltoolkit#imap('[[', '[<++>](<++>)<++>', 1)
 call xelltoolkit#imap('["', '[<++>](<++>"<++>")<++>', 1)
 call xelltoolkit#imap('~~', '~~<++>~~<++>', 1)

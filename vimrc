@@ -24,7 +24,7 @@ set nocompatible
 " Xell Global Variables {{{1
 
 " URL {{{2
-let g:urlpattern = '[a-z]\w\+:\/\/[^ "' . "'>\\])]\\+"
+let g:urlpattern = '[[:alpha:]-]\+:\/\/[^ "' . "'>\\])]\\+"
 let g:webbrowser = ''
 " let g:webserver_host = 'http://localhost:80/~xell'
 let g:webserver_host = 'http://localhost'
@@ -70,13 +70,21 @@ set formatoptions=mBlrocq
 
 " While a file is changed outside Vim, automaitcally read it w/o warning
 set autoread
+" Triger `autoread` when files changes on disk
+" https://unix.stackexchange.com/questions/149209/refresh-changed-content-of-file-opened-in-vim/383044#383044
+" https://vi.stackexchange.com/questions/13692/prevent-focusgained-autocmd-running-in-command-line-editing-mode
+autocmd FocusGained,BufEnter,CursorHold,CursorHoldI *
+            \ if mode() !~ '\v(c|r.?|!|t)' && getcmdwintype() == '' | checktime | endif
+" Notification after file change
+" https://vi.stackexchange.com/questions/13091/autocmd-event-for-autoread
+autocmd FileChangedShellPost *
+            \ echohl Title | echo "File changed on disk. Buffer reloaded." | echohl None
 
 " Set the number of history of : commands and search.
 set history=500
 
 " Options in sessions
-" TODO consider localoptions,options
-set sessionoptions=buffers,curdir,folds,globals,help,resize,slash,tabpages,winpos,winsize
+set sessionoptions=buffers,curdir,folds,globals,help,resize,slash,tabpages,winpos,winsize,localoptions,options
 
 " Set local current directory
 set autochdir
@@ -586,7 +594,7 @@ nmap <Leader>L viw"zy:call xelltoolkit#grep_in_lcd_r('','',"<C-R>z")<CR>:cw<CR>/
 vmap <Leader>L "zy:call xelltoolkit#grep_in_lcd_r('','',"<C-R>z")<CR>:cw<CR>/\c<C-R>z<CR>
 
 " Look up the visual selection in Google
-vmap <D-k> "zy:silent! !open "https://www.google.com/?q="$(php -r "echo rawurlencode('<C-R>z');")<CR>
+vmap <D-k> "zy:silent! !open "https://www.google.com/search?q="$(php -r "echo rawurlencode('<C-R>z');")<CR>
 " Look up the word under the cursor in Dictionary.app
 nmap <silent> <D-k> :silent !open "dict://<cword>"<CR>
 
