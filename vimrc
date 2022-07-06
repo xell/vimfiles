@@ -347,7 +347,7 @@ function! s:XellBufferStatuslineHighlight()
 	let buffername = bufname("%")
 	if empty(buffername)
         highlight! link StatusLine Question
-	elseif buffername =~ '\%(\.tmp\|0\)$' || expand("%:p") =~ '^\/private\/var' || expand("%:e") =~ g:xell_notes_temp_ext
+	elseif buffername =~ '\%(\.tmp\|0\)$' || expand("%:p") =~ '^\/private\/var'
         highlight! link StatusLine WarningMsg
 	else
         highlight! link StatusLine StatusLine
@@ -850,13 +850,14 @@ iab xdate <C-r>=strftime("%Y-%m-%d %H:%M:%S")<CR>
 """"""""""""""""""""""""""""""""""""""""""""""""""""" 
 
 " XellNotes {{{2
-let g:xell_notes_root = glob('~/Documents/notes/notes/notes')
-let g:xell_notes_ex_root = glob('~/Documents/notes/notes_preview')
+let g:xell_notes_root = fnameescape(glob('~/Library/Mobile\ Documents/iCloud~md~obsidian/Documents/Notes'))
+" TODO FIXME
+let g:xell_notes_ex_root = fnameescape(glob('~/Library/Mobile\ Documents/iCloud~md~obsidian/Documents/Notes\ Preview'))
 " TODO it should not be connected with ffs
 " i.e. ffs should be more general, not focusing with notes
 let g:xell_notes_default_ext = 'md'
-let g:xell_notes_temp_ext = 'tempnote'
-nmap <Leader>rj :exec 'e /Users/xell/Documents/notes/rj.md'<CR>
+" TODO FIXME
+let g:xell_notes_temp_ext = ['tempnote', 'md'][1]
 " nmap <Leader>pr :exec 'e /Users/xell/Documents/notes/projects/main.xproject'<CR>
 " }}}
 
