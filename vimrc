@@ -78,7 +78,7 @@ autocmd FocusGained,BufEnter,CursorHold,CursorHoldI *
 " Notification after file change
 " https://vi.stackexchange.com/questions/13091/autocmd-event-for-autoread
 autocmd FileChangedShellPost *
-            \ echohl Title | echo "File changed on disk. Buffer reloaded." | echohl None
+            \ echohl Title | echom expand("%:p:t") . " changed on disk. Buffer reloaded." | echohl None
 
 " Set the number of history of : commands and search.
 set history=500
@@ -594,13 +594,13 @@ nmap <Leader>L viw"zy:call xelltoolkit#grep_in_lcd_r('','',"<C-R>z")<CR>:cw<CR>/
 vmap <Leader>L "zy:call xelltoolkit#grep_in_lcd_r('','',"<C-R>z")<CR>:cw<CR>/\c<C-R>z<CR>
 
 " Look up the visual selection in Google
-vmap <D-k> "zy:silent! !open "https://www.google.com/search?q="$(php -r "echo rawurlencode('<C-R>z');")<CR>
+vmap <D-d> "zy:silent! !open "https://www.google.com/search?q="$(php -r "echo rawurlencode('<C-R>z');")<CR>
 " Look up the word under the cursor in Dictionary.app
-nmap <silent> <D-k> :silent !open "dict://<cword>"<CR>
+nmap <silent> <D-d> :silent !open "dict://<cword>"<CR>
 
 " Move to url
-nmap <Tab> :call xelltoolkit#goto_next_word(g:urlpattern)<CR>
-nmap <S-Tab> :call xelltoolkit#goto_pre_word(g:urlpattern)<CR>
+nnoremap gn :call xelltoolkit#goto_next_word(g:urlpattern)<CR>
+nnoremap gN :call xelltoolkit#goto_pre_word(g:urlpattern)<CR>
 
 " }}}
 
@@ -952,7 +952,7 @@ endfunction
 set rtp+=/usr/local/opt/fzf
 let g:fzf_buffers_jump = 1
 let g:fzf_layout = { 'up': '~20%' }
-nmap <Leader>fe :Files<CR>
+nmap <D-o> :Files<CR>
 nmap <Leader>ft :Tags<CR>
 nmap <Leader>fh :Helptags<CR>
 nmap <Leader>fb :Buffers<CR>
@@ -968,7 +968,7 @@ nmap <Leader>fn :Files <C-R>=g:xell_notes_root<CR><CR>
 " https://github.com/junegunn/fzf.vim/issues/228
 " https://github.com/junegunn/fzf.vim/commit/8ea2e872d7ac7492b86bcca16ccd5d5021663efb
 command! -bang -nargs=* AG call fzf#vim#ag(<q-args>, '-S', {'options': '--bind ctrl-a:select-all,ctrl-d:deselect-all'}, <bang>0)
-nmap <Leader><Leader><Leader> :AG<CR>
+nmap <D-F> :AG<CR>
 
 nmap <Leader>ff :FZFMru<CR>
 
@@ -1228,9 +1228,10 @@ nnoremap <Leader>nb :NERDTreeFromBookmark
 " }}}
 " OpenURI {{{2
 " Open or yank web url
-nmap <Leader>Y :call Open()<CR>
+nmap <D-> :call Open()<CR>
 nmap <expr> <Leader>y xelltoolkit#get_copy(xelltoolkit#get_word_at_cursor(g:urlpattern))
 nmap <Leader>O :OpenInBrowser<CR>
+" FIXME it's used to open the corresonding html of the current markdown. 
 command! -bang -nargs=? OpenInBrowser call OpenInBrowser(<bang>1, '<args>')
 command! -nargs=0 OpenInDefaultPrg call xelltoolkit#run('', expand("%:p"))
 command! -nargs=1 Es call xelltoolkit#edit_samename_file('<args>')

@@ -119,15 +119,16 @@ call AddHighlight('ErrorMsg', red[0], bg)
 " call AddHighlight('Todo', white, orange[3], bold)
 call AddHighlight('Todo', orange[0], bg, undercurl, orange[0])
 
+call AddHighlight('Visual', bg, yellow[0])
 " Visual:
 " Change the selection color on focus change 
-call AddHighlight('Visual', none, 'MacSelectedTextBackgroundColor' )
-if has("gui_macvim") && !exists("s:augroups_defined")
-  au FocusLost * if exists("colors_name") && colors_name == "xell_dark" | hi Visual guibg=MacSecondarySelectedControlColor | endif
-  au FocusGained * if exists("colors_name") && colors_name == "xell_dark" | hi Visual guibg=MacSelectedTextBackgroundColor | endif
-
-  let s:augroups_defined = 1
-endif
+" call AddHighlight('Visual', none, 'MacSelectedTextBackgroundColor' )
+" if has("gui_macvim") && !exists("s:augroups_defined")
+"   au FocusLost * if exists("colors_name") && colors_name == "xell_dark" | hi Visual guibg=MacSecondarySelectedControlColor | endif
+"   au FocusGained * if exists("colors_name") && colors_name == "xell_dark" | hi Visual guibg=MacSelectedTextBackgroundColor | endif
+"
+"   let s:augroups_defined = 1
+" endif
 " }}}
 
 " Other: {{{

@@ -61,13 +61,18 @@ setlocal comments=s:<!--,m:\ \ \ \ ,e:-->,:*,:1.
 
 " Mappings {{{1
 " Temp for surroundind `` to the selected
-nmap <buffer> <M-c> vt>l"zc`<C-R>Z`<Esc>
-vnoremap <buffer> <M-c> "zc`<C-R>Z`<Esc>
-vnoremap <buffer> <M-t> "zc~~<C-R>Z~~<Esc>
-vnoremap <buffer> <M-8> "zc**<C-R>Z**<Esc>
-inoremap <buffer> <M-8> ****<++><Left><Left><Left><Left><Left><Left>
-vnoremap <buffer> <M-0> "zc*<C-R>Z*<Esc>
-vnoremap <buffer> <M-[> "zc{=<C-R>Z}<Esc>
+" Bold
+inoremap <buffer> <D-b> ****<++><Left><Left><Left><Left><Left><Left>
+vnoremap <buffer> <D-b> "zc**<C-R>Z**<Esc>
+" Italics
+vnoremap <buffer> <D-i> "zc*<C-R>Z*<Esc>
+" Code C-A-c
+nmap <buffer> <D-ã> vt>l"zc`<C-R>Z`<Esc>
+vnoremap <buffer> <D-ã> "zc`<C-R>Z`<Esc>
+" Highlight
+vnoremap <buffer> <D-M> "zc{=<C-R>Z}<Esc>
+" Strikethrough C-A-s
+vnoremap <buffer> <D-ó> "zc~~<C-R>Z~~<Esc>
 
 nnoremap <buffer> j gj
 nnoremap <buffer> k gk
@@ -82,10 +87,13 @@ call xelltoolkit#imap('~~', '~~<++>~~<++>', 1)
 call xelltoolkit#imap('$$', '$<++>$<++>', 1)
 call xelltoolkit#imap('{{', '{=<++>}<++>', 1)
 
-imap <buffer> <c-w><c-w> <Esc>:call <SID>shift_plus()<CR>
-imap <buffer> <c-w><c-q> <Esc>:call <SID>shift_minus()<CR>
+" TODO remove the imap?
+imap <buffer> <c-w><c-w> <Esc>:call <SID>promote_item()<CR>
+imap <buffer> <c-w><c-q> <Esc>:call <SID>demote_item()<CR>
+nmap <buffer> <Tab> :call <SID>promote_item()<CR>
+nmap <buffer> <S-Tab> :call <SID>demote_item()<CR>
 " Shift list {{{2
-function! s:shift_plus()
+function! s:promote_item()
 	let cur_line = getline('.')
 	if match(cur_line, '^\s*\zs[^ ]\ze', 0) == 1
 		let leading = '   '
@@ -98,18 +106,11 @@ function! s:shift_plus()
 		let suffix = ' '
 	endif
 	call setline('.', leading . cur_line . suffix)
-	startinsert!
 endfunction
-function! s:shift_minus()
+function! s:demote_item()
 	let cur_line = getline('.')
-	if match(cur_line, '^\s*\zs[^ ]\ze', 0) == 4
-		let minus = 3
-	else
-		let minus = 4
-	endif
-	let cur_line = substitute(cur_line, '^' . repeat('\s', minus), '', '')
+	let cur_line = substitute(cur_line, '^' . repeat('\s', 4), '', '')
 	call setline('.', cur_line)
-	startinsert!
 endfunction
 " }}}
 
@@ -330,9 +331,10 @@ endfunction "}}}
 " Link {{{1
 " Search, copy and open
 nmap <buffer> <expr> <Leader>y xelltoolkit#get_copy(<SID>get_link())
-nmap <buffer> <Leader>Y :call <SID>open()<CR>
-nmap <buffer> <Tab> :call xelltoolkit#goto_next_word(b:tabpattern)<CR>
-nmap <buffer> <S-Tab> :call xelltoolkit#goto_pre_word(b:tabpattern)<CR>
+nmap <buffer> <D-> :call <SID>open()<CR>
+" TODO diff with urlpattern?
+nnoremap <buffer> gn :call xelltoolkit#goto_next_word(b:tabpattern)<CR>
+nmap <buffer> gN :call xelltoolkit#goto_pre_word(b:tabpattern)<CR>
 
 " let b:tabpattern = '\(\[[^\^]\{-}\]\([:\[]\)\@!\(([^)]\{-})\)\?\)\|' . g:urlpattern
 let b:tabpattern = '\(\[[^\^]\{-}\]\([:\[]\)\@!\(([^ ]\{-}\%(\s"[^"]\{-}"\)\?)\)\?\)\|' . g:urlpattern
@@ -360,6 +362,47 @@ function! s:get_link()
 		let id = matchstr(linktext, '^\[\zs[^]]\+\ze\]', 0)
 	endif
 	return matchstr(getline(searchpos('^[ ]\{0,3}\[' . id . '\]:\s', 'n')[0]), '\]:\s\zs[^ ]\+\ze')
+endfunction
+" }}}
+
+" Textbundle {{{
+" http://textbundle.org/spec/
+let s:textbundle_filename = expand("%:r")
+
+command! -buffer -nargs=0 ExportTextbundle call <SID>export_textbundle()
+function! s:export_textbundle()
+    " Is it already in a Textbundle?
+    if expand("%:p:h:t") =~ '\.textbundle$'
+        echohl ErrorMsg | echo "It's already a Textbundle." | echohl None
+        return
+    endif
+    " Is there an assests directory?
+    let current_dir = expand("%:p:h")
+    if !isdirectory(current_dir . '/assets')
+        echohl ErrorMsg | echo "There's no 'assets' directory." | echohl None
+        return
+    endif
+    " CD to current directory to siimplify the following operations
+    exec 'cd ' . current_dir
+    let textbundle_filename = expand("%:t:r")
+    " let textbundle_path = current_dir . '/' . textbundle_filename . '.textbundle'
+    " call mkdir(textbundle_path)
+    call mkdir(textbundle_filename . '.textbundle')
+    echo system('cp -r assets "' . textbundle_filename . '.textbundle/"')
+    echo system('cp "' . expand("%:p:t") . '" "' . textbundle_filename . '.textbundle/text.md"')
+    let info_json_content = ['{', '"version" : 2,',
+                \ '"type": "net.daringfireball.markdown",',
+                \ '"transient" : true,',
+                \ '"creatorURL" : "file:///Applications/MacVim.app",',
+                \ '"creatorIdentifier" : "org.vim",',
+                \ '"sourceURL": ""', '}']
+    call writefile(info_json_content, 'info.json', )
+    echo system('mv info.json "' . textbundle_filename . '.textbundle/"')
+    " echohl MoreMsg
+    echom textbundle_filename . ".textbundle"
+    echom "was successfully created in"
+    echom current_dir
+    " echohl None
 endfunction
 " }}}
 

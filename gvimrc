@@ -310,6 +310,9 @@ command! -nargs=0 WRE call WriteRoomEnd()
 
 macm Edit.Font.Bigger key=<nop>
 macm Edit.Font.Smaller key=<nop>
+macm Tools.Make key=<nop>
+macm File.Save\ All key=<nop>
+macm File.Open… key=<nop>
 
 " Don't close the last tab with D-w {{{2
 macm File.Close key=<nop>
