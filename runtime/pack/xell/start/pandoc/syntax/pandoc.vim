@@ -5,6 +5,7 @@
 " 
 " This file is a mixture of Schultz's and Sanson's with heavy modification of
 " mine.
+" https://github.com/vim-pandoc/vim-pandoc-syntax/blob/master/syntax/pandoc.vim
 
 " Initialization {{{1
 " if exists("b:current_syntax")
@@ -178,12 +179,24 @@ if exists('g:pandoc_syntax_table') && g:pandoc_syntax_table
 endif
 " }}}
 
+" YAML frontmatter {{{1
+" syn include @markdownYamlTop syntax/yaml.vim
+" unlet! b:current_syntax
+" syn region markdownYamlHead start="\%^---$" end="^\%(---\|\.\.\.\)\s*$" keepend contains=@markdownYamlTop,@Spell
+try
+    unlet! b:current_syntax
+    syn include @YAML syntax/yaml.vim
+catch /E484/
+endtry
+syn region pandocYAMLHeader start=/\%(\%^\|\_^\s*\n\)\@<=\_^-\{3}\ze\n.\+/ end=/^\([-.]\)\1\{2}$/ keepend contains=@YAML containedin=TOP
+" }}}
+
 " ===============================================
 " Highlights {{{1
 
 hi default link pdcHTMLComment Comment
 
-hi default link pdcTitleBlock String
+hi default link pdcTitleBlock Comment
 hi default link pdcAtxHeader Title
 hi default link pdcSetexHeader Title
 

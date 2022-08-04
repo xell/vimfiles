@@ -41,11 +41,10 @@ set nojoinspaces
 
 " HTML style comments
 setlocal commentstring=<!--%s-->
-setlocal comments=s:<!--,m:\ \ \ \ ,e:-->,:*,:1.
+setlocal comments+=s:<!--,m:\ \ \ \ ,e:-->,:*,:1.
 
 "setlocal showbreak=\ \ \ 
 "setlocal textwidth=80
-
 
 " TODO Use pandoc to tidy up text
 "

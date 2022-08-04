@@ -68,6 +68,10 @@ set whichwrap+=<,>,[,],l,h
 " t autowrap
 set formatoptions=mBlrocq
 
+" Set - comments
+set comments-=fb:-
+set comments+=:-
+
 " While a file is changed outside Vim, automaitcally read it w/o warning
 set autoread
 " Triger `autoread` when files changes on disk
@@ -967,7 +971,7 @@ nmap <Leader>fn :Files <C-R>=g:xell_notes_root<CR><CR>
 " https://github.com/junegunn/fzf.vim/issues/54
 " https://github.com/junegunn/fzf.vim/issues/228
 " https://github.com/junegunn/fzf.vim/commit/8ea2e872d7ac7492b86bcca16ccd5d5021663efb
-command! -bang -nargs=* AG call fzf#vim#ag(<q-args>, '-S', {'options': '--bind ctrl-a:select-all,ctrl-d:deselect-all'}, <bang>0)
+command! -bang -nargs=* AG call fzf#vim#ag(<q-args>, '-S', {'options': '--bind ctrl-a:select-all,ctrl-d:deselect-all,ctrl-j:page-down,ctrl-k:page-up'}, <bang>0)
 nmap <D-F> :AG<CR>
 
 nmap <Leader>ff :FZFMru<CR>
