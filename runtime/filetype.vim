@@ -23,7 +23,5 @@ au BufRead,BufNewFile *.wikimedia.org*      setf mediawiki
 au BufRead,BufNewFile todo.txt          setf todotxt
 " hostlist
 au BufRead,BufNewFile *.hostslist       setf hostslist
-" xproject
-au BufRead,BufNewFile *.xproject       setf xproject
 augroup END
 

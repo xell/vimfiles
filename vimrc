@@ -862,7 +862,6 @@ let g:xell_notes_ex_root = fnameescape(glob('~/Library/Mobile\ Documents/iCloud~
 let g:xell_notes_default_ext = 'md'
 " TODO FIXME
 let g:xell_notes_temp_ext = ['tempnote', 'md'][1]
-" nmap <Leader>pr :exec 'e /Users/xell/Documents/notes/projects/main.xproject'<CR>
 " }}}
 
 " Blockdiff {{{2
