@@ -313,6 +313,7 @@ macm Edit.Font.Smaller key=<nop>
 macm Tools.Make key=<nop>
 macm File.Save\ All key=<nop>
 macm File.Open… key=<nop>
+macm File.Print key=<nop>
 
 " Don't close the last tab with D-w {{{2
 macm File.Close key=<nop>

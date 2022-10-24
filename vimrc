@@ -955,7 +955,7 @@ endfunction
 set rtp+=/usr/local/opt/fzf
 let g:fzf_buffers_jump = 1
 let g:fzf_layout = { 'up': '~20%' }
-nmap <D-o> :Files<CR>
+nmap <D-p> :Files<CR>
 nmap <Leader>ft :Tags<CR>
 nmap <Leader>fh :Helptags<CR>
 nmap <Leader>fb :Buffers<CR>
@@ -989,6 +989,22 @@ imap <c-x><c-l> <plug>(fzf-complete-line)
 
 " Advanced customization using autoload functions
 " inoremap <expr> <c-x><c-k> fzf#vim#complete#word({'left': '20'})
+
+" https://github.com/junegunn/fzf/blob/master/README-VIM.md
+" https://github.com/junegunn/fzf.vim/issues/586
+" https://github.com/junegunn/fzf.vim/issues/185
+" An action can be a reference to a function that processes selected lines
+function! s:build_quickfix_list(lines)
+  call setqflist(map(copy(a:lines), '{ "filename": v:val }'))
+  copen
+  cc
+endfunction
+
+let g:fzf_action = {
+  \ 'ctrl-q': function('s:build_quickfix_list'),
+  \ 'ctrl-s': 'tab split',
+  \ 'ctrl-x': 'split',
+  \ 'ctrl-v': 'vsplit' }
 
 " }}}
 " Gitv {{{2

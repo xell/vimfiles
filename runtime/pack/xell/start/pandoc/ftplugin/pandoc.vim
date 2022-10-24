@@ -42,6 +42,7 @@ set nojoinspaces
 " HTML style comments
 setlocal commentstring=<!--%s-->
 setlocal comments+=s:<!--,m:\ \ \ \ ,e:-->,:*,:1.
+setlocal comments-=b:#
 
 "setlocal showbreak=\ \ \ 
 "setlocal textwidth=80
